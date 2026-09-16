@@ -16,11 +16,11 @@ class VacationAdminService {
         if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${_id} not found.`);
     }
 
+
     public async updateVacation(vacation: IVacationModel): Promise<IVacationModel> {
 
         const dbVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnDocument: "after" }).exec();
-        if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found.`);
-        return dbVacation;
+        return dbVacation!;
 
     }
 

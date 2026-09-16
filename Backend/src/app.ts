@@ -20,6 +20,7 @@ class App {
 
         // Connect to mongoDb:
         await mongoose.connect(appConfig.mongoConnectionString);
+        mongoose.set("runValidators", true);
 
         // Configure smart-saver - images path:
         saver.config(path.join(__dirname, "assets", "images"));

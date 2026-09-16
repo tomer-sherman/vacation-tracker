@@ -12,8 +12,9 @@ class VacationAdminController {
     public constructor() {
         this.router.post("/api/vacations", securityMiddleware.verifyAdmin, this.addVacation);
         this.router.get("/api/admin/likes", securityMiddleware.verifyAdmin, this.getAllVacationLikes);
-        this.router.put("/api/vacations/:_id", securityMiddleware.verifyAdmin, this.updateVacation);
-        this.router.delete("/api/vacations/:_id", securityMiddleware.verifyAdmin, this.deleteVacation);
+            this.router.put("/api/vacations/:_id",  this.updateVacation);
+        this.router.delete("/api/vacations/:_id",  this.deleteVacation);
+        this.router.get("/api/test-error", ()=> {throw new Error("Test Catch All.")})
 
 
     }
@@ -32,6 +33,7 @@ class VacationAdminController {
         request.body._id = request.params._id.toString();
         const vacation = new VacationModel(request.body);
         const dbVacation = await vacationAdminService.updateVacation(vacation);
+        
         response.json(dbVacation);
 
     }
