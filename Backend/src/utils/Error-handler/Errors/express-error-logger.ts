@@ -23,7 +23,7 @@ class ExpressErrorLogger {
 
     }
 
-
+    
 }
 
 export const expressErrorLogger = new ExpressErrorLogger();

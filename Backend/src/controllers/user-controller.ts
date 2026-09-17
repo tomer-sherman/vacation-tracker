@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import { userService } from "../services/user-service";
 import { CredentialsModel, UserModel } from "../models/user-model";
-import { StatusCode } from "error-color-logger";
+import { StatusCode } from "../utils/Error-handler/models/enum"
 import { securityMiddleware } from "../middleware/security-middleware";
 
 

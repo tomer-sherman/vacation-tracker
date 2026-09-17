@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from "express";
 import { vacationService } from "../services/vacation-service";
 import { securityMiddleware } from "../middleware/security-middleware";
 import { AuthRequest } from "../models/user-model";
-import { StatusCode } from "error-color-logger";
+import { StatusCode } from "../utils/Error-handler/models/enum"
 
 
 

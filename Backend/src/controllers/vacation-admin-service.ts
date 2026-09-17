@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import { securityMiddleware } from "../middleware/security-middleware";
-import { StatusCode } from "error-color-logger";
+import { StatusCode } from "../utils/Error-handler/models/enum"
 import { VacationModel } from "../models/vacation-model";
 import { vacationAdminService } from "../services/vacation-admin-service";
 

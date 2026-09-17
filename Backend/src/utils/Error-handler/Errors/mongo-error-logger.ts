@@ -12,7 +12,7 @@ class MongoErrorLogger {
 
         // One line per failed field (e.g. "destination: Path `destination` is required.").
         // Falls back to the raw message when no per-field details exist:
-        const details = err.errors
+        const message = err.errors
             ? Object.values(err.errors).map(fieldErr => `${fieldErr.path}: ${fieldErr.message}`)
             : [err.message];
 
@@ -21,7 +21,7 @@ class MongoErrorLogger {
         console.log(colors.yellow.bold("Status:        " + status));
         console.log(colors.red.bold("Error Type:    " + type));
         console.log(colors.red("Error Message:"));
-        for (const detail of details) {
+        for (const detail of message) {
             console.log(colors.red("  • " + detail));
         }
         console.log(colors.red(this.line));
@@ -31,11 +31,7 @@ class MongoErrorLogger {
     }
 
     public logDuplicateKeyError(err: mongoose.mongo.MongoServerError): void {
-
-        if (err.code !== 11000) {
-            throw new Error("Wrong error undentification |" + 11000 + "| Initially, yet it is " + err.code);
-        };
-
+        const status = 409;
         const code = err.code!;
         const codeName = "Duplicate Key Error";
         const keyPattern = err.keyPattern
@@ -49,7 +45,7 @@ class MongoErrorLogger {
 
         console.log();
         console.log(colors.red(this.line));
-        console.log(colors.yellow.bold("Status:        ") + "409");
+        console.log(colors.yellow.bold("Status:        ") + status);
         console.log(colors.yellow.bold("Mongo Status:  ") + code);
         console.log(colors.red.bold("Error type:    " + codeName));
         console.log(colors.red("Error Message: " + message));
@@ -67,6 +63,8 @@ class MongoErrorLogger {
         console.log(colors.red(this.line));
         console.log();
 
+        
+
     };
 
     public logCastError(err: mongoose.Error.CastError) {
@@ -77,17 +75,17 @@ class MongoErrorLogger {
         const valueType = typeof err.value;
         const message = err.message;
 
-         console.log();
+        console.log();
         console.log(colors.red(this.line));
         console.log(colors.yellow.bold("Status:        ") + status);
         console.log(colors.red.bold("Error type:    " + errorType));
         console.log(colors.red("Field: " + field));
         console.log(colors.red("Value type:    " + valueType));
-        console.log(colors.red("Message: " + message))
+        console.log(colors.red("Message: " + message));
         console.log(colors.red(this.line));
         console.log();
 
-
+        
     }
 
 

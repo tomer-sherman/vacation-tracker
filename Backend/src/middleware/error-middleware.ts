@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { appConfig } from "../utils/app-config";
-import { ClientError, errorColorLogger, StatusCode } from "error-color-logger";
-import { mongoErrorLogger } from "../utils/Errors/mongo-error-logger";
+import { ClientError } from "../utils/Error-handler/models/client-error";
+import { StatusCode } from "../utils/Error-handler/models/enum";
+import { mongoErrorLogger } from "../utils/Error-handler/Errors/mongo-error-logger";
 import mongoose from "mongoose";
 import { any } from "zod";
-import { logError } from "../utils/Errors/error-log";
+import { logError } from "../utils/Error-handler/error-log";
+import { extractErrMessageStatus } from "../utils/Error-handler/message-status-extract";
 
 
 class ErrorMiddleware {
@@ -19,22 +21,17 @@ class ErrorMiddleware {
     public catchAll(err: any, request: Request, response: Response, next: NextFunction): void {
 
         // Take status:
-        const status = err.status || StatusCode.InternalServerError;
-
-        // Is server error:
-        const isServerError = status >= 500 && status <= 599;
-
-        // Take message: 
-        const message = isServerError && appConfig.isProduction ? "Some error, please try again." : err.message;
-
-        // Console message: 
         logError(err);
 
-        // Log errors in database:
-        // ...
+        // Extract Status and message:
+        const extractedError = extractErrMessageStatus(err);
+        if (!extractedError) response.status(StatusCode.InternalServerError).json(`${appConfig.isDevelopment ? "Extractor failed" : "Sorry something went wrong pls Try again later."}`);
+
+        const status = extractedError?.status!;
+        const message = extractedError?.message!;
 
         // Return back error:
-        response.status(status).json({ message });
+        response.status(status).json(message);
     }
 
 }

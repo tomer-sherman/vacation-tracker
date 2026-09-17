@@ -1,4 +1,5 @@
-import { ClientError, StatusCode } from "error-color-logger";
+import { ClientError } from "../utils/Error-handler/models/client-error";
+import { StatusCode } from "../utils/Error-handler/models/enum";
 import { VacationModel, IVacationModel } from "../models/vacation-model";
 
 
