@@ -1,8 +1,9 @@
 import express, { Request, Response, Router } from "express";
 import { securityMiddleware } from "../middleware/security-middleware";
-import { StatusCode } from "../utils/Error-handler/models/enum"
+import { StatusCode } from "../models/enums";
 import { VacationModel } from "../models/vacation-model";
 import { vacationAdminService } from "../services/vacation-admin-service";
+
 
 
 class VacationAdminController {
@@ -10,13 +11,10 @@ class VacationAdminController {
     public router: Router = express.Router();
 
     public constructor() {
-        this.router.post("/api/vacations", securityMiddleware.verifyAdmin, this.addVacation);
-        this.router.get("/api/admin/likes", securityMiddleware.verifyAdmin, this.getAllVacationLikes);
-            this.router.put("/api/vacations/:_id",  this.updateVacation);
-        this.router.delete("/api/vacations/:_id",  this.deleteVacation);
-        this.router.get("/api/test-error", ()=> {throw new Error("Test Catch All.")})
-
-
+        this.router.post("/api/vacations", this.addVacation);
+        this.router.get("/api/admin/likes", this.getAllVacationLikes);
+        this.router.put("/api/vacations/:_id", this.updateVacation);
+        this.router.delete("/api/vacations/:_id", this.deleteVacation);
     }
 
     public async addVacation(request: Request, response: Response): Promise<void> {
@@ -33,7 +31,7 @@ class VacationAdminController {
         request.body._id = request.params._id.toString();
         const vacation = new VacationModel(request.body);
         const dbVacation = await vacationAdminService.updateVacation(vacation);
-        
+
         response.json(dbVacation);
 
     }

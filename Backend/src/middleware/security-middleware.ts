@@ -2,8 +2,8 @@ import { Express, NextFunction, Request, Response } from "express";
 import expressRateLimit from "express-rate-limit";
 import helmet from "helmet";
 import striptags from "striptags";
-import { ClientError } from "../utils/Error-handler/models/client-error";
-import { StatusCode } from "../utils/Error-handler/models/enum"
+import { ClientError } from "../models/client-error";
+import { StatusCode } from "../models/enums";
 import { security } from "../utils/security";
 import jwt from "jsonwebtoken";
 import { AuthRequest, IUserModel } from "../models/user-model";

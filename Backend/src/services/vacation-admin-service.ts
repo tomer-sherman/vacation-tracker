@@ -1,5 +1,5 @@
-import { ClientError } from "../utils/Error-handler/models/client-error";
-import { StatusCode } from "../utils/Error-handler/models/enum";
+import { ClientError } from "../models/client-error";
+import { StatusCode } from "../models/enums";
 import { VacationModel, IVacationModel } from "../models/vacation-model";
 
 
@@ -7,6 +7,10 @@ class VacationAdminService {
 
 
     public async addVacation(vacation: IVacationModel): Promise<IVacationModel> {
+
+        await ClientError.validateDocument(vacation);
+
+
         const dbVacation = await vacation.save();
         return dbVacation;
     }
@@ -20,8 +24,12 @@ class VacationAdminService {
 
     public async updateVacation(vacation: IVacationModel): Promise<IVacationModel> {
 
+        await ClientError.validateDocument(vacation);
+
         const dbVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnDocument: "after" }).exec();
-        return dbVacation!;
+        if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found.`)
+
+        return dbVacation;
 
     }
 

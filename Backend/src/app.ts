@@ -9,10 +9,11 @@ import { securityMiddleware } from "./middleware/security-middleware";
 import { appConfig } from "./utils/app-config";
 import mongoose from "mongoose";
 import { vacationController } from "./controllers/vacation-controller";
-import { vacationAdminController} from "./controllers/vacation-admin-service";
+import { vacationAdminController } from "./controllers/vacation-admin-service";
 import { vacationMcpServer } from "./mcp/mcp-server";
 import { aiController } from "./controllers/ai-controller";
 import { sseHandlers } from "express-mcp-handler";
+import { loggerMiddleware } from "./middleware/logger-middleware";
 
 class App {
 
@@ -20,7 +21,7 @@ class App {
 
         // Connect to mongoDb:
         await mongoose.connect(appConfig.mongoConnectionString);
-        mongoose.set("runValidators", true);
+
 
         // Configure smart-saver - images path:
         saver.config(path.join(__dirname, "assets", "images"));
@@ -41,6 +42,9 @@ class App {
         server.use(expressFileUpload());
 
         server.use(securityMiddleware.preventXss);
+
+        // Logger middleware:
+        server.use(loggerMiddleware.logToConsole);
 
         // Register controllers:
         server.use(userController.router);

@@ -1,5 +1,5 @@
-import { ClientError } from "../utils/Error-handler/models/client-error";
-import { StatusCode } from "../utils/Error-handler/models/enum";
+import { ClientError } from "../models/client-error";
+import { StatusCode } from "../models/enums";
 import { VacationModel, IVacationModel } from "../models/vacation-model";
 
 

@@ -3,6 +3,7 @@ import colors from "colors";
 
 class LoggerMiddleware {
 
+
     // Pass-Through Middleware:
     public logToConsole(request: Request, response: Response, next: NextFunction): void {
         const method = request.method;

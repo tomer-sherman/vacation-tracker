@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from "express";
 import { vacationService } from "../services/vacation-service";
 import { securityMiddleware } from "../middleware/security-middleware";
 import { AuthRequest } from "../models/user-model";
-import { StatusCode } from "../utils/Error-handler/models/enum"
+import { StatusCode } from "../models/enums";
 
 
 
@@ -11,10 +11,10 @@ class VacationController {
     public router: Router = express.Router();
 
     public constructor() {
-        this.router.get("/api/vacations", securityMiddleware.verifyLogin, this.getAllVacations);
-        this.router.get("/api/vacations/:_id", securityMiddleware.verifyLogin, this.getOneVacation);
-        this.router.post("/api/vacations/like/:_id", securityMiddleware.verifyLogin, this.likeVacation)
-        this.router.post("/api/vacations/unlike/:_id", securityMiddleware.verifyLogin, this.unlikeVacation)
+        this.router.get("/api/vacations", this.getAllVacations);
+        this.router.get("/api/vacations/:_id", this.getOneVacation);
+        this.router.post("/api/vacations/like/:_id", this.likeVacation)
+        this.router.post("/api/vacations/unlike/:_id", this.unlikeVacation)
     }
 
     private async getAllVacations(request: Request, response: Response): Promise<void> {
