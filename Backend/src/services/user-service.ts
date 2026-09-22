@@ -25,7 +25,7 @@ class UserService {
         credentials.password = security.hashPassword(credentials.password);
         const dbUserArr = await UserModel.find({ email: credentials.email, password: credentials.password }).exec() as IUserModel[];
         const dbUser = dbUserArr[0];
-        
+
         if (!dbUser) throw new ClientError(StatusCode.Unauthorized, "Incorrect email or password.")
 
         const jwt = security.generateJwt(dbUser);
@@ -34,7 +34,7 @@ class UserService {
     }
 
     private async isEmailTaken(email: string): Promise<boolean> {
-
+        
         const user = await UserModel.findOne({ email }).exec();
         if (user) return true;
         return false;

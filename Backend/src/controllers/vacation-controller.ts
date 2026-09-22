@@ -35,7 +35,7 @@ class VacationController {
     private async likeVacation(request: Request, response: Response): Promise<void> {
 
         const userId = (request as AuthRequest).user._id.toString();
-        const vacationId = request.params._id as string;
+        const vacationId = request.params._id as string; // UNdefiened need to find out why.
         await vacationService.like(userId, vacationId);
         response.status(StatusCode.NoContent).json();
 

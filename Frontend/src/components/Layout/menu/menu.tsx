@@ -8,8 +8,13 @@ export function Menu() {
 
             <NavLink to="/home">Home</NavLink>
 
+            <NavLink to="/register">Register</NavLink>
+
+            <NavLink to="/login">Login</NavLink>
+
+
             <NavLink to="/data" end>Data</NavLink>
-            
+
             <NavLink to="/about">About</NavLink>
 
         </div>

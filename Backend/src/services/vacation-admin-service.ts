@@ -10,7 +10,6 @@ class VacationAdminService {
 
         await ClientError.validateDocument(vacation);
 
-
         const dbVacation = await vacation.save();
         return dbVacation;
     }

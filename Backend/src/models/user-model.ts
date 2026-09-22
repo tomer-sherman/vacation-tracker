@@ -22,7 +22,7 @@ export const UserSchema = new Schema<IUserModel>({
         required: [true, "First name required"],
         minLength: [2, "First name cannot be with less than 2 chars."],
         maxLength: [50, "Yo brah why your name so long"],
-        match: [/^[A-Z][a-z]*$/, "Your name must contain english chars only, and the first char must be uppercase."],
+        match: [/^[a-z]*$/, "Your name must contain english chars only, no empty spaces."],
         trim: true,
     },
     lastName: {
@@ -30,7 +30,7 @@ export const UserSchema = new Schema<IUserModel>({
         required: [true, "First name required"],
         minLength: [2, "First name cannot be with less than 2 chars."],
         maxLength: [50, "Yo brah why your name so long"],
-        match: [/^[A-Z][a-z]*$/, "Your last name must contain english chars only, the first char must be uppercase."],
+        match: [/^[a-z]*$/, "Your last name must contain english chars only."],
         trim: true,
     },
     email: {
