@@ -55,3 +55,14 @@ export const VacationSchema = new Schema<IVacationModel>({
 })
 
 export const VacationModel = model<IVacationModel>("VacationModel", VacationSchema, "holidays");
+
+
+export type VacationView = {
+    _id: Types.ObjectId;
+    destination: string;
+    startAt: Date;
+    finishAt: Date;
+    price: number;
+    likeCount: number;
+    isLiked: boolean;
+};

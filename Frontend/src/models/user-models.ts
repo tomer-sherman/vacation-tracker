@@ -47,3 +47,17 @@ export const userValidation = {
     },
 
 }
+
+export type UserModel = {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: Role
+
+}
+
+export enum Role {
+    User = "user",
+    Admin = "admin"
+}

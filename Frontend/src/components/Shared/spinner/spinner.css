@@ -1,8 +1,8 @@
 /* ============================================================================
    Spinner — loading indicator
    ----------------------------------------------------------------------------
-   The GIF has a white background, so it is presented as a rounded white tile
-   with a soft glow. Centered inline in whatever container renders it.
+   The GIF is cropped into a circle and wrapped in a spinning sunset ring
+   (a conic gradient masked into a donut). Both stack in the same grid cell.
    ============================================================================ */
 
 .Spinner {
@@ -12,13 +12,31 @@
     animation: fade-in var(--normal) var(--ease) both;
 }
 
+.Spinner::before {
+    content: "";
+    grid-area: 1 / 1;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        transparent 0% 18%,
+        #ffb347 34%,
+        #ff5c7a 54%,
+        #0ea5e9 76%,
+        transparent 100%);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+    animation: spin 1.3s linear infinite;
+}
+
 .Spinner img {
-    width: 140px;
-    height: 140px;
+    grid-area: 1 / 1;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
-    border-radius: var(--radius-lg);
+    border-radius: 50%;
     box-shadow:
-        0 0 0 1px var(--border),
+        0 0 0 6px var(--surface-solid),
         var(--shadow-lg),
-        0 0 60px rgba(139, 92, 246, 0.2);
+        0 0 60px rgba(255, 92, 122, 0.25);
 }

@@ -22,7 +22,7 @@ export function Routing() {
             <Route path="/login" element={<Login />} />
 
             {/* Data:  */}
-            <Route path="/data" element={<VacationPage />} />
+            <Route path="/vacations" element={<VacationPage />} />
 
             {/* About:  */}
             <Route path="/about" element={<About />} />

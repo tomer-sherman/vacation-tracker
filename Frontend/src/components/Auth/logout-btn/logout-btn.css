@@ -1,3 +1,33 @@
+/* ============================================================================
+   LogoutBtn — small outlined pill in the nav, fills with sunset on hover
+   ============================================================================ */
+
 .LogoutBtn {
-	
+    display: flex;
+    align-items: center;
+    margin-left: 0.4rem;
+}
+
+.LogoutBtn button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--coral);
+    border: 2px solid rgba(255, 92, 122, 0.45);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.LogoutBtn button::before {
+    content: "👋";
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.LogoutBtn button:hover {
+    background: var(--g-sunset);
+    background-size: 200% 200%;
+    color: #fff;
+    border-color: transparent;
+    box-shadow: var(--glow-sunset);
 }

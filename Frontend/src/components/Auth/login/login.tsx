@@ -16,7 +16,7 @@ export function Login() {
 
         await authService.login(credentials)
             .then(() => {
-                navigate("/data");
+                navigate("/vacations");
                 notify.success("Login successful.")
             })
             .catch(err => notify.error(err));

@@ -1,72 +1,43 @@
 /* ============================================================================
-   VacationPage page
+   VacationPage — page wrapper for the vacations grid
    ----------------------------------------------------------------------------
-   Layout for lists / tables / cards of records. Pairs with the global
-   .grid, .card, .badge and table styles from index.css.
+   The TSX renders only <VacList />; the title and subtitle are pseudo-
+   elements ordered above the list with flex `order`.
    ============================================================================ */
 
 .VacationPage {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Toolbar above a list: search on the left, actions on the right */
-.VacationPage .toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.VacationPage .toolbar input {
-    max-width: 320px;
-}
-
-/* Record cards: <div class="list"><div class="card">...</div></div> */
-.VacationPage .list {
-    display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-}
-
-.VacationPage .list .card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition:
-        transform var(--normal) var(--ease),
-        box-shadow var(--normal) var(--ease),
-        border-color var(--normal) var(--ease);
-}
-
-.VacationPage .list .card:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow);
-}
-
-.VacationPage .list .card img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    border-radius: var(--radius);
-    background: var(--surface-2);
-}
-
-/* Meta row inside a card: dates, price, likes */
-.VacationPage .list .card .meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
 }
 
-.VacationPage .list .card .price {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    color: var(--accent);
+/* Title */
+.VacationPage::before {
+    content: "Pick your next escape";
+    order: 0;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    background: var(--g-text);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 7s ease-in-out infinite;
+}
+
+/* Subtitle */
+.VacationPage::after {
+    content: "🧳 Curated getaways. Tap ♥ on the ones that call your name.";
+    order: 1;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+}
+
+.VacationPage > .VacList {
+    order: 2;
 }

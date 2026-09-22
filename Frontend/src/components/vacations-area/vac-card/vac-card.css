@@ -1,3 +1,303 @@
+/* ============================================================================
+   VacCard — postcard-style card with a CSS-painted scenery banner
+   ----------------------------------------------------------------------------
+   DOM (no classes on children):
+       p1 destination   p2 startAt   p3 finishAt   p4 likeCount   p5 price
+       then either one button (Like / UnLike) or two (Edit, Delete)
+
+   Layout: 2-column grid.
+       ::before  (sky + sun banner, spans both columns, bleeds to the edges)
+       p1        destination, spans both
+       p2 | p3   depart / return
+       p4 | p5   likes / price
+       button(s)
+
+   The sea at the bottom of the banner is ::after, absolutely positioned and
+   masked with a wave shape that rolls sideways.
+
+   Dates arrive as ISO strings (2026-10-05T00:00:00.000Z). The date boxes use
+   a monospace font and a fixed width of 10ch, so only YYYY-MM-DD shows.
+
+   Every 4th card cycles the scenery palette via custom properties.
+   ============================================================================ */
+
 .VacCard {
-	
+    /* scenery palette (sunset) */
+    --sky-1: #ffd08a;
+    --sky-2: #ff5c7a;
+    --sky-3: #b33bd6;
+    --sea: #0ea5e9;
+    --sun-x: 74%;
+    --sun-y: 38%;
+
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.75rem;
+    row-gap: 0.65rem;
+    align-items: center;
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    background: var(--surface-solid);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: var(--shadow);
+    transition:
+        transform var(--normal) var(--bounce),
+        box-shadow var(--normal) var(--ease);
+    animation: card-in 0.6s var(--ease) backwards;
+}
+
+[data-theme="dark"] .VacCard {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Scenery variants */
+.VacCard:nth-child(4n+2) { --sky-1: #bae6fd; --sky-2: #38bdf8; --sky-3: #0369a1; --sea: #2dd4bf; --sun-x: 26%; --sun-y: 34%; }
+.VacCard:nth-child(4n+3) { --sky-1: #fef3c7; --sky-2: #fbbf24; --sky-3: #f97316; --sea: #0891b2; --sun-x: 70%; --sun-y: 30%; }
+.VacCard:nth-child(4n+4) { --sky-1: #c4b5fd; --sky-2: #7c3aed; --sky-3: #1e1b4b; --sea: #4f46e5; --sun-x: 30%; --sun-y: 42%; }
+
+/* Staggered entrance */
+.VacCard:nth-child(1)  { animation-delay: 0.00s; }
+.VacCard:nth-child(2)  { animation-delay: 0.07s; }
+.VacCard:nth-child(3)  { animation-delay: 0.14s; }
+.VacCard:nth-child(4)  { animation-delay: 0.21s; }
+.VacCard:nth-child(5)  { animation-delay: 0.28s; }
+.VacCard:nth-child(6)  { animation-delay: 0.35s; }
+.VacCard:nth-child(7)  { animation-delay: 0.42s; }
+.VacCard:nth-child(8)  { animation-delay: 0.49s; }
+.VacCard:nth-child(9)  { animation-delay: 0.56s; }
+.VacCard:nth-child(10) { animation-delay: 0.63s; }
+.VacCard:nth-child(11) { animation-delay: 0.70s; }
+.VacCard:nth-child(12) { animation-delay: 0.77s; }
+
+.VacCard:hover {
+    transform: translateY(-8px) scale(1.015);
+    box-shadow: 0 28px 60px rgba(15, 42, 61, 0.18);
+}
+
+/* ---- Banner: sky + sun ---------------------------------------------------- */
+.VacCard::before {
+    content: "";
+    grid-column: 1 / -1;
+    height: 160px;
+    margin: -1.25rem -1.25rem 0.25rem;
+    background:
+        radial-gradient(circle at var(--sun-x) var(--sun-y),
+            #fffbe6 0 15px,
+            rgba(255, 251, 230, 0) 16px),
+        radial-gradient(circle at var(--sun-x) var(--sun-y),
+            rgba(255, 255, 255, 0.6) 0 22px,
+            rgba(255, 255, 255, 0) 64px),
+        linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 58%, var(--sky-3) 100%);
+    transform-origin: 50% 100%;
+    transition:
+        transform var(--slow) var(--ease),
+        filter var(--normal) var(--ease);
+}
+
+.VacCard:hover::before {
+    transform: scale(1.06);
+    filter: saturate(1.15) brightness(1.04);
+}
+
+/* ---- Sea: wave-masked strip rolling across the bottom of the banner ------- */
+.VacCard::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 118px;
+    height: 42px;
+    background: var(--sea);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%23000'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-x;
+    -webkit-mask-size: 50% 100%;
+    -webkit-mask-position: 0 0;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%23000'/%3E%3C/svg%3E");
+    mask-repeat: repeat-x;
+    mask-size: 50% 100%;
+    mask-position: 0 0;
+    animation: wave-mask 7s linear infinite;
+    pointer-events: none;
+}
+
+/* ---- Content -------------------------------------------------------------- */
+.VacCard p {
+    margin: 0;
+}
+
+/* Destination */
+.VacCard p:nth-of-type(1) {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text);
+}
+
+.VacCard p:nth-of-type(1)::before {
+    content: "📍";
+    font-size: 0.85em;
+    line-height: 1;
+}
+
+/* Depart / Return — boarding-pass boxes, clipped to YYYY-MM-DD.
+   overflow: hidden clips at the padding box, so the right-hand spacing is a
+   transparent border rather than padding: the content box is exactly 10ch
+   wide and the clip edge lands right after the tenth character. The outline
+   is a box-shadow because the real border is used for spacing. */
+.VacCard p:nth-of-type(2),
+.VacCard p:nth-of-type(3) {
+    width: calc(10ch + 1.3rem);
+    padding: 0.4rem 0 0.4rem 0.65rem;
+    border: 0;
+    border-right: 0.65rem solid transparent;
+    border-radius: 12px;
+    background: rgba(14, 165, 233, 0.08);
+    box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.18);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .VacCard p:nth-of-type(2),
+[data-theme="dark"] .VacCard p:nth-of-type(3) {
+    background: rgba(56, 189, 248, 0.12);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+}
+
+.VacCard p:nth-of-type(2)::before,
+.VacCard p:nth-of-type(3)::before {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 0.1rem;
+}
+
+.VacCard p:nth-of-type(2)::before { content: "Depart"; }
+.VacCard p:nth-of-type(3)::before { content: "Return"; }
+
+.VacCard p:nth-of-type(3) {
+    justify-self: end;
+}
+
+/* Likes — coral pill with a heart */
+.VacCard p:nth-of-type(4) {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    background: rgba(255, 92, 122, 0.12);
+    color: var(--danger);
+    font-weight: 800;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.VacCard p:nth-of-type(4)::before {
+    content: "♥";
+    font-size: 1.05em;
+}
+
+/* Price — big gradient number */
+.VacCard p:nth-of-type(5) {
+    justify-self: end;
+    margin-top: 0.35rem;
+    font-size: 1.65rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background: var(--g-text);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.VacCard p:nth-of-type(5)::before {
+    content: "$";
+    font-size: 0.6em;
+    vertical-align: top;
+    margin-right: 0.05em;
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+.VacCard button {
+    margin-top: 0.6rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+}
+
+/* User: single Like / UnLike button */
+.VacCard button:only-of-type {
+    grid-column: 1 / -1;
+}
+
+.VacCard button:only-of-type::before {
+    content: "♥";
+    display: inline-block;
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.VacCard button:only-of-type:hover::before {
+    animation: heartbeat 0.9s ease-in-out infinite;
+}
+
+/* Admin: Edit (ocean) + Delete (outlined red) */
+.VacCard button:first-of-type:not(:only-of-type) {
+    grid-column: 1;
+    background: var(--g-ocean);
+    background-size: 200% 200%;
+    box-shadow: var(--glow-ocean), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.VacCard button:first-of-type:not(:only-of-type):hover {
+    box-shadow: 0 16px 36px rgba(6, 182, 212, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.VacCard button:first-of-type:not(:only-of-type)::before {
+    content: "✏️";
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.VacCard button:last-of-type:not(:only-of-type) {
+    grid-column: 2;
+    background: var(--surface-solid);
+    color: var(--danger);
+    border: 2px solid rgba(225, 29, 72, 0.35);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.VacCard button:last-of-type:not(:only-of-type)::before {
+    content: "🗑️";
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.VacCard button:last-of-type:not(:only-of-type):hover {
+    background: linear-gradient(135deg, #ff5c7a, #e11d48);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 12px 30px rgba(225, 29, 72, 0.35);
 }

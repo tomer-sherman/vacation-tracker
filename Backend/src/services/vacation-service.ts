@@ -1,14 +1,29 @@
 import mongoose from "mongoose";
 import { ClientError } from "../models/client-error";
 import { StatusCode } from "../models/enums";
-import { VacationModel, IVacationModel } from "../models/vacation-model";
+import { VacationModel, IVacationModel, VacationView } from "../models/vacation-model";
+
 
 
 class VacationService {
 
-    public async getAllVacations(): Promise<IVacationModel[]> {
+    public async getAllVacations(userId: string): Promise<VacationView[]> {
 
-        const dbVacations = await VacationModel.find().exec() as IVacationModel[];
+        //Convert string to mongoDb userId object.
+        const mongoUserId = new mongoose.Types.ObjectId(userId);
+
+        const dbVacations = await VacationModel.aggregate<VacationView>([
+            {
+                $project: {
+                    // This fields will be sent the same way as mongo stores them.
+                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1,
+
+                    // This are sent a bit differently, since we want to handle isLiked and likeCount as well.
+                    likeCount: { $size: "$likes" },
+                    isLiked: { $in: [mongoUserId, "$likes"] }
+                },
+            }
+        ])
         return dbVacations;
 
     }
@@ -44,7 +59,7 @@ class VacationService {
             { returnDocument: "after" }
         ).exec();
 
-        
+
     }
 
 

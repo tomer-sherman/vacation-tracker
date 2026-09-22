@@ -1,3 +1,54 @@
+/* ============================================================================
+   VacList — responsive grid of VacCards
+   ----------------------------------------------------------------------------
+   Also styles the bare "Loading vacations..." <span> and the empty state
+   (no children at all) via :empty.
+   ============================================================================ */
+
 .VacList {
-	
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    align-items: start;
+}
+
+/* Loading pill with a spinning sun */
+.VacList > span {
+    grid-column: 1 / -1;
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-full);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow);
+    font-weight: 700;
+    color: var(--text-muted);
+    animation: pulse 1.6s ease-in-out infinite;
+}
+
+.VacList > span::before {
+    content: "🌞";
+    font-size: 1.2rem;
+    line-height: 1;
+    animation: spin 3s linear infinite;
+}
+
+/* Nothing loaded and nothing loading */
+.VacList:empty {
+    display: block;
+}
+
+.VacList:empty::before {
+    content: "🏝️ No vacations yet. The horizon is wide open.";
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    padding: 3.5rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border-strong);
+    background: var(--surface-2);
 }

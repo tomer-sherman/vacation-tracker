@@ -11,15 +11,18 @@ class VacationController {
     public router: Router = express.Router();
 
     public constructor() {
-        this.router.get("/api/vacations", this.getAllVacations);
-        this.router.get("/api/vacations/:_id", this.getOneVacation);
-        this.router.post("/api/vacations/like/:_id", this.likeVacation)
-        this.router.post("/api/vacations/unlike/:_id", this.unlikeVacation)
+        this.router.get("/api/vacations", securityMiddleware.verifyLogin, this.getAllVacations);
+        this.router.get("/api/vacations/:_id", securityMiddleware.verifyLogin, this.getOneVacation);
+        this.router.post("/api/vacations/like/:_id", securityMiddleware.verifyLogin, this.likeVacation)
+        this.router.post("/api/vacations/unlike/:_id", securityMiddleware.verifyLogin, this.unlikeVacation)
     }
 
     private async getAllVacations(request: Request, response: Response): Promise<void> {
 
-        const vacations = await vacationService.getAllVacations();
+
+        const userId = (request as AuthRequest).user._id.toString();
+
+        const vacations = await vacationService.getAllVacations(userId);
         response.json(vacations);
 
     }

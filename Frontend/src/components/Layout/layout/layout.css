@@ -2,9 +2,13 @@
    Layout — app shell
    ----------------------------------------------------------------------------
    Grid areas:
-       header | nav       <- one sticky top bar (brand left, links right)
+       header | nav       <- one sticky frosted-glass top bar
        main   | main      <- centered content column
-       footer | footer
+       footer | footer    <- ocean footer with rolling waves
+
+   Extras drawn here:
+       .Layout::before     a thin animated sunset strip pinned to the top edge
+       footer::before/after   two layers of CSS-only waves lapping upward
    ============================================================================ */
 
 .Layout {
@@ -23,7 +27,22 @@
 .Layout > main   { grid-area: main; }
 .Layout > footer { grid-area: footer; }
 
-/* Top bar: header + nav share the same sticky strip */
+/* Rainbow strip along the very top of the viewport */
+.Layout::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    z-index: 60;
+    background: var(--g-rainbow);
+    background-size: 300% 100%;
+    animation: flow 10s linear infinite;
+    pointer-events: none;
+}
+
+/* Top bar: header + nav share the same sticky frosted strip */
 .Layout > header,
 .Layout > nav {
     position: sticky;
@@ -32,11 +51,16 @@
     height: var(--nav-height);
     display: flex;
     align-items: center;
-    background: var(--bg-elevated);
-    background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    backdrop-filter: blur(14px) saturate(160%);
-    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="dark"] .Layout > header,
+[data-theme="dark"] .Layout > nav {
+    background: rgba(11, 18, 38, 0.62);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .Layout > header {
@@ -54,13 +78,43 @@
     width: 100%;
     max-width: var(--container);
     margin-inline: auto;
-    padding: clamp(1.5rem, 4vw, 3rem) var(--gutter);
+    padding: clamp(1.75rem, 4vw, 3.5rem) var(--gutter) clamp(3rem, 6vw, 5rem);
 }
 
-/* Footer */
+/* Footer — deep water */
 .Layout > footer {
-    border-top: 1px solid var(--border);
-    background: var(--bg-elevated);
+    position: relative;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    color: #fff;
+    background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+}
+
+/* Two wave layers rolling in opposite directions */
+.Layout > footer::before,
+.Layout > footer::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-repeat: repeat-x;
+    pointer-events: none;
+}
+
+.Layout > footer::before {
+    top: -58px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%230ea5e9'/%3E%3C/svg%3E");
+    background-size: 1200px 60px;
+    animation: wave-a 14s linear infinite;
+}
+
+.Layout > footer::after {
+    top: -44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%2338bdf8'/%3E%3C/svg%3E");
+    background-size: 600px 60px;
+    opacity: 0.55;
+    animation: wave-b 9s linear infinite;
 }
 
 /* ---- Mobile: stack the bar, nav scrolls horizontally --------------------- */
@@ -78,14 +132,14 @@
     .Layout > header {
         position: static;
         height: auto;
-        padding: 0.875rem var(--gutter);
+        padding: 1rem var(--gutter) 0.5rem;
         border-bottom: 0;
     }
 
     .Layout > nav {
         height: auto;
         justify-content: flex-start;
-        padding: 0.5rem var(--gutter);
+        padding: 0.5rem var(--gutter) 0.75rem;
         overflow-x: auto;
         scrollbar-width: none;
     }

@@ -22,7 +22,7 @@ export function Register() {
 
         await authService.register(form).
             then(() => {
-                navigate("/data");
+                navigate("/vacations");
                 notify.success("Register succeeded.")
             })
             .catch(err => notify.error(err))

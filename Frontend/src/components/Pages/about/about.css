@@ -1,7 +1,9 @@
 /* ============================================================================
    About page
    ----------------------------------------------------------------------------
-   Readable single-column layout for long-form text.
+   Long-form layout for when real content lands. Until then, the single <p>
+   is dressed up as a postcard: airmail striped border, ruled lines, script
+   handwriting and a stamp in the corner.
    ============================================================================ */
 
 .About {
@@ -24,7 +26,73 @@
     line-height: 1.75;
 }
 
-/* The scaffold placeholder should still span the full content width */
+/* ---- Postcard mode (only while the page has a single <p>) ---------------- */
 .About > p:only-child {
+    position: relative;
     max-width: none;
+    width: min(100%, 680px);
+    min-height: 300px;
+    margin: 1rem auto;
+    padding: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 5vw, 3rem);
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.8vw, 1.9rem);
+    line-height: 1.55;
+    background:
+        repeating-linear-gradient(180deg,
+            transparent 0 calc(1.55em - 1px),
+            rgba(14, 165, 233, 0.16) calc(1.55em - 1px) 1.55em),
+        var(--surface-solid);
+    background-origin: content-box;
+    background-clip: padding-box, border-box;
+    border: 8px solid transparent;
+    border-image: repeating-linear-gradient(45deg,
+        #ff5c7a 0 14px,
+        #ffffff 14px 28px,
+        #0ea5e9 28px 42px) 8;
+    box-shadow: var(--shadow-lg);
+    transform: rotate(-1.2deg);
+    transition: transform var(--normal) var(--bounce), box-shadow var(--normal) var(--ease);
+    animation: postcard-in 0.7s var(--bounce) backwards;
+}
+
+.About > p:only-child:hover {
+    transform: rotate(0deg) scale(1.01);
+    box-shadow: 0 30px 70px rgba(15, 42, 61, 0.2);
+}
+
+/* "Greetings from" eyebrow */
+.About > p:only-child::before {
+    content: "Greetings from";
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 0.5rem;
+}
+
+/* Stamp */
+.About > p:only-child::after {
+    content: "✈ PAR AVION";
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 0.6rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    color: var(--ocean);
+    border: 2px dashed rgba(14, 165, 233, 0.55);
+    background: rgba(14, 165, 233, 0.08);
+    transform: rotate(7deg);
+}
+
+@keyframes postcard-in {
+    from { opacity: 0; transform: translateY(30px) rotate(-5deg) scale(0.96); }
+    to   { opacity: 1; transform: rotate(-1.2deg); }
 }
