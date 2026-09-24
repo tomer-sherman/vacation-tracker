@@ -29,7 +29,7 @@ class AiController {
     }
     private async getAiRecommendation(request: Request, response: Response): Promise<void> {
 
-        const userPrompt = request.body.userPrompt as string;
+        const userPrompt = request.body.text as string;
         const recommendation = await aiService.getAiRecommendation(userPrompt);
 
         response.json(recommendation);

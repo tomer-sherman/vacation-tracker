@@ -2,6 +2,10 @@
 import OpenAi from "openai"
 import { appConfig } from "../utils/app-config";
 import { promptHolder } from "../utils/prompt-holder";
+import { AiResponse } from "../models/ai-recommendation-model";
+
+import { ClientError } from "../models/client-error";
+import { StatusCode } from "../models/enums";
 
 class AiService {
 
@@ -12,7 +16,7 @@ class AiService {
     public async getMcpCompletion(prompt: string): Promise<string> {
 
         const response = await this.openai.responses.create({
-            model: "gpt-5",
+            model: "gpt-4o-mini",
             input: prompt,
 
             tools: [{
@@ -30,21 +34,27 @@ class AiService {
     }
 
 
-    public async getAiRecommendation(userPrompt: string): Promise<string> {
+    public async getAiRecommendation(userPrompt: string): Promise<AiResponse> {
 
 
         const promptToSend =
-            "systemPrompt: " + promptHolder.systemPrompt +
-            "instructions: " + promptHolder.instructions +
-            "userQuestion: " + userPrompt +
-            "security instructions: " + promptHolder.securityCheck;
+            "systemPrompt: " + promptHolder.systemPrompt + "\n"
+        "instructions: " + promptHolder.instructions + "\n"
+        "userQuestion: " + userPrompt + "\n"
+        "security instructions: " + promptHolder.securityCheck; + "\n"
 
         "Your answer : ";
 
         const completion = await this.getMcpCompletion(promptToSend);
+        const aiResponse = this.parseAiRecommendation(completion);
+        return aiResponse;
 
-        return completion;
+    }
 
+    private parseAiRecommendation(completion: string): AiResponse {
+
+        const aiResponse: AiResponse = JSON.parse(completion);
+        return aiResponse;
     }
 
 
