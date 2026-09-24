@@ -5,6 +5,7 @@ import { Page404 } from "../../Pages/page404/page404";
 import { Register } from "../../Auth/register/register";
 import { Login } from "../../Auth/login/login";
 import { VacationPage } from "../../Pages/vacation-page/vacation-page";
+import { AskMcpPage } from "../../Pages/ask-mcp-page/ask-mcp-page";
 
 export function Routing() {
 
@@ -23,6 +24,8 @@ export function Routing() {
 
             {/* Data:  */}
             <Route path="/vacations" element={<VacationPage />} />
+
+            <Route path="/ask-mcp" element={<AskMcpPage />} />
 
             {/* About:  */}
             <Route path="/about" element={<About />} />

@@ -24,7 +24,7 @@ export function Menu() {
             {user &&
                 <>
                     <NavLink to="/vacations" end>Vacations</NavLink>
-                    {/**Here sits mcp and ask ai recomendation. */}
+                    <NavLink to="/ask-mcp">Ask AI</NavLink>
                     <LogoutBtn />
                 </>
             }
@@ -48,7 +48,7 @@ export function Menu() {
 
 
 
-          
+
 
         </div>
     );

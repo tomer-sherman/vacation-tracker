@@ -1,0 +1,238 @@
+/* ============================================================================
+   AskMcpPage — AI concierge
+   ----------------------------------------------------------------------------
+   DOM order: <h1> headline, <form> (label, input, span.error, button),
+   <p> answer, <p> "calculating" (only while loading).
+
+   Layout: one centered column. The form is a search-bar: label on top,
+   input + button side by side, error message underneath (grid + `order`,
+   so the TSX order stays untouched). The answer <p> becomes a chat bubble
+   and hides itself while empty.
+
+   Decorations: an eyebrow pill above the title (::before) and a crystal
+   ball floating top-right (::after).
+   ============================================================================ */
+
+.AskMcpPage {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    width: min(100%, 780px);
+    margin: clamp(0.25rem, 2vh, 1.5rem) auto;
+}
+
+/* Eyebrow pill */
+.AskMcpPage::before {
+    content: "✨ AI concierge";
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35em 0.95em;
+    border-radius: var(--radius-full);
+    background: var(--g-ocean);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    box-shadow: var(--glow-ocean);
+    animation: fade-up 0.6s var(--ease) 0.05s both;
+}
+
+/* Crystal ball watermark */
+.AskMcpPage::after {
+    content: "🔮";
+    position: absolute;
+    z-index: -1;
+    top: -1.25rem;
+    right: 0.5rem;
+    font-size: clamp(4rem, 9vw, 6.5rem);
+    line-height: 1;
+    opacity: 0.18;
+    pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Headline */
+.AskMcpPage h1 {
+    max-width: 30ch;
+    margin-bottom: 0.25rem;
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+    font-weight: 900;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    background: var(--g-text);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: fade-up 0.7s var(--ease) 0.15s both, gradient-shift 7s ease-in-out infinite;
+}
+
+/* ---- Prompt bar ----------------------------------------------------------- */
+
+.AskMcpPage form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+    width: 100%;
+    padding: clamp(1.1rem, 3vw, 1.5rem);
+    border-radius: var(--radius-xl);
+    border: 3px solid transparent;
+    background:
+        linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
+        var(--g-rainbow) border-box;
+    background-size: auto, 300% 100%;
+    box-shadow: var(--shadow-lg);
+    animation: fade-up 0.7s var(--ease) 0.28s both, flow 14s linear infinite;
+}
+
+.AskMcpPage form label {
+    order: 0;
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-left: 0.35rem;
+    color: var(--ocean);
+}
+
+.AskMcpPage form input {
+    order: 1;
+    grid-column: 1;
+    min-width: 0;
+    padding: 0.95rem 1.4rem;
+    border-radius: var(--radius-full);
+    font-size: 1.05rem;
+}
+
+.AskMcpPage form button {
+    order: 2;
+    grid-column: 2;
+    margin-top: 0;
+    padding: 0.95rem 1.6rem;
+    font-size: 0.95rem;
+}
+
+.AskMcpPage form button::before {
+    content: "🚀";
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Validation message from react-hook-form; collapses while empty */
+.AskMcpPage form .error {
+    order: 3;
+    grid-column: 1 / -1;
+    padding-left: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--danger);
+    animation: fade-up var(--normal) var(--ease) both;
+}
+
+.AskMcpPage form .error:empty {
+    display: none;
+}
+
+/* Flag the input red while its message is showing */
+.AskMcpPage form input:has(+ .error:not(:empty)) {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px var(--danger-soft);
+    animation: shake 0.5s var(--ease);
+}
+
+/* ---- Answer bubble -------------------------------------------------------- */
+
+.AskMcpPage > p:first-of-type {
+    position: relative;
+    width: 100%;
+    padding: 2.9rem clamp(1.25rem, 3vw, 1.9rem) clamp(1.25rem, 3vw, 1.6rem);
+    border-radius: var(--radius-lg);
+    border-top-left-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    animation: rise var(--slow) var(--bounce) both;
+}
+
+.AskMcpPage > p:first-of-type:empty {
+    display: none;
+}
+
+.AskMcpPage > p:first-of-type::before {
+    content: "🤖 AI says";
+    position: absolute;
+    top: 1.1rem;
+    left: clamp(1.25rem, 3vw, 1.9rem);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--coral);
+}
+
+[data-theme="dark"] .AskMcpPage > p:first-of-type {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Loading pill --------------------------------------------------------- */
+
+.AskMcpPage > p:nth-of-type(2) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 1.1rem 0.6rem 0.85rem;
+    border-radius: var(--radius-full);
+    background: var(--accent-soft);
+    color: #0e7490;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fade-in var(--normal) var(--ease) both, pulse 1.8s ease-in-out infinite;
+}
+
+.AskMcpPage > p:nth-of-type(2)::before {
+    content: "";
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 3px solid rgba(6, 182, 212, 0.25);
+    border-top-color: var(--lagoon);
+    animation: spin 0.9s linear infinite;
+}
+
+[data-theme="dark"] .AskMcpPage > p:nth-of-type(2) {
+    color: var(--mint);
+}
+
+/* ---- Mobile: stack the prompt bar ---------------------------------------- */
+
+@media (max-width: 560px) {
+    .AskMcpPage form {
+        grid-template-columns: 1fr;
+    }
+
+    .AskMcpPage form input,
+    .AskMcpPage form button {
+        grid-column: 1;
+        width: 100%;
+    }
+
+    .AskMcpPage::after {
+        top: -0.5rem;
+        right: 0;
+    }
+}

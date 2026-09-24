@@ -19,8 +19,8 @@ class AiController {
 
 
     private async getMcpCompletion(request: Request, response: Response): Promise<void> {
-
-        const userPrompt = request.body.userPrompt as string;
+        console.log(request.body);
+        const userPrompt = request.body.text as string;
         const completion = await aiService.getMcpCompletion(userPrompt);
         response.json(completion);
 
