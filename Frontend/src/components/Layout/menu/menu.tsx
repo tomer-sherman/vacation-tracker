@@ -18,13 +18,16 @@ export function Menu() {
             <NavLink to="/about">About</NavLink>
 
 
-
+            {/** For admins */}
+            {isAdmin && <NavLink to="/admin/vacation/add">Add vacation</NavLink>}
+            {/** vacation likes dashboard */}
 
             {/** For all logged in users */}
             {user &&
                 <>
                     <NavLink to="/vacations" end>Vacations</NavLink>
                     <NavLink to="/ask-mcp">Ask AI</NavLink>
+                    <NavLink to="/ai-recommendation" >Ai Recommendation</NavLink>
                     <LogoutBtn />
                 </>
             }
@@ -39,9 +42,7 @@ export function Menu() {
             }
 
 
-            {/** For admins */}
-            {/** vacation adding form */}
-            {/** vacation likes dashboard */}
+
 
 
 

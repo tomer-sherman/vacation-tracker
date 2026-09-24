@@ -1,6 +1,8 @@
 import axios from "axios";
-import { VacationModel } from "../models/vacation-model";
+import { VacationFormModel, VacationModel } from "../models/vacation-model";
 import { appConfig } from "../utils/app-config";
+import { vacationSlice } from "../redux/vacation-slice";
+import { store } from "../redux/store";
 
 
 class VacationService {
@@ -8,8 +10,16 @@ class VacationService {
     // User services
     public async getAllVacations(): Promise<VacationModel[]> {
 
+        // Fetch from global state if exist:
+        if (store.getState().vacation.length > 0) return store.getState().vacation;
+
+
         const response = await axios.get<VacationModel[]>(appConfig.vacationsUrl);
         const vacations = response.data;
+
+        // Store in global state
+        const action = vacationSlice.actions.initVacations(vacations);
+        store.dispatch(action);
 
         return vacations;
 
@@ -35,7 +45,7 @@ class VacationService {
 
 
     // Admin services
-    public async addVacation(vacation: VacationModel): Promise<VacationModel> {
+    public async addVacation(vacation: VacationFormModel): Promise<VacationModel> {
         const response = await axios.post<VacationModel>(appConfig.vacationsUrl, vacation);
         const dbVacation = response.data;
 

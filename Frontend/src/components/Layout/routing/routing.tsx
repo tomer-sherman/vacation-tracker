@@ -6,6 +6,8 @@ import { Register } from "../../Auth/register/register";
 import { Login } from "../../Auth/login/login";
 import { VacationPage } from "../../Pages/vacation-page/vacation-page";
 import { AskMcpPage } from "../../Pages/ask-mcp-page/ask-mcp-page";
+import { AiRecommendationPage } from "../../Pages/ai-recommendation-page/ai-recommendation-page";
+import { AddVacationPage } from "../../Pages/add-vacation-page/add-vacation-page";
 
 export function Routing() {
 
@@ -27,8 +29,12 @@ export function Routing() {
 
             <Route path="/ask-mcp" element={<AskMcpPage />} />
 
+            <Route path="/ai-recommendation" element={<AiRecommendationPage />} />
+
             {/* About:  */}
             <Route path="/about" element={<About />} />
+
+            <Route path="/admin/vacation/add" element={<AddVacationPage />} />
 
             {/* Page not found: */}
             <Route path="*" element={<Page404 />} />
