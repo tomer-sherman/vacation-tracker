@@ -1,125 +1,91 @@
 /* ============================================================================
-   VacCard — postcard-style card with a CSS-painted scenery banner
+   VacCard — editorial card with a CSS-painted horizon banner
    ----------------------------------------------------------------------------
    DOM (no classes on children):
        p1 destination   p2 startAt   p3 finishAt   p4 likeCount   p5 price
        then either one button (Like / UnLike) or two (Edit, Delete)
 
    Layout: 2-column grid.
-       ::before  (sky + sun banner, spans both columns, bleeds to the edges)
+       ::before  banner: sky, setting sun, lined sea (spans both columns,
+                 bleeds to the card edges). Same motif as the Home arch.
        p1        destination, spans both
        p2 | p3   depart / return
        p4 | p5   likes / price
        button(s)
 
-   The sea at the bottom of the banner is ::after, absolutely positioned and
-   masked with a wave shape that rolls sideways.
-
    Dates arrive as ISO strings (2026-10-05T00:00:00.000Z). The date boxes use
    a monospace font and a fixed width of 10ch, so only YYYY-MM-DD shows.
 
-   Every 4th card cycles the scenery palette via custom properties.
+   Every 4th card cycles the banner palette via custom properties.
+   The banner is a placeholder until vacations have real images.
    ============================================================================ */
 
 .VacCard {
-    /* scenery palette (sunset) */
-    --sky-1: #ffd08a;
-    --sky-2: #ff5c7a;
-    --sky-3: #b33bd6;
-    --sea: #0ea5e9;
-    --sun-x: 74%;
-    --sun-y: 38%;
+    /* banner palette (dusk) */
+    --sky-1: #f4e6d2;
+    --sky-2: #e7b08c;
+    --sun: #d0603a;
+    --sea-1: #2a6f86;
+    --sea-2: #1a4f63;
+    --sun-x: 68%;
 
     position: relative;
     overflow: hidden;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 0.75rem;
-    row-gap: 0.65rem;
+    row-gap: 0.6rem;
     align-items: center;
     padding: 1.25rem;
     border-radius: var(--radius-lg);
     background: var(--surface-solid);
-    border: 1px solid rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
     box-shadow: var(--shadow);
     transition:
-        transform var(--normal) var(--bounce),
+        transform var(--normal) var(--ease),
         box-shadow var(--normal) var(--ease);
-    animation: card-in 0.6s var(--ease) backwards;
+    animation: card-in 0.5s var(--ease) backwards;
 }
 
-[data-theme="dark"] .VacCard {
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-/* Scenery variants */
-.VacCard:nth-child(4n+2) { --sky-1: #bae6fd; --sky-2: #38bdf8; --sky-3: #0369a1; --sea: #2dd4bf; --sun-x: 26%; --sun-y: 34%; }
-.VacCard:nth-child(4n+3) { --sky-1: #fef3c7; --sky-2: #fbbf24; --sky-3: #f97316; --sea: #0891b2; --sun-x: 70%; --sun-y: 30%; }
-.VacCard:nth-child(4n+4) { --sky-1: #c4b5fd; --sky-2: #7c3aed; --sky-3: #1e1b4b; --sea: #4f46e5; --sun-x: 30%; --sun-y: 42%; }
+/* Palette variants: morning, golden hour, night */
+.VacCard:nth-child(4n+2) { --sky-1: #e6edf0; --sky-2: #b9cfd8; --sun: #e3b65e; --sea-1: #3b7d8c; --sea-2: #24596a; --sun-x: 30%; }
+.VacCard:nth-child(4n+3) { --sky-1: #f3ead6; --sky-2: #e3c48f; --sun: #c98a3a; --sea-1: #4a7f7a; --sea-2: #2f5e5a; --sun-x: 72%; }
+.VacCard:nth-child(4n+4) { --sky-1: #3a4660; --sky-2: #1f2a3d; --sun: #e9dfc8; --sea-1: #1c2e40; --sea-2: #121e2b; --sun-x: 34%; }
 
 /* Staggered entrance */
 .VacCard:nth-child(1)  { animation-delay: 0.00s; }
-.VacCard:nth-child(2)  { animation-delay: 0.07s; }
-.VacCard:nth-child(3)  { animation-delay: 0.14s; }
-.VacCard:nth-child(4)  { animation-delay: 0.21s; }
-.VacCard:nth-child(5)  { animation-delay: 0.28s; }
-.VacCard:nth-child(6)  { animation-delay: 0.35s; }
-.VacCard:nth-child(7)  { animation-delay: 0.42s; }
-.VacCard:nth-child(8)  { animation-delay: 0.49s; }
-.VacCard:nth-child(9)  { animation-delay: 0.56s; }
-.VacCard:nth-child(10) { animation-delay: 0.63s; }
-.VacCard:nth-child(11) { animation-delay: 0.70s; }
-.VacCard:nth-child(12) { animation-delay: 0.77s; }
+.VacCard:nth-child(2)  { animation-delay: 0.05s; }
+.VacCard:nth-child(3)  { animation-delay: 0.10s; }
+.VacCard:nth-child(4)  { animation-delay: 0.15s; }
+.VacCard:nth-child(5)  { animation-delay: 0.20s; }
+.VacCard:nth-child(6)  { animation-delay: 0.25s; }
+.VacCard:nth-child(7)  { animation-delay: 0.30s; }
+.VacCard:nth-child(8)  { animation-delay: 0.35s; }
 
 .VacCard:hover {
-    transform: translateY(-8px) scale(1.015);
-    box-shadow: 0 28px 60px rgba(15, 42, 61, 0.18);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
 }
 
-/* ---- Banner: sky + sun ---------------------------------------------------- */
+/* ---- Banner (top layer first): sea lines, sea, sun, sky ------------------- */
 .VacCard::before {
     content: "";
     grid-column: 1 / -1;
-    height: 160px;
-    margin: -1.25rem -1.25rem 0.25rem;
+    height: 150px;
+    margin: -1.25rem -1.25rem 0.4rem;
     background:
-        radial-gradient(circle at var(--sun-x) var(--sun-y),
-            #fffbe6 0 15px,
-            rgba(255, 251, 230, 0) 16px),
-        radial-gradient(circle at var(--sun-x) var(--sun-y),
-            rgba(255, 255, 255, 0.6) 0 22px,
-            rgba(255, 255, 255, 0) 64px),
-        linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 58%, var(--sky-3) 100%);
-    transform-origin: 50% 100%;
-    transition:
-        transform var(--slow) var(--ease),
-        filter var(--normal) var(--ease);
+        repeating-linear-gradient(180deg, transparent 0 9px, rgba(255, 255, 255, 0.16) 9px 10px)
+            bottom / 100% 38% no-repeat,
+        linear-gradient(180deg, var(--sea-1), var(--sea-2))
+            bottom / 100% 38% no-repeat,
+        radial-gradient(circle 30px at var(--sun-x) 62%, var(--sun) 0 29px, transparent 30px),
+        radial-gradient(circle 70px at var(--sun-x) 62%, color-mix(in srgb, var(--sun) 22%, transparent), transparent),
+        linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%);
+    transition: filter var(--normal) var(--ease);
 }
 
 .VacCard:hover::before {
-    transform: scale(1.06);
-    filter: saturate(1.15) brightness(1.04);
-}
-
-/* ---- Sea: wave-masked strip rolling across the bottom of the banner ------- */
-.VacCard::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 118px;
-    height: 42px;
-    background: var(--sea);
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%23000'/%3E%3C/svg%3E");
-    -webkit-mask-repeat: repeat-x;
-    -webkit-mask-size: 50% 100%;
-    -webkit-mask-position: 0 0;
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%23000'/%3E%3C/svg%3E");
-    mask-repeat: repeat-x;
-    mask-size: 50% 100%;
-    mask-position: 0 0;
-    animation: wave-mask 7s linear infinite;
-    pointer-events: none;
+    filter: saturate(1.08) brightness(1.02);
 }
 
 /* ---- Content -------------------------------------------------------------- */
@@ -130,49 +96,36 @@
 /* Destination */
 .VacCard p:nth-of-type(1) {
     grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 1.45rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     line-height: 1.2;
     color: var(--text);
 }
 
-.VacCard p:nth-of-type(1)::before {
-    content: "📍";
-    font-size: 0.85em;
-    line-height: 1;
-}
-
-/* Depart / Return — boarding-pass boxes, clipped to YYYY-MM-DD.
+/* Depart / Return — clipped to YYYY-MM-DD.
    overflow: hidden clips at the padding box, so the right-hand spacing is a
    transparent border rather than padding: the content box is exactly 10ch
    wide and the clip edge lands right after the tenth character. The outline
    is a box-shadow because the real border is used for spacing. */
 .VacCard p:nth-of-type(2),
 .VacCard p:nth-of-type(3) {
-    width: calc(10ch + 1.3rem);
-    padding: 0.4rem 0 0.4rem 0.65rem;
+    /* -1px keeps the anti-aliased edge of the hidden "T" from peeking out */
+    width: calc(10ch + 1.2rem - 1px);
+    padding: 0.4rem 0 0.4rem 0.6rem;
     border: 0;
-    border-right: 0.65rem solid transparent;
-    border-radius: 12px;
-    background: rgba(14, 165, 233, 0.08);
-    box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.18);
+    border-right: 0.6rem solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    box-shadow: 0 0 0 1px var(--border);
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text);
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
-}
-
-[data-theme="dark"] .VacCard p:nth-of-type(2),
-[data-theme="dark"] .VacCard p:nth-of-type(3) {
-    background: rgba(56, 189, 248, 0.12);
-    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
 }
 
 .VacCard p:nth-of-type(2)::before,
@@ -180,7 +133,7 @@
     display: block;
     font-family: var(--font-sans);
     font-size: 0.6rem;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-faint);
@@ -194,110 +147,103 @@
     justify-self: end;
 }
 
-/* Likes — coral pill with a heart */
+/* Likes — small muted count with a heart */
 .VacCard p:nth-of-type(4) {
     justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    margin-top: 0.35rem;
-    padding: 0.35rem 0.85rem;
-    border-radius: var(--radius-full);
-    background: rgba(255, 92, 122, 0.12);
-    color: var(--danger);
-    font-weight: 800;
+    margin-top: 0.4rem;
+    color: var(--text-muted);
+    font-weight: 500;
     font-size: 0.9rem;
     line-height: 1;
 }
 
 .VacCard p:nth-of-type(4)::before {
     content: "♥";
-    font-size: 1.05em;
+    color: var(--coral);
+    font-size: 1em;
 }
 
-/* Price — big gradient number */
+/* Price */
 .VacCard p:nth-of-type(5) {
     justify-self: end;
-    margin-top: 0.35rem;
-    font-size: 1.65rem;
-    font-weight: 900;
-    letter-spacing: -0.03em;
+    margin-top: 0.4rem;
+    font-family: var(--font-serif);
+    font-size: 1.55rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     line-height: 1;
-    background: var(--g-text);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+    color: var(--text);
 }
 
 .VacCard p:nth-of-type(5)::before {
     content: "$";
     font-size: 0.6em;
     vertical-align: top;
-    margin-right: 0.05em;
+    margin-right: 0.08em;
+    color: var(--text-muted);
 }
 
 /* ---- Buttons -------------------------------------------------------------- */
 .VacCard button {
-    margin-top: 0.6rem;
+    margin-top: 0.7rem;
     width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.92rem;
 }
 
-/* User: single Like / UnLike button */
+/* User: single Like / UnLike button — quiet outline with a terracotta heart */
 .VacCard button:only-of-type {
     grid-column: 1 / -1;
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-strong);
+    box-shadow: none;
 }
 
 .VacCard button:only-of-type::before {
     content: "♥";
-    display: inline-block;
-    font-size: 1.1em;
+    color: var(--coral);
+    font-size: 1.05em;
     line-height: 1;
+    transition: transform var(--normal) var(--ease);
+}
+
+.VacCard button:only-of-type:hover {
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    border-color: rgba(192, 83, 43, 0.35);
+    box-shadow: none;
 }
 
 .VacCard button:only-of-type:hover::before {
-    animation: heartbeat 0.9s ease-in-out infinite;
+    transform: scale(1.15);
 }
 
-/* Admin: Edit (ocean) + Delete (outlined red) */
+/* Admin: Edit (sea) + Delete (outlined red) */
 .VacCard button:first-of-type:not(:only-of-type) {
     grid-column: 1;
-    background: var(--g-ocean);
-    background-size: 200% 200%;
-    box-shadow: var(--glow-ocean), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    background: var(--ocean);
 }
 
 .VacCard button:first-of-type:not(:only-of-type):hover {
-    box-shadow: 0 16px 36px rgba(6, 182, 212, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.VacCard button:first-of-type:not(:only-of-type)::before {
-    content: "✏️";
-    font-size: 1rem;
-    line-height: 1;
+    background: #174e62;
+    box-shadow: var(--glow-ocean);
 }
 
 .VacCard button:last-of-type:not(:only-of-type) {
     grid-column: 2;
     background: var(--surface-solid);
     color: var(--danger);
-    border: 2px solid rgba(225, 29, 72, 0.35);
+    border-color: rgba(180, 35, 24, 0.3);
     box-shadow: none;
-    text-shadow: none;
-}
-
-.VacCard button:last-of-type:not(:only-of-type)::before {
-    content: "🗑️";
-    font-size: 1rem;
-    line-height: 1;
 }
 
 .VacCard button:last-of-type:not(:only-of-type):hover {
-    background: linear-gradient(135deg, #ff5c7a, #e11d48);
+    background: var(--danger);
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 12px 30px rgba(225, 29, 72, 0.35);
+    box-shadow: 0 4px 12px rgba(180, 35, 24, 0.2);
 }

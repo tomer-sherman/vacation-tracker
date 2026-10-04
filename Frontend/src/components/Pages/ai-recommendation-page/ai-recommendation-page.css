@@ -1,3 +1,235 @@
+/* ============================================================================
+   AiRecommendationPage — AI travel guide
+   ----------------------------------------------------------------------------
+   DOM order: <label> prompt, <form> (input, ul.suggestions only while there
+   are matches, button), <span> "thinking" (only while loading).
+
+   Layout: one centered column, same family as AskMcpPage.
+       ::before        kicker
+       label           becomes the page headline (there is no <h1>)
+       form            search card:
+                           form::before  small "Destination" field label
+                           input | button
+       ul.suggestions  dropdown hanging under the input. It is absolutely
+                       positioned inside the input's grid area (an abs-pos
+                       grid child uses its grid area as containing block),
+                       so it matches the input's width without a wrapper.
+       span            loading line
+
+   Dropdown visibility: shown only while the form has focus. Clicking an
+   <li> blurs the input, so hiding is delayed a beat (and held while the
+   list is :active) to let the click land. After a pick the input is no
+   longer focused, so the list closes by itself.
+   ============================================================================ */
+
 .AiRecommendationPage {
-	
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    width: min(100%, 760px);
+    margin: clamp(0.25rem, 2vh, 1.5rem) auto;
+}
+
+/* Kicker */
+.AiRecommendationPage::before {
+    content: "AI travel guide";
+    padding-left: 2.1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral);
+    background: linear-gradient(var(--coral), var(--coral)) left center / 1.5rem 1px no-repeat;
+    animation: fade-up 0.5s var(--ease) both;
+}
+
+/* Headline (the page's only label) */
+.AiRecommendationPage > label {
+    max-width: 26ch;
+    margin: 0 0 0.4rem;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
+    animation: fade-up 0.6s var(--ease) 0.08s both;
+}
+
+/* ---- Search card ---------------------------------------------------------- */
+
+.AiRecommendationPage form {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.6rem;
+    row-gap: 0.45rem;
+    width: 100%;
+    padding: clamp(1.1rem, 3vw, 1.4rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow);
+    animation: fade-up 0.6s var(--ease) 0.16s both;
+}
+
+/* Field label */
+.AiRecommendationPage form::before {
+    content: "Destination";
+    grid-row: 1;
+    grid-column: 1 / -1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Search input with a magnifier */
+.AiRecommendationPage form input {
+    grid-row: 2;
+    grid-column: 1;
+    min-width: 0;
+    padding: 0.85rem 1rem 0.85rem 2.6rem;
+    font-size: 1rem;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2718%27 height=%2718%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%238b959c%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Ccircle cx=%2711%27 cy=%2711%27 r=%277%27/%3E%3Cpath d=%27m20 20-3.5-3.5%27/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 0.9rem center;
+}
+
+.AiRecommendationPage form button {
+    grid-row: 2;
+    grid-column: 2;
+    margin-top: 0;
+    padding: 0.85rem 1.35rem;
+}
+
+/* ---- Suggestions dropdown ------------------------------------------------- */
+
+.AiRecommendationPage .suggestions {
+    position: absolute;
+    z-index: 20;
+    /* both lines explicit: an `auto` end line on an abs-pos item means the
+       padding edge, which would stretch the list across the whole card */
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    right: 0;
+    max-height: 264px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+    padding: 0.3rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-lg);
+    scrollbar-width: thin;
+
+    /* hidden until the form has focus; the delayed visibility lets clicks land */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+        opacity var(--fast) var(--ease),
+        transform var(--fast) var(--ease),
+        visibility 0s linear 250ms;
+}
+
+.AiRecommendationPage form:focus-within .suggestions,
+.AiRecommendationPage .suggestions:active {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity var(--fast) var(--ease),
+        transform var(--fast) var(--ease),
+        visibility 0s;
+}
+
+.AiRecommendationPage .suggestions li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.95rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--fast) var(--ease);
+}
+
+/* Map-pin glyph, drawn as a masked SVG so it takes the current color */
+.AiRecommendationPage .suggestions li::before {
+    content: "";
+    flex: none;
+    width: 15px;
+    height: 15px;
+    background: var(--text-faint);
+    -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23000%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z%27/%3E%3Ccircle cx=%2712%27 cy=%2710%27 r=%273%27/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23000%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z%27/%3E%3Ccircle cx=%2712%27 cy=%2710%27 r=%273%27/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: background-color var(--fast) var(--ease);
+}
+
+.AiRecommendationPage .suggestions li:hover {
+    background: var(--surface-2);
+}
+
+.AiRecommendationPage .suggestions li:hover::before {
+    background: var(--coral);
+}
+
+.AiRecommendationPage .suggestions li:active {
+    background: var(--primary-soft);
+}
+
+/* ---- Loading line --------------------------------------------------------- */
+
+.AiRecommendationPage > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    animation: fade-in var(--normal) var(--ease) both;
+}
+
+.AiRecommendationPage > span::before {
+    content: "";
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--coral);
+    animation: spin 0.8s linear infinite;
+}
+
+/* The button quietly pulses while the AI is working */
+.AiRecommendationPage:has(> span) form button {
+    animation: pulse-glow 1.6s ease-in-out infinite;
+}
+
+/* ---- Mobile: stack the search card --------------------------------------- */
+
+@media (max-width: 560px) {
+    .AiRecommendationPage form {
+        grid-template-columns: 1fr;
+    }
+
+    .AiRecommendationPage form input,
+    .AiRecommendationPage form button {
+        grid-column: 1;
+        width: 100%;
+    }
+
+    .AiRecommendationPage form button {
+        grid-row: 3;
+    }
 }

@@ -7,32 +7,33 @@
 
 .VacList {
     display: grid;
-    gap: 1.75rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
     align-items: start;
 }
 
-/* Loading pill with a spinning sun */
+/* Loading line with a small spinning ring */
 .VacList > span {
     grid-column: 1 / -1;
     justify-self: center;
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.8rem 1.5rem;
-    border-radius: var(--radius-full);
-    background: var(--surface-solid);
-    box-shadow: var(--shadow);
-    font-weight: 700;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.92rem;
+    font-weight: 500;
     color: var(--text-muted);
-    animation: pulse 1.6s ease-in-out infinite;
+    animation: fade-in var(--normal) var(--ease) both;
 }
 
 .VacList > span::before {
-    content: "🌞";
-    font-size: 1.2rem;
-    line-height: 1;
-    animation: spin 3s linear infinite;
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--coral);
+    animation: spin 0.8s linear infinite;
 }
 
 /* Nothing loaded and nothing loading */
@@ -41,14 +42,14 @@
 }
 
 .VacList:empty::before {
-    content: "🏝️ No vacations yet. The horizon is wide open.";
+    content: "No vacations yet. Check back soon.";
     display: block;
     text-align: center;
-    font-weight: 600;
-    font-size: 1.05rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.15rem;
     color: var(--text-muted);
     padding: 3.5rem 1.5rem;
     border-radius: var(--radius-lg);
-    border: 2px dashed var(--border-strong);
-    background: var(--surface-2);
+    border: 1px dashed var(--border-strong);
 }

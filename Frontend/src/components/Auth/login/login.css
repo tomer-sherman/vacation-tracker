@@ -1,23 +1,23 @@
 /* ============================================================================
-   Login — centered card with a gradient frame
+   Login — centered paper card
    ----------------------------------------------------------------------------
    The TSX only renders a <form>; the title and subtitle are pseudo-elements,
-   re-ordered with flex `order` so they sit above the form.
+   re-ordered with flex `order` so they sit above the form. A terracotta
+   hairline runs along the card's top edge (form::before, absolutely placed).
    ============================================================================ */
 
 .Login {
     position: relative;
-    max-width: 460px;
+    overflow: hidden;
+    max-width: 440px;
     margin: clamp(0.5rem, 4vh, 2.5rem) auto;
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    padding: clamp(1.75rem, 4vw, 2.5rem);
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
     border-radius: var(--radius-xl);
-    border: 3px solid transparent;
-    background:
-        linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
-        var(--g-sunset) border-box;
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
     box-shadow: var(--shadow-lg);
 }
 
@@ -25,45 +25,37 @@
 .Login::before {
     content: "Welcome back";
     order: 0;
-    font-size: clamp(1.7rem, 3.2vw, 2.2rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    background: var(--g-text);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: gradient-shift 6s ease-in-out infinite;
+    font-family: var(--font-serif);
+    font-size: clamp(1.7rem, 3.2vw, 2.1rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--text);
 }
 
 /* Subtitle */
 .Login::after {
-    content: "☀️ Your next escape is one login away.";
+    content: "Sign in to see this season's getaways.";
     order: 1;
     color: var(--text-muted);
-    font-weight: 500;
+    font-size: 0.95rem;
     margin-bottom: 1.25rem;
 }
 
 .Login form {
     order: 2;
-    position: relative;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
-/* Faint sunrise watermark floating in the corner */
-.Login form::after {
-    content: "🌅";
+/* Top hairline */
+.Login form::before {
+    content: "";
     position: absolute;
-    top: -4.5rem;
-    right: -0.5rem;
-    font-size: 4.5rem;
-    line-height: 1;
-    opacity: 0.16;
-    pointer-events: none;
-    animation: float 6s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--coral);
 }
 
 .Login form label {
@@ -77,12 +69,6 @@
 .Login form button {
     margin-top: 1.5rem;
     width: 100%;
-    padding: 0.95rem 1.5rem;
-    font-size: 1.05rem;
-}
-
-.Login form button::before {
-    content: "🔓";
-    font-size: 1.1rem;
-    line-height: 1;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
 }

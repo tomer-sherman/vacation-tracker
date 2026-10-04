@@ -11,7 +11,7 @@ import { Role, UserModel } from "../../../models/user-models";
 
 export function VacList() {
 
-    const [vacations, setVacations] = useState<VacationModel[]>();
+    const vacations = useSelector<AppState, VacationModel[]>(state => state.vacation)
     const [loading, setLoading] = useState<boolean>(false);
 
     const user = useSelector<AppState, UserModel | null>(state => state.user);
@@ -22,10 +22,9 @@ export function VacList() {
 
 
     useEffect(() => {
-
+        // No need for then Since the rendering is handled by the global state.
         setLoading(true);
         vacationService.getAllVacations()
-            .then(vacations => setVacations(vacations))
             .catch(err => notify.error(err))
             .finally(() => setLoading(false));
 
@@ -47,6 +46,9 @@ export function VacList() {
 
         try {
             await vacationService.unLikeVacation(vacationId);
+
+            // same thing as like but ternary.
+
 
         } catch (err: any) {
             notify.error(err);

@@ -8,34 +8,30 @@
 .VacationPage {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 /* Title */
 .VacationPage::before {
     content: "Pick your next escape";
     order: 0;
-    font-size: clamp(1.9rem, 4vw, 2.8rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
     line-height: 1.1;
-    background: var(--g-text);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: gradient-shift 7s ease-in-out infinite;
+    color: var(--text);
 }
 
 /* Subtitle */
 .VacationPage::after {
-    content: "🧳 Curated getaways. Tap ♥ on the ones that call your name.";
+    content: "Curated getaways. Save the ones you like with a ♥.";
     order: 1;
     color: var(--text-muted);
-    font-weight: 500;
-    font-size: 1.05rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.02rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .VacationPage > .VacList {

@@ -2,13 +2,12 @@
    Layout — app shell
    ----------------------------------------------------------------------------
    Grid areas:
-       header | nav       <- one sticky frosted-glass top bar
+       header | nav       <- one sticky frosted top bar with a hairline
        main   | main      <- centered content column
-       footer | footer    <- ocean footer with rolling waves
+       footer | footer    <- deep-sea footer
 
    Extras drawn here:
-       .Layout::before     a thin animated sunset strip pinned to the top edge
-       footer::before/after   two layers of CSS-only waves lapping upward
+       .Layout::before     a thin gold → terracotta → sea hairline on the top edge
    ============================================================================ */
 
 .Layout {
@@ -27,18 +26,16 @@
 .Layout > main   { grid-area: main; }
 .Layout > footer { grid-area: footer; }
 
-/* Rainbow strip along the very top of the viewport */
+/* Hairline along the very top of the viewport */
 .Layout::before {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 2px;
     z-index: 60;
     background: var(--g-rainbow);
-    background-size: 300% 100%;
-    animation: flow 10s linear infinite;
     pointer-events: none;
 }
 
@@ -51,16 +48,15 @@
     height: var(--nav-height);
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.62);
-    -webkit-backdrop-filter: blur(18px) saturate(180%);
-    backdrop-filter: blur(18px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+    background: rgba(246, 242, 234, 0.82);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--border);
 }
 
 [data-theme="dark"] .Layout > header,
 [data-theme="dark"] .Layout > nav {
-    background: rgba(11, 18, 38, 0.62);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 29, 0.82);
 }
 
 .Layout > header {
@@ -81,40 +77,12 @@
     padding: clamp(1.75rem, 4vw, 3.5rem) var(--gutter) clamp(3rem, 6vw, 5rem);
 }
 
-/* Footer — deep water */
+/* Footer — deep sea, flat */
 .Layout > footer {
-    position: relative;
     margin-top: 3rem;
-    padding-top: 2rem;
-    color: #fff;
-    background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
-}
-
-/* Two wave layers rolling in opposite directions */
-.Layout > footer::before,
-.Layout > footer::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background-repeat: repeat-x;
-    pointer-events: none;
-}
-
-.Layout > footer::before {
-    top: -58px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%230ea5e9'/%3E%3C/svg%3E");
-    background-size: 1200px 60px;
-    animation: wave-a 14s linear infinite;
-}
-
-.Layout > footer::after {
-    top: -44px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 Q300,0 600,60 T1200,60 V120 H0 Z' fill='%2338bdf8'/%3E%3C/svg%3E");
-    background-size: 600px 60px;
-    opacity: 0.55;
-    animation: wave-b 9s linear infinite;
+    color: rgba(255, 255, 255, 0.86);
+    background: var(--ink);
+    border-top: 3px solid var(--coral);
 }
 
 /* ---- Mobile: stack the bar, nav scrolls horizontally --------------------- */
@@ -139,7 +107,7 @@
     .Layout > nav {
         height: auto;
         justify-content: flex-start;
-        padding: 0.5rem var(--gutter) 0.75rem;
+        padding: 0.4rem var(--gutter) 0.6rem;
         overflow-x: auto;
         scrollbar-width: none;
     }

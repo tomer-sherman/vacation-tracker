@@ -1,5 +1,5 @@
 /* ============================================================================
-   Register — centered card with an ocean gradient frame
+   Register — centered paper card (sibling of Login, sea-blue hairline)
    ----------------------------------------------------------------------------
    DOM order is: <p> (eyebrow), <form>. Pseudo-elements add a title and a
    subtitle; flex `order` arranges: eyebrow, title, subtitle, form.
@@ -7,88 +7,65 @@
 
 .Register {
     position: relative;
-    max-width: 500px;
+    overflow: hidden;
+    max-width: 480px;
     margin: clamp(0.5rem, 4vh, 2.5rem) auto;
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    padding: clamp(1.75rem, 4vw, 2.5rem);
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
     border-radius: var(--radius-xl);
-    border: 3px solid transparent;
-    background:
-        linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
-        var(--g-ocean) border-box;
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
     box-shadow: var(--shadow-lg);
 }
 
-/* Eyebrow: the existing <p> becomes a tiny tag above the title */
+/* Eyebrow: the existing <p> becomes a small kicker above the title */
 .Register > p:first-child {
     order: -1;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    align-self: flex-start;
-    font-size: 0.68rem;
-    font-weight: 800;
+    font-size: 0.72rem;
+    font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #fff;
-    padding: 0.35rem 0.8rem;
-    border-radius: var(--radius-full);
-    background: var(--g-ocean);
-    box-shadow: var(--glow-ocean);
-    margin-bottom: 0.75rem;
-}
-
-.Register > p:first-child::before {
-    content: "✨";
-    font-size: 0.85rem;
+    color: var(--ocean);
+    margin-bottom: 0.4rem;
 }
 
 /* Title */
 .Register::before {
-    content: "Join the club";
+    content: "Create your account";
     order: 0;
-    font-size: clamp(1.7rem, 3.2vw, 2.2rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    background: var(--g-text);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: gradient-shift 6s ease-in-out infinite;
+    font-family: var(--font-serif);
+    font-size: clamp(1.7rem, 3.2vw, 2.1rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--text);
 }
 
 /* Subtitle */
 .Register::after {
-    content: "🏖️ Free to join. Free to roam.";
+    content: "Free to join. Members see every offer.";
     order: 1;
     color: var(--text-muted);
-    font-weight: 500;
+    font-size: 0.95rem;
     margin-bottom: 1.25rem;
 }
 
 .Register form {
     order: 2;
-    position: relative;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
-/* Palm watermark swaying in the corner */
-.Register form::after {
-    content: "🌴";
+/* Top hairline */
+.Register form::before {
+    content: "";
     position: absolute;
-    top: -5rem;
-    right: -0.25rem;
-    font-size: 4.5rem;
-    line-height: 1;
-    opacity: 0.16;
-    pointer-events: none;
-    transform-origin: 50% 100%;
-    animation: sway 5s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--ocean);
 }
 
 .Register form label {
@@ -103,49 +80,21 @@
 .Register form span {
     display: block;
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--danger);
-    padding: 0.45rem 0.75rem;
-    border-radius: var(--radius-sm);
-    background: var(--danger-soft);
-    border-left: 3px solid var(--danger);
-    animation: shake 0.5s var(--ease);
-}
-
-.Register form span::before {
-    content: "⚠️ ";
+    animation: fade-in var(--normal) var(--ease) both;
 }
 
 /* Password rules hint */
 .Register form p {
     font-size: 0.8rem;
     color: var(--text-muted);
-    padding: 0.55rem 0.8rem;
-    border-radius: var(--radius-sm);
-    background: var(--accent-soft);
     line-height: 1.45;
-}
-
-.Register form p::before {
-    content: "💡 ";
 }
 
 .Register form button {
     margin-top: 1.25rem;
     width: 100%;
-    padding: 0.95rem 1.5rem;
-    font-size: 1.05rem;
-    background: var(--g-ocean);
-    background-size: 200% 200%;
-    box-shadow: var(--glow-ocean), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.Register form button:hover {
-    box-shadow: 0 16px 36px rgba(6, 182, 212, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.Register form button::before {
-    content: "🛫";
-    font-size: 1.1rem;
-    line-height: 1;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
 }

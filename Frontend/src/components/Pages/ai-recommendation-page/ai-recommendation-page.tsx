@@ -2,11 +2,7 @@ import { useSelector } from "react-redux";
 import "./ai-recommendation-page.css";
 import { AppState } from "../../../redux/app-state";
 import { VacationModel } from "../../../models/vacation-model";
-import { useForm } from "react-hook-form";
-import { Prompt } from "../ask-mcp-page/ask-mcp-page";
 import { ChangeEvent, useState } from "react";
-import { UserModel } from "../../../models/user-models";
-import { useNavigate } from "react-router-dom";
 import { notify } from "../../../utils/notify";
 import { aiService } from "../../../services/ai-service";
 import { VacationRecommendation } from "../../../models/ai-recommendation-model";
@@ -16,36 +12,33 @@ export function AiRecommendationPage() {
 
     const vacations = useSelector<AppState, VacationModel[] | null>(state => state.vacation);
     const [destinations, setDestinations] = useState<string[] | undefined>([]);
-    const { register, handleSubmit } = useForm<Prompt>();
     const [completion, setCompletion] = useState<VacationRecommendation>();
     const [loading, setLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
 
-    const user = useSelector<AppState, UserModel | null>(state => state.user);
-    if (!user) {
-        navigate("/login")
-        notify.error("You are not a logged in user.")
-    }
+    const [query, setQuery] = useState<string>("");
+
+
 
     function handleChange(args: ChangeEvent<HTMLInputElement>) {
-        const queryValue = args.target.value;
-        console.log(queryValue);
 
-        const regex = new RegExp("^" + queryValue, "i");
+        const value = args.target.value;
+        setQuery(value);
 
-        const filteredDestinations = vacations?.filter(v => regex.test(v.destination)).map(v => v.destination);
-        setDestinations(filteredDestinations);
+        const filtered = vacations?.filter(v => v.destination.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()))
+            .map(v => v.destination)
+
+        setDestinations(filtered);
 
     }
 
 
 
-    async function send(prompt: Prompt) {
-
-        console.log(prompt);
+    async function send(e: React.FormEvent<HTMLFormElement>) {
+        // Prevents the page from reloading since i do not use a react-hook-form here.
+        e.preventDefault();
 
         setLoading(true);
-        aiService.getAiRecommendation(prompt)
+        aiService.getAiRecommendation({ text: query })
             .then(completion => setCompletion(completion))
             .catch(err => notify.error(err))
             .finally(() => setLoading(false));
@@ -58,17 +51,21 @@ export function AiRecommendationPage() {
     return (
         <div className="AiRecommendationPage">
             <label>Choose a destination for Ai recommendation:</label>
-            <input type="text" onChange={handleChange} ></input>
 
-            <form onSubmit={handleSubmit(send)}>
-                
-                <select>
-                    {destinations?.map((d, index) => <option key={index} {...register("text")} >{d}</option>)}
-                </select>
+            <form onSubmit={send} >
 
-                <button>Submit Your destination</button>
+                <input value={query} onChange={handleChange} />
+
+                {destinations && destinations.length > 0 && (
+                    <ul className="suggestions">
+                        {destinations.map((d, i) => (
+                            <li key={i} onClick={() => setQuery(d)}>{d}</li>
+                        ))}
+                    </ul>
+                )}
+                <button>Get Ai Recomendation.</button>
+
             </form>
-
 
             {loading && <span> AI IS THINKING!!!!!!</span>}
 

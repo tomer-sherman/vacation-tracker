@@ -1,10 +1,6 @@
 import { useForm } from "react-hook-form";
 import "./ask-mcp-page.css";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../redux/app-state";
-import { UserModel } from "../../../models/user-models";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { notify } from "../../../utils/notify";
 import { aiService } from "../../../services/ai-service";
 
@@ -16,21 +12,12 @@ export type Prompt = {
 export function AskMcpPage() {
 
     const { register, handleSubmit, formState: { errors } } = useForm<Prompt>();
-    const user = useSelector<AppState, UserModel | null>(state => state.user);
     const [loading, setLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
+    
 
     const [completion, setCompletion] = useState<string>("");
 
-    useEffect(() => {
-
-        if (!user) {
-            navigate("/login");
-            notify.error("You are not a logged in user.");
-        }
-
-
-    }, [])
+    
 
 
     async function send(prompt: Prompt) {

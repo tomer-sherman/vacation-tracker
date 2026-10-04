@@ -35,10 +35,15 @@ class VacationService {
 
     public async likeVacation(vacationId: string): Promise<void> {
         await axios.post(appConfig.likeVacationUrl + vacationId);
+        const action = vacationSlice.actions.likeVacation(vacationId);
+        store.dispatch(action);
     }
 
     public async unLikeVacation(vacationId: string): Promise<void> {
         await axios.post(appConfig.unlikeVacationUrl + vacationId);
+        const action = vacationSlice.actions.unlikeVacation(vacationId);
+        store.dispatch(action);
+
     }
 
 
@@ -49,6 +54,9 @@ class VacationService {
         const response = await axios.post<VacationModel>(appConfig.vacationsUrl, vacation);
         const dbVacation = response.data;
 
+        const action = vacationSlice.actions.addVacation(dbVacation);
+        store.dispatch(action);
+
         return dbVacation;
     }
 
@@ -56,11 +64,17 @@ class VacationService {
         const response = await axios.put<VacationModel>(appConfig.vacationsUrl + vacation._id, vacation);
         const dbVacation = response.data;
 
+        const action = vacationSlice.actions.updateVacation(dbVacation);
+        store.dispatch(action);
+
         return dbVacation;
     }
 
     public async deleteVacation(vacationId: string): Promise<void> {
         await axios.delete(appConfig.vacationsUrl + vacationId);
+
+        const action = vacationSlice.actions.removeVacation(vacationId);
+        store.dispatch(action);
     }
 
 }

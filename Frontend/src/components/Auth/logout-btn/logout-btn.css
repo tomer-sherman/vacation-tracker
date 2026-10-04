@@ -1,33 +1,26 @@
 /* ============================================================================
-   LogoutBtn — small outlined pill in the nav, fills with sunset on hover
+   LogoutBtn — small quiet outlined button at the end of the nav
    ============================================================================ */
 
 .LogoutBtn {
     display: flex;
     align-items: center;
-    margin-left: 0.4rem;
+    margin-left: 0.5rem;
 }
 
 .LogoutBtn button {
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 0.9rem;
     font-size: 0.85rem;
+    font-weight: 500;
     background: transparent;
-    color: var(--coral);
-    border: 2px solid rgba(255, 92, 122, 0.45);
+    color: var(--text);
+    border-color: var(--border-strong);
     box-shadow: none;
-    text-shadow: none;
-}
-
-.LogoutBtn button::before {
-    content: "👋";
-    font-size: 1rem;
-    line-height: 1;
 }
 
 .LogoutBtn button:hover {
-    background: var(--g-sunset);
-    background-size: 200% 200%;
-    color: #fff;
-    border-color: transparent;
-    box-shadow: var(--glow-sunset);
+    background: var(--surface-solid);
+    color: var(--text);
+    border-color: rgba(21, 34, 44, 0.35);
+    box-shadow: var(--shadow-sm);
 }

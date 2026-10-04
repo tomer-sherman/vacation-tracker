@@ -11,12 +11,19 @@ class AuthService {
     public constructor() {
 
         const token = localStorage.getItem("auth-token");
+        // If there is no token then exit
+        if (!token) return;
+        // If the token is expired remove it from the local storage
+        if (this.isTokenExpired(token)) {
+            localStorage.removeItem("auth-token");
+            return;
+        }
 
+        // If it is not expired then decode it, For frontend use.
         if (token) {
             const dbUser = this.decodeJwt(token);
             this.storeGlobalUser(dbUser);
         }
-
     }
 
     public async register(form: RegisterFormModel): Promise<string> {
@@ -69,6 +76,11 @@ class AuthService {
     private storeGlobalUser(user: UserModel): void {
         const action = userSlice.actions.initUser(user);
         store.dispatch(action);
+    }
+
+    private isTokenExpired(token: string): boolean {
+        const { exp } = jwtDecode<{ exp: number }>(token);
+        return exp * 1000 < Date.now();
     }
 
 
