@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+
 import { authService } from "../../../services/auth-service";
 import "./logout-btn.css";
 import { notify } from "../../../utils/notify";

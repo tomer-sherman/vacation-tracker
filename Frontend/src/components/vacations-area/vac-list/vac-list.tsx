@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+
 import "./vac-list.css";
-import { VacationModel } from "../../../models/vacation-model";
 import { notify } from "../../../utils/notify";
 import { vacationService } from "../../../services/vacation-service";
 import { VacCard } from "../vac-card/vac-card";

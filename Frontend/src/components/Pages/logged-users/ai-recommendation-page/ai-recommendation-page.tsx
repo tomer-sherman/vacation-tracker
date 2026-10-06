@@ -1,7 +1,5 @@
-import { useSelector } from "react-redux";
+
 import "./ai-recommendation-page.css";
-import { AppState } from "../../../../redux/app-state";
-import { VacationModel } from "../../../../models/vacation-model";
 import { ChangeEvent, useState } from "react";
 import { notify } from "../../../../utils/notify";
 import { aiService } from "../../../../services/ai-service";
@@ -67,6 +65,13 @@ export function AiRecommendationPage() {
                 <button>Get Ai Recomendation.</button>
 
             </form>
+
+            {completion &&
+                <div>
+                    Ai info
+                </div>
+
+            }
 
             {loading && <span> AI IS THINKING!!!!!!</span>}
 
