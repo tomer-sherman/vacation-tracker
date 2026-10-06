@@ -13,7 +13,7 @@ class VacationService {
 
         //Convert string to mongoDb userId object.
         const mongoUserId = new mongoose.Types.ObjectId(userId);
-
+        
         const dbVacations = await VacationModel.aggregate<VacationView>([
             {
                 $project: {
@@ -33,6 +33,8 @@ class VacationService {
     public async getOneVacation(_id: string): Promise<IVacationModel> {
 
         if (!mongoose.isValidObjectId(_id)) throw new ClientError(StatusCode.NotFound, `_id: ${_id} not found.`);
+
+        // Add image
 
         const dbVacation = await VacationModel.findById(_id).exec() as IVacationModel;
         return dbVacation;

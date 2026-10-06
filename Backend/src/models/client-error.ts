@@ -15,7 +15,7 @@ export class ClientError {
 
     public static async validateDocument(document: Document): Promise<void> {
         try {
-            await document.validate();
+            await document.validate({ pathsToSkip: ["imageId"] });
         }
         catch (err: any) {
             throw new ClientError(StatusCode.UnprocessableContent, err.message);

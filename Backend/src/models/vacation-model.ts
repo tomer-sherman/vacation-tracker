@@ -1,3 +1,4 @@
+import { UploadedFile } from "express-fileupload";
 import { Document, model, Schema, Types } from "mongoose";
 
 
@@ -9,6 +10,7 @@ export interface IVacationModel extends Document {
     startAt: Date;
     finishAt: Date;
     price: number,
+    image: UploadedFile,
     imageId: string,
     likes: Types.ObjectId[];
 }
@@ -43,6 +45,9 @@ export const VacationSchema = new Schema<IVacationModel>({
         required: [true, "Vacation must be priced."],
         min: [0, "Price cannot be lower than 0."],
         max: [99999, "Price cannot be higher than 99,999"],
+    },
+    imageId: {
+        type: String,
     },
     likes: {
         type: [Schema.Types.ObjectId],
