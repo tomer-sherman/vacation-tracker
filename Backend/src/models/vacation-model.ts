@@ -9,7 +9,7 @@ export interface IVacationModel extends Document {
     startAt: Date;
     finishAt: Date;
     price: number,
-    fileName: string,
+    imageId: string,
     likes: Types.ObjectId[];
 }
 

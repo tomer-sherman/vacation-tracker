@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { ClientError } from "../models/client-error";
 import { StatusCode } from "../models/enums";
 import { VacationModel, IVacationModel, VacationView } from "../models/vacation-model";
+import { imageHandler } from "../utils/image-handler";
+import path from "node:path";
 
 
 
@@ -60,6 +62,16 @@ class VacationService {
         ).exec();
 
 
+    }
+
+    public async getImagePath(_id: string): Promise<string> {
+        const imageObj = await VacationModel.findById(_id).select("imageId");
+        if (!imageObj) throw new ClientError(StatusCode.NotFound, `Image of the vacation or vacation ${_id} not found.`);
+
+        const imageId = imageObj.imageId;
+        const filePath = path.join(imageHandler.folderPath, imageId);
+
+        return filePath;
     }
 
 
