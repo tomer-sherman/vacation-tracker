@@ -94,7 +94,7 @@ only need overrides where they hard-code a color.
 | File | What it holds |
 |---|---|
 | `Frontend/src/index.css` | **The design system.** Tokens, reset, typography, global form/button/table styles, utility classes (`.card .badge .alert .grid .stack .eyebrow ...`), **every shared `@keyframes`**, iziToast overrides. Read its header first. |
-| `Frontend/src/components/**/x.css` | One plain-CSS file per component, imported by its TSX. |
+| `Frontend/src/components/**/x.css` | One plain-CSS file per component, imported by its TSX. Pages are grouped by who can see them: `Pages/all-users/`, `Pages/logged-users/`, `Pages/admin/`. |
 
 ---
 
@@ -121,12 +121,31 @@ A centered column at `min(100%, 760px)`: kicker (`::before`) → serif headline 
 (stacked under 560px) → reply card (white, 3px sea left border, "Answer" label) → a loading line with a
 small spinning ring. New AI features follow this pattern.
 
+### Recurring page pattern: admin dashboards (`LikeAnalytics`)
+Left-aligned column at `min(100%, 960px)`: sea kicker "Admin · Insights" (`::before`) → serif headline →
+muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart card** (white, 1px border,
+`--radius-lg`, `--shadow`) with a small uppercase label in its top padding ("Likes per destination").
+
+**Styling Recharts from CSS** (the TSX passes colors as props, but CSS still wins):
+- SVG attributes (`fill="#15222c"`, `stroke="#666"`) are presentation attributes, so any CSS rule overrides
+  them. Bars: `.recharts-bar-rectangle path`. Axes: `.recharts-xAxis` / `.recharts-yAxis` with
+  `.recharts-cartesian-axis-line`, `-tick-line`, `-tick-value`. Hover row: `.recharts-tooltip-cursor`.
+- Inline `style` (the tooltip box `.recharts-default-tooltip`, the item color, the responsive container's
+  `width: 100%`) needs `!important`. Use it only there.
+- To make `.recharts-responsive-container` the card, give it `box-sizing: content-box; width: auto !important`
+  and padding. Recharts re-measures its content box with a ResizeObserver, so the chart still fits.
+- Bar thickness and rounding without props: `clip-path: inset(max(0px, calc(50% - 10px)) 0 round 0 4px 4px 0)`
+  caps a horizontal bar at 20px and rounds only the data end.
+- Chart specs (dataviz): one series → no legend. Bars in `--primary`, hairline axes, tick text in ink tokens
+  (never the bar color). In the tooltip the value leads (serif, ink) with a terracotta `♥` key.
+
 ### Gotchas we've hit
 - An absolutely positioned grid child uses its grid area as the containing block **only if both lines
   are explicit** (`grid-column: 1 / 2`). An `auto` end line falls back to the padding edge.
 - Huge `border-radius` values (999px) get scaled down together with the other corners. For an arch, use
   exact half-width radii.
 - An emoji written with a variation selector (`©️`) ignores `font-variant-emoji: text`.
+- A **numeric** `height` on `ResponsiveContainer` is used as is: CSS `min-height` grows the box but not the chart.
 
 ---
 
@@ -143,7 +162,9 @@ small spinning ring. New AI features follow this pattern.
 | Spinner | Designed | GIF in a thin terracotta ring |
 | AskMcpPage | Designed | Reference for the AI-page pattern |
 | AiRecommendationPage | Designed (form + loading) | Search card with an SVG-pin suggestions dropdown (shown on focus). The result isn't rendered by the TSX yet, see section 6. |
-| AddVacationPage | **Not designed** | CSS file is still an empty stub |
+| LikeAnalytics (admin) | Designed | Reference for the admin-dashboard pattern: terracotta 20px bars in a white chart card, ♥ tooltip, italic empty state. Two TSX requests in section 6. |
+| AddVacationPage (admin) | **Not designed** | CSS file is still an empty stub |
+| UpdateVacation (admin) | **Not designed** | CSS file is still an empty stub |
 
 ---
 
@@ -155,6 +176,14 @@ small spinning ring. New AI features follow this pattern.
 - **AiRecommendationPage: suggestion details (minor).** Duplicate destinations show twice (one `<li>` per
   vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it), and
   picking one doesn't clear `destinations` (CSS already hides the list on blur, so this is cosmetic).
+- **LikeAnalytics: load the vacations.** The page only reads `state.vacation`, which gets filled when
+  `VacList` mounts. Opening `/admin/likes` directly (or refreshing it) shows an empty chart. Calling
+  `vacationService.getAllVacations()` in a `useEffect`, as `VacList` does, would fix it. Until then, CSS
+  shows "No likes to chart yet." in the card (keyed off the container's inline `height: 0px`).
+- **LikeAnalytics: chart height (minor).** `height={data.length * 40}` also has to fit the X axis (~40px),
+  so with 1–2 vacations the rows get squeezed and Recharts drops labels. `data.length * 40 + 40` fixes it.
+  Nice to have: `name="Likes"` on `<Bar>` (CSS currently hides the raw "likeCount :" in the tooltip), and
+  dropping `fill="#15222c"` (CSS overrides it anyway).
 - **Copyrights: use a plain `©`.** The TSX has `©️` (emoji form), which renders as a purple emoji. CSS
   currently mutes it with `filter: grayscale(1)`. Remove that line once the character is fixed.
 
@@ -172,6 +201,16 @@ the layout CSS and the component CSS, then screenshot it with headless Chrome. P
   --screenshot=out.png --window-size=1280,900 --virtual-time-budget=6000 --user-data-dir=<scratch> <url>
 ```
 
+**Recharts pages:** a static DOM paste won't work. Bundle the real component with a mock store instead.
+Write a scratch `entry.tsx` that renders the page inside
+`<Provider store={configureStore({ reducer: { vacation: () => sample, user: () => null } })}>`. Build it with
+Vite's own bundler: load it through `createRequire("<Frontend>/package.json")("rolldown")`, then call `build({ input,
+resolve: { modules: ["<Frontend>/node_modules"] }, moduleTypes: { ".css": "empty" }, output: { format: "iife" } })`.
+Link the CSS in the mock HTML yourself. Add `--force-prefers-reduced-motion` to Chrome or the bars stay
+empty (the entrance animation never runs under virtual time). For the tooltip, render a copy of the chart
+with `<Tooltip defaultIndex={n} />`. Give each Chrome run its own `--user-data-dir` (or run them one at a
+time): parallel runs sharing a profile silently fail.
+
 Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a wrapper page holding 400px
 `<iframe>`s. `autofocus` on an input captures focus-only states, but it also scrolls the page to that input.
 
@@ -184,3 +223,7 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   (rainbow gradients, emoji, Pacifico, bounce) to **"Coastal Editorial"**. Touched `index.css` and every
   component CSS. Home buttons redesigned (one solid primary CTA plus a text-link Login). The previous theme
   is in git history (commit `c21122e`) if it's ever needed.
+- **2026-10-06:** Designed the admin `LikeAnalytics` page (CSS only): editorial header, chart card,
+  restyled Recharts bars, axes and tooltip, and an empty state. Added the admin-dashboard pattern and
+  Recharts notes (section 4), a Recharts verification recipe (section 7) and two LikeAnalytics TSX
+  requests (section 6).

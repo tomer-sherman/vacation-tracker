@@ -13,14 +13,21 @@ export function Menu() {
     return (
         <div className="Menu">
 
+            {/** For admins */}
+            {/** vacation likes dashboard */}
+            {isAdmin &&
+                <>
+                    <NavLink to="/admin/likes">Like analytics</NavLink>
+                    <NavLink to="/admin/vacation/add">Add vacation</NavLink>
+                </>
+            }
+
             {/** For all users */}
             <NavLink to="/home">Home</NavLink>
             <NavLink to="/about">About</NavLink>
 
 
-            {/** For admins */}
-            {isAdmin && <NavLink to="/admin/vacation/add">Add vacation</NavLink>}
-            {/** vacation likes dashboard */}
+
 
             {/** For all logged in users */}
             {user &&
@@ -31,6 +38,7 @@ export function Menu() {
                     <LogoutBtn />
                 </>
             }
+
 
 
             {/** For anynimous users */}

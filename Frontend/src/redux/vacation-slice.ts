@@ -47,7 +47,7 @@ function likeVacation(currentState: VacationModel[], action: PayloadAction<strin
 
 
     const newState = state.map(v => v._id === idToLike ?
-        { ...v, isLiked: true, likeCount: v.likeCount + 1 } : v)
+        { ...v, isLiked: true, likeCount: v.likeCount! + 1 } : v)
 
     return newState;
 }
@@ -59,7 +59,7 @@ function unlikeVacation(currentState: VacationModel[], action: PayloadAction<str
 
 
     const newState = state.map(v => v._id === idToLike ?
-        { ...v, isLiked: false, likeCount: v.likeCount - 1 } : v)
+        { ...v, isLiked: false, likeCount: v.likeCount! - 1 } : v)
 
     return newState;
 }

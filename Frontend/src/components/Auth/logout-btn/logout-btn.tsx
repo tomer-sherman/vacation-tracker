@@ -5,12 +5,10 @@ import { notify } from "../../../utils/notify";
 
 export function LogoutBtn() {
 
-    const navigate = useNavigate();
-
     function logout() {
         authService.logout();
-        navigate("/home");
-        notify.success("Logout succeded.")
+        window.location.href = "/login"
+        notify.success("Logout succeded.");
 
     }
 

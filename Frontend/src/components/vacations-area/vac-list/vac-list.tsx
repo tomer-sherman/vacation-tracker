@@ -8,27 +8,17 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../redux/app-state";
 import { Role, UserModel } from "../../../models/user-models";
+import { useVacations } from "../use-vacations/use-vacations";
 
 export function VacList() {
 
-    const vacations = useSelector<AppState, VacationModel[]>(state => state.vacation)
-    const [loading, setLoading] = useState<boolean>(false);
-
+    const { vacations, isLoading } = useVacations();
     const user = useSelector<AppState, UserModel | null>(state => state.user);
     const isAdmin = user?.role === Role.Admin;
-
     const navigate = useNavigate();
 
 
 
-    useEffect(() => {
-        // No need for then Since the rendering is handled by the global state.
-        setLoading(true);
-        vacationService.getAllVacations()
-            .catch(err => notify.error(err))
-            .finally(() => setLoading(false));
-
-    }, [])
 
 
     async function handleLike(vacationId: string) {
@@ -57,7 +47,7 @@ export function VacList() {
     }
 
     function handleEdit(vacationId: string) {
-        navigate(`/vacation/edit/${vacationId}`);
+        navigate(`/admin/vacation/edit/${vacationId}`);
     }
 
     async function handleDelete(vacationId: string) {
@@ -97,7 +87,7 @@ export function VacList() {
 
             ))}
 
-            {loading && <span>Loading vacations...</span>}
+            {isLoading && <span>Loading vacations...</span>}
 
         </div>
     );

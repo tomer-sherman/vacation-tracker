@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import "./add-vacation-page.css";
-import { VacationFormModel, vacationValidation } from "../../../models/vacation-model";
-import { vacationService } from "../../../services/vacation-service";
-import { notify } from "../../../utils/notify";
+import { VacationFormModel, vacationValidation } from "../../../../models/vacation-model";
+import { vacationService } from "../../../../services/vacation-service";
+import { notify } from "../../../../utils/notify";
 
 export function AddVacationPage() {
 

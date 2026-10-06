@@ -1,19 +1,21 @@
 import { useSelector } from "react-redux";
 import "./ai-recommendation-page.css";
-import { AppState } from "../../../redux/app-state";
-import { VacationModel } from "../../../models/vacation-model";
+import { AppState } from "../../../../redux/app-state";
+import { VacationModel } from "../../../../models/vacation-model";
 import { ChangeEvent, useState } from "react";
-import { notify } from "../../../utils/notify";
-import { aiService } from "../../../services/ai-service";
-import { VacationRecommendation } from "../../../models/ai-recommendation-model";
+import { notify } from "../../../../utils/notify";
+import { aiService } from "../../../../services/ai-service";
+import { VacationRecommendation } from "../../../../models/ai-recommendation-model";
+import { useVacations } from "../../../vacations-area/use-vacations/use-vacations";
 
 
 export function AiRecommendationPage() {
 
-    const vacations = useSelector<AppState, VacationModel[] | null>(state => state.vacation);
+    const { vacations } = useVacations();
     const [destinations, setDestinations] = useState<string[] | undefined>([]);
     const [completion, setCompletion] = useState<VacationRecommendation>();
     const [loading, setLoading] = useState<boolean>(false);
+
 
     const [query, setQuery] = useState<string>("");
 
@@ -36,8 +38,7 @@ export function AiRecommendationPage() {
     async function send(e: React.FormEvent<HTMLFormElement>) {
         // Prevents the page from reloading since i do not use a react-hook-form here.
         e.preventDefault();
-
-        setLoading(true);
+        setLoading(true)
         aiService.getAiRecommendation({ text: query })
             .then(completion => setCompletion(completion))
             .catch(err => notify.error(err))

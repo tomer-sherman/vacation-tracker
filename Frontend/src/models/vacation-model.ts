@@ -4,8 +4,8 @@ export type VacationModel = {
     startAt: string;
     finishAt: string;
     price: number;
-    likeCount: number;
-    isLiked: boolean;
+    likeCount?: number;
+    isLiked?: boolean;
 };
 
 export type VacationFormModel = {

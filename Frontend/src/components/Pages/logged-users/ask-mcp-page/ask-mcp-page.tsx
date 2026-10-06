@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import "./ask-mcp-page.css";
 import { useState } from "react";
-import { notify } from "../../../utils/notify";
-import { aiService } from "../../../services/ai-service";
+import { notify } from "../../../../utils/notify";
+import { aiService } from "../../../../services/ai-service";
 
 
 export type Prompt = {
