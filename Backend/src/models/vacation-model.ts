@@ -48,6 +48,7 @@ export const VacationSchema = new Schema<IVacationModel>({
     },
     imageId: {
         type: String,
+        required: [true, "imageId required"]
     },
     likes: {
         type: [Schema.Types.ObjectId],

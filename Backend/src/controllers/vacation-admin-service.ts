@@ -3,6 +3,7 @@ import { securityMiddleware } from "../middleware/security-middleware";
 import { StatusCode } from "../models/enums";
 import { VacationModel } from "../models/vacation-model";
 import { vacationAdminService } from "../services/vacation-admin-service";
+import { UploadedFile } from "express-fileupload";
 
 
 
@@ -12,7 +13,6 @@ class VacationAdminController {
 
     public constructor() {
         this.router.post("/api/vacations", this.addVacation);
-        this.router.get("/api/admin/likes", this.getAllVacationLikes);
         this.router.put("/api/vacations/:_id", this.updateVacation);
         this.router.delete("/api/vacations/:_id", this.deleteVacation);
     }
@@ -20,6 +20,9 @@ class VacationAdminController {
     public async addVacation(request: Request, response: Response): Promise<void> {
 
         const vacation = new VacationModel(request.body);
+
+        vacation.image = request.files?.image as UploadedFile;
+
         const dbVacation = await vacationAdminService.addVacation(vacation);
         response.status(StatusCode.Created).json(dbVacation);
 
@@ -29,6 +32,8 @@ class VacationAdminController {
 
         //Extract id too the Body:
         request.body._id = request.params._id.toString();
+        request.body.image = request.files?.image as UploadedFile;
+
         const vacation = new VacationModel(request.body);
         const dbVacation = await vacationAdminService.updateVacation(vacation);
 
@@ -43,21 +48,6 @@ class VacationAdminController {
         response.status(StatusCode.NoContent).json();
 
     }
-
-    public async getAllVacationLikes(request: Request, response: Response): Promise<void> {
-
-        const vacationsWithLikes = await vacationAdminService.getAllVacationLikes();
-        response.json(vacationsWithLikes);
-
-
-    }
-
-
-
-
-
-
-
 
 }
 
