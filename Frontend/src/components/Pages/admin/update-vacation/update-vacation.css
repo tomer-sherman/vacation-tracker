@@ -1,3 +1,333 @@
+/* ============================================================================
+   UpdateVacation — admin form: edit a vacation
+   ----------------------------------------------------------------------------
+   DOM order: <form> (label, input[name=destination], span.error?,
+     label, input[name=description],
+     label, input[name=startAt], span.error?,
+     label, input[name=finishAt], span.error?,
+     label, div.imagePreview (the current photo once loaded, or the picked file),
+     label.imageUploadButton (wraps the hidden file input),
+     label, input[name=price], span.error?,
+     button "Update vacation"),
+   then <button> "Back" outside the form.
+
+   Layout: a centered column. "Back" becomes a quiet "← Back" link on top
+   (flex `order: -1`), ::before is the kicker, ::after the serif headline,
+   and the form is a white card with a sea hairline.
+
+   Inside the card a 2-column grid places every field by its `name`
+   (explicit rows, so the conditional error spans never shift anything):
+       1-3   destination (label, input, error)
+       4-5   description
+       6-8   start date | end date        (stacked as rows 6-11 under 480px)
+       12-14 price
+       15-17 cover image (label, preview box, "Select Image" button)
+       18    submit
+   Rows with nothing in them collapse to 0 because row-gap is 0 (spacing
+   lives in margins). Price is shown before the image, like the reference.
+
+   AddVacationPage uses the same layout (terracotta accent) — keep them in sync.
+   ============================================================================ */
+
 .UpdateVacation {
-	
+    --form-accent: var(--ocean);
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: min(100%, 620px);
+    margin: clamp(0.25rem, 2vh, 1.5rem) auto;
+}
+
+/* Kicker */
+.UpdateVacation::before {
+    content: "Admin · Vacations";
+    order: 0;
+    align-self: flex-start;
+    margin-bottom: 0.6rem;
+    padding-left: 2.1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--form-accent);
+    background: linear-gradient(var(--form-accent), var(--form-accent)) left center / 1.5rem 1px no-repeat;
+    animation: fade-up 0.5s var(--ease) both;
+}
+
+/* Headline */
+.UpdateVacation::after {
+    content: "Edit vacation";
+    order: 1;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+    animation: fade-up 0.6s var(--ease) 0.06s both;
+}
+
+/* ---- "Back" → quiet text link above the kicker ---------------------------- */
+
+.UpdateVacation > button {
+    order: -1;
+    align-self: flex-start;
+    margin-bottom: 1.25rem;
+    padding: 0.25rem 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.UpdateVacation > button::before {
+    content: "←";
+    transition: transform var(--fast) var(--ease);
+}
+
+.UpdateVacation > button:hover {
+    background: none;
+    box-shadow: none;
+    color: var(--text);
+    transform: none;
+}
+
+.UpdateVacation > button:hover::before {
+    transform: translateX(-3px);
+}
+
+.UpdateVacation > button:focus-visible {
+    border-radius: var(--radius-sm);
+    box-shadow: var(--ring);
+}
+
+/* ---- Form card --------------------------------------------------------------- */
+
+.UpdateVacation > form {
+    order: 2;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1rem;
+    row-gap: 0;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    background: var(--surface-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    animation: fade-up 0.6s var(--ease) 0.12s both;
+}
+
+/* Top hairline */
+.UpdateVacation > form::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--form-accent);
+}
+
+/* Every child spans the card unless placed in a column below */
+.UpdateVacation > form > * {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 0;
+}
+
+/* Field labels (not the upload button, which is also a <label>) */
+.UpdateVacation > form > label:not(.imageUploadButton) {
+    margin-top: 1.35rem;
+    margin-bottom: 0.4rem;
+}
+
+/* ---- Grid placement ----------------------------------------------------------- */
+
+.UpdateVacation > form > label:has(+ input[name="destination"]) { grid-row: 1; margin-top: 0; }
+.UpdateVacation > form > input[name="destination"]              { grid-row: 2; }
+.UpdateVacation > form > input[name="destination"] + .error     { grid-row: 3; }
+
+.UpdateVacation > form > label:has(+ input[name="description"]) { grid-row: 4; }
+.UpdateVacation > form > input[name="description"]              { grid-row: 5; }
+
+.UpdateVacation > form > label:has(+ input[name="startAt"]) { grid-row: 6; grid-column: 1; }
+.UpdateVacation > form > input[name="startAt"]              { grid-row: 7; grid-column: 1; }
+.UpdateVacation > form > input[name="startAt"] + .error     { grid-row: 8; grid-column: 1; }
+
+.UpdateVacation > form > label:has(+ input[name="finishAt"]) { grid-row: 6; grid-column: 2; }
+.UpdateVacation > form > input[name="finishAt"]              { grid-row: 7; grid-column: 2; }
+.UpdateVacation > form > input[name="finishAt"] + .error     { grid-row: 8; grid-column: 2; }
+
+.UpdateVacation > form > label:has(+ input[name="price"]) { grid-row: 12; }
+.UpdateVacation > form > input[name="price"]              { grid-row: 13; }
+.UpdateVacation > form > input[name="price"] + .error     { grid-row: 14; }
+
+.UpdateVacation > form > label:has(+ .imagePreview) { grid-row: 15; }
+.UpdateVacation > form > .imagePreview              { grid-row: 16; }
+.UpdateVacation > form > .imageUploadButton         { grid-row: 17; }
+
+.UpdateVacation > form > button { grid-row: 18; }
+
+/* Narrow screens: end date drops under the start date (rows 9-11) */
+@media (max-width: 480px) {
+    .UpdateVacation > form > label:has(+ input[name="finishAt"]) { grid-row: 9;  grid-column: 1 / -1; }
+    .UpdateVacation > form > input[name="finishAt"]              { grid-row: 10; grid-column: 1 / -1; }
+    .UpdateVacation > form > input[name="finishAt"] + .error     { grid-row: 11; grid-column: 1 / -1; }
+
+    .UpdateVacation > form > label:has(+ input[name="startAt"]),
+    .UpdateVacation > form > input[name="startAt"],
+    .UpdateVacation > form > input[name="startAt"] + .error {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ---- Fields ------------------------------------------------------------------ */
+
+/* Dates read as data: mono, like dates elsewhere on the site */
+.UpdateVacation > form > input[type="date"] {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+}
+
+/* Price: a "$" sign inside the field, no spinner arrows */
+.UpdateVacation > form > input[name="price"] {
+    padding-left: 2rem;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2716%27%3E%3Ctext x=%270%27 y=%2713%27 font-family=%27Inter,Arial,sans-serif%27 font-size=%2714%27 fill=%27%2356636d%27%3E$%3C/text%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 0.95rem center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.UpdateVacation > form > input[name="price"]::-webkit-inner-spin-button,
+.UpdateVacation > form > input[name="price"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Validation: a rendered error span marks its field */
+.UpdateVacation > form > input:has(+ .error) {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.UpdateVacation > form > .error {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--danger);
+    animation: fade-in var(--normal) var(--ease) both;
+}
+
+.UpdateVacation > form > .error:empty {
+    display: none;
+}
+
+/* ---- Cover image: preview box --------------------------------------------- */
+
+.UpdateVacation .imagePreview {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+}
+
+.UpdateVacation .imagePreview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: fade-in var(--normal) var(--ease) both;
+}
+
+/* Broken image: Chrome paints img::after only when the load fails */
+.UpdateVacation .imagePreview img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--surface-2);
+}
+
+/* Empty state: dashed box with a picture icon and a hint */
+.UpdateVacation .imagePreview:empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-style: dashed;
+}
+
+.UpdateVacation .imagePreview:empty::before {
+    content: "";
+    width: 2.4rem;
+    height: 2.4rem;
+    background: var(--text-faint);
+    -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%273%27 y=%274%27 width=%2718%27 height=%2716%27 rx=%272%27/%3E%3Ccircle cx=%279%27 cy=%2710%27 r=%271.75%27/%3E%3Cpath d=%27m21 16-4.5-4.5L7 20%27/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%273%27 y=%274%27 width=%2718%27 height=%2716%27 rx=%272%27/%3E%3Ccircle cx=%279%27 cy=%2710%27 r=%271.75%27/%3E%3Cpath d=%27m21 16-4.5-4.5L7 20%27/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.UpdateVacation .imagePreview:empty::after {
+    content: "No image selected";
+    font-size: 0.85rem;
+    color: var(--text-faint);
+}
+
+/* ---- Cover image: "Select Image" button (a <label>) ----------------------- */
+
+.UpdateVacation .imageUploadButton {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.6rem 1.05rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        transform var(--fast) var(--ease),
+        border-color var(--fast) var(--ease),
+        box-shadow var(--normal) var(--ease);
+}
+
+/* Upload icon */
+.UpdateVacation .imageUploadButton::before {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    background: var(--ocean);
+    -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 15V4m-4.5 4.5L12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3%27/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 15V4m-4.5 4.5L12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3%27/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.UpdateVacation .imageUploadButton:hover {
+    transform: translateY(-1px);
+    border-color: rgba(21, 34, 44, 0.35);
+    box-shadow: var(--shadow);
+}
+
+/* ---- Submit -------------------------------------------------------------------- */
+
+.UpdateVacation > form > button {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
 }

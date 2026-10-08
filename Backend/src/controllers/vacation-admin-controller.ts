@@ -24,6 +24,8 @@ class VacationAdminController {
 
         vacation.image = request.files?.image as UploadedFile;
 
+        console.log(vacation.image);
+
         const dbVacation = await vacationAdminService.addVacation(vacation);
         response.status(StatusCode.Created).json(dbVacation);
 
@@ -37,6 +39,7 @@ class VacationAdminController {
 
         // Construct an extra field, Since the vacationModel does not handle this image field.
         vacation.image = request.files?.image as UploadedFile;
+        console.log(vacation.image);
 
         const dbVacation = await vacationAdminService.updateVacation(vacation);
         response.json(dbVacation);

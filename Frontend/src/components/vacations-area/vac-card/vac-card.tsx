@@ -1,4 +1,5 @@
 import { VacationModel } from "../../../models/vacation-model";
+import { appConfig } from "../../../utils/app-config";
 import "./vac-card.css";
 
 // Using the prop to pass down a function, that only passes the id to the arguments.
@@ -29,6 +30,7 @@ export function VacCard(props: VacProps) {
             <p>{props.vacacation.finishAt}</p>
             <p>{props.vacacation.likeCount}</p>
             <p>{props.vacacation.price}</p>
+            <img src={appConfig.vacPictureUrl + props.vacacation.imageId}></img>
 
             {/** Handles the like rendering, and the conditional rendering whether the user is an admin or not. */}
             {props.isAdmin ?

@@ -76,8 +76,13 @@ class SecurityMiddleware {
         server.use(expressRateLimit({
             windowMs: 1000, // Time window in milliseconds.
             limit: 10, // How many requests allowed in that window.
-            skip: (request) => request.path === "/mcp", // One MCP handshake (initialize, initialized, tools/list, tools/call...) is several requests in under a second.
+            skip: (request: Request) => request.path === "/mcp" || request.path.startsWith("/api/images/"),
         }));
+
+        server.use("/api/images/", expressRateLimit({
+            windowMs: 1000,
+            limit: 200,
+        }))
 
     }
 

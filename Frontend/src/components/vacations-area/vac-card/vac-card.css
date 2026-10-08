@@ -1,23 +1,25 @@
 /* ============================================================================
-   VacCard — editorial card with a CSS-painted horizon banner
+   VacCard — editorial card with a full-bleed destination photo
    ----------------------------------------------------------------------------
    DOM (no classes on children):
        p1 destination   p2 startAt   p3 finishAt   p4 likeCount   p5 price
+       img (the vacation photo)
        then either one button (Like / UnLike) or two (Edit, Delete)
 
    Layout: 2-column grid.
-       ::before  banner: sky, setting sun, lined sea (spans both columns,
-                 bleeds to the card edges). Same motif as the Home arch.
+       img       photo, moved to the top with order: -1, spans both columns,
+                 bleeds to the card edges, fixed 3:2 crop
        p1        destination, spans both
        p2 | p3   depart / return
        p4 | p5   likes / price
-       button(s)
+       button(s) pinned to the bottom, so cards in a row line up
 
    Dates arrive as ISO strings (2026-10-05T00:00:00.000Z). The date boxes use
    a monospace font and a fixed width of 10ch, so only YYYY-MM-DD shows.
 
-   Every 4th card cycles the banner palette via custom properties.
-   The banner is a placeholder until vacations have real images.
+   The sun/sea motif (same as the Home arch) is painted behind the photo as
+   its loading / broken-image fallback; every 4th card cycles its palette via
+   custom properties.
    ============================================================================ */
 
 .VacCard {
@@ -33,6 +35,9 @@
     overflow: hidden;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* photo, destination, dates, likes/price, buttons. The last row soaks up
+       any extra height when VacList stretches a row of cards to match. */
+    grid-template-rows: auto auto auto auto 1fr;
     column-gap: 0.75rem;
     row-gap: 0.6rem;
     align-items: center;
@@ -67,12 +72,26 @@
     box-shadow: var(--shadow-lg);
 }
 
-/* ---- Banner (top layer first): sea lines, sea, sun, sky ------------------- */
-.VacCard::before {
-    content: "";
+/* ---- Photo ----------------------------------------------------------------
+   The <img> comes after the <p>s in the DOM; order: -1 lifts it to the top
+   row. A fixed 3:2 box + object-fit: cover gives every photo the same size
+   whatever ratio was uploaded (portrait, square, panorama), and it bleeds to
+   the card edges. The sun/sea motif is its background (top layer first: sea
+   lines, sea, sun, sky), so it shows while the photo loads or if it fails. */
+.VacCard img {
+    order: -1;
     grid-column: 1 / -1;
-    height: 150px;
+    width: calc(100% + 2.5rem);
+    max-width: none;
+    height: auto;
+    aspect-ratio: 3 / 2;
     margin: -1.25rem -1.25rem 0.4rem;
+    object-fit: cover;
+    object-position: center;
+    border-bottom: 1px solid var(--border);
+    /* the alt text / broken-image label would otherwise sit on the motif */
+    color: transparent;
+    font-size: 0;
     background:
         repeating-linear-gradient(180deg, transparent 0 9px, rgba(255, 255, 255, 0.16) 9px 10px)
             bottom / 100% 38% no-repeat,
@@ -81,11 +100,21 @@
         radial-gradient(circle 30px at var(--sun-x) 62%, var(--sun) 0 29px, transparent 30px),
         radial-gradient(circle 70px at var(--sun-x) 62%, color-mix(in srgb, var(--sun) 22%, transparent), transparent),
         linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%);
+    position: relative;
     transition: filter var(--normal) var(--ease);
 }
 
-.VacCard:hover::before {
-    filter: saturate(1.08) brightness(1.02);
+/* Chrome draws ::after on an <img> only when it fails to load: repaint the
+   motif over the broken-image icon. */
+.VacCard img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+}
+
+.VacCard:hover img {
+    filter: saturate(1.08) brightness(1.03);
 }
 
 /* ---- Content -------------------------------------------------------------- */
@@ -188,6 +217,7 @@
 
 /* ---- Buttons -------------------------------------------------------------- */
 .VacCard button {
+    align-self: end;
     margin-top: 0.7rem;
     width: 100%;
     padding: 0.7rem 1rem;

@@ -126,6 +126,26 @@ Left-aligned column at `min(100%, 960px)`: sea kicker "Admin · Insights" (`::be
 muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart card** (white, 1px border,
 `--radius-lg`, `--shadow`) with a small uppercase label in its top padding ("Likes per destination").
 
+### Recurring page pattern: admin forms (`AddVacationPage`, `UpdateVacation`)
+A centered column at `min(100%, 620px)`: the outside "Back" `<button>` becomes a quiet "← Back" text link on
+top (`order: -1`) → kicker "Admin · Vacations" (`::before`) → serif headline (`::after`) → **form card**
+(white, 1px border, `--radius-xl`, `--shadow`, 3px top hairline in `--form-accent`: terracotta for Add,
+sea for Edit). Inside the card a 2-column grid places each field **by its `name` attribute**
+(`input[name="startAt"]`, `label:has(+ input[name="…"])`, `input[name="…"] + .error`) on fixed rows, so the
+conditional error spans never shift the layout. The two dates sit side by side and stack under 480px. Price
+gets a "$" inside the field. The cover image is a 3:2 preview box (dashed "No image selected" state when
+`:empty`, the same crop as VacCard) with a separate outline "Select Image" label-button under it. Full-width
+primary submit. The two CSS files are copies with the root class, accent and headline swapped: keep them in sync.
+
+### Recurring pattern: pagination (`VacList`, react-paginate)
+The `ul.pagination` spans the full grid width under the cards (`grid-column: 1 / -1`), centered, with a
+`--border` hairline above it. Each control is a 2.5rem quiet square (radius `--radius`, Inter 600, tabular
+numbers) that gets a white surface, a border and a 1px lift on hover. The current page (`li.active`) is solid
+ink (`--text` fill, `--surface-solid` text), not terracotta, so it never competes with the primary button.
+Prev/next are outlined squares: their label is hidden with `font-size: 0` and drawn as `←` / `→` in `::before`.
+`li.disabled` fades to 35%. The whole pager hides when it has fewer than 4 `<li>` (one page or none).
+Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones (fine for now).
+
 **Styling Recharts from CSS** (the TSX passes colors as props, but CSS still wins):
 - SVG attributes (`fill="#15222c"`, `stroke="#666"`) are presentation attributes, so any CSS rule overrides
   them. Bars: `.recharts-bar-rectangle path`. Axes: `.recharts-xAxis` / `.recharts-yAxis` with
@@ -145,7 +165,17 @@ muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart
 - Huge `border-radius` values (999px) get scaled down together with the other corners. For an arch, use
   exact half-width radii.
 - An emoji written with a variation selector (`©️`) ignores `font-variant-emoji: text`.
+- **Broken `<img>`:** Chrome renders `img::after` only when the image fails to load. VacCard uses it
+  (`position: absolute; inset: 0; background: inherit`) to paint the fallback over the broken-image icon.
+  Use the same trick for any future photo.
+- **Photos of mixed sizes:** give the `<img>` a fixed `aspect-ratio`, `height: auto` and `object-fit: cover`.
+  Uploads range from 275px wide to 2048px, portrait to panorama.
 - A **numeric** `height` on `ResponsiveContainer` is used as is: CSS `min-height` grows the box but not the chart.
+- **A library that always renders a wrapper breaks `:empty`.** react-paginate renders its `<ul>` even with
+  0 pages, so VacList's empty state matches `.VacList:not(:has(> .VacCard, > span))` instead of `:empty`.
+- **Grid with conditional children:** give every child an explicit `grid-row` and set `row-gap: 0` (spacing
+  goes in margins). Empty implicit rows then collapse to 0, so one row numbering works whether or not an
+  error span is rendered, and a breakpoint can move items into rows that are empty on desktop.
 
 ---
 
@@ -158,13 +188,13 @@ muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart
 | Login, Register, LogoutBtn | Designed | White auth cards with a colored top hairline (terracotta / sea) |
 | Home | Designed | Left-aligned editorial hero, arch-window art on the right (hidden under 860px), one primary CTA plus a text-link Login |
 | About, Page404 | Designed | Letter card / large italic serif 404 |
-| VacationPage, VacList, VacCard | Designed | Card banner uses the sun/sea motif as an image placeholder; restyle once real images arrive |
+| VacationPage, VacList, VacCard | Designed | Full-bleed destination photo on top of each card, cropped to 3:2 (`object-fit: cover`) so every card matches. The sun/sea motif is the photo's loading / broken-image fallback. Rows of cards are equal height with the buttons pinned to the bottom. Pagination (react-paginate) under the grid, see section 4. Three TSX requests in section 6. |
 | Spinner | Designed | GIF in a thin terracotta ring |
 | AskMcpPage | Designed | Reference for the AI-page pattern |
 | AiRecommendationPage | Designed (form + loading) | Search card with an SVG-pin suggestions dropdown (shown on focus). The result isn't rendered by the TSX yet, see section 6. |
 | LikeAnalytics (admin) | Designed | Reference for the admin-dashboard pattern: terracotta 20px bars in a white chart card, ♥ tooltip, italic empty state. Two TSX requests in section 6. |
-| AddVacationPage (admin) | **Not designed** | CSS file is still an empty stub |
-| UpdateVacation (admin) | **Not designed** | CSS file is still an empty stub |
+| AddVacationPage (admin) | Designed | Reference for the admin-form pattern (terracotta accent). One TSX request in section 6. |
+| UpdateVacation (admin) | Designed | Same layout as AddVacationPage with a sea accent; the preview box shows the current photo. |
 
 ---
 
@@ -184,6 +214,21 @@ muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart
   so with 1–2 vacations the rows get squeezed and Recharts drops labels. `data.length * 40 + 40` fixes it.
   Nice to have: `name="Likes"` on `<Bar>` (CSS currently hides the raw "likeCount :" in the tooltip), and
   dropping `fill="#15222c"` (CSS overrides it anyway).
+- **VacCard: `alt` on the photo.** The `<img>` has no `alt`, so screen readers announce nothing (or the
+  file URL). `alt={props.vacacation.destination}` fixes it; `loading="lazy"` would also help once the list
+  grows. CSS already hides any alt text that shows while a photo is broken.
+- **VacCard: Like vs UnLike state (minor).** Both buttons look identical apart from the word, because CSS
+  can't match on text. `aria-pressed={props.vacacation.isLiked}` on the button (also good for
+  accessibility) would let CSS fill the heart and tint the button for liked vacations.
+- **Add/Update vacation: keyboard access to "Select Image" (minor).** The file input has `hidden`, so it
+  can't be focused and keyboard users can't pick an image. A visually-hidden class on the input instead of
+  `hidden` would fix it, and CSS could then show a focus ring on the label with `:has(input:focus-visible)`.
+  Nice to have: `<textarea>` for Description (it's `<input type="textarea">`, i.e. a one-line text box).
+- **VacList: pagination details (minor).** `previousLabel="'"` / `nextLabel="'"` look like typos. CSS hides
+  them and draws arrows, so `"←"` / `"→"` (or the defaults) would make that swap unnecessary. Changing page
+  doesn't scroll back up, so after clicking the pager under the cards the user lands at the bottom of the new
+  page; `window.scrollTo({ top: 0, behavior: "smooth" })` in `onPageChange` fixes it. Nice to have:
+  `renderOnZeroPageCount={null}` so the empty `<ul>` isn't rendered while loading.
 - **Copyrights: use a plain `©`.** The TSX has `©️` (emoji form), which renders as a purple emoji. CSS
   currently mutes it with `filter: grayscale(1)`. Remove that line once the character is fixed.
 
@@ -227,3 +272,16 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   restyled Recharts bars, axes and tooltip, and an empty state. Added the admin-dashboard pattern and
   Recharts notes (section 4), a Recharts verification recipe (section 7) and two LikeAnalytics TSX
   requests (section 6).
+- **2026-10-08:** Vacations now have real photos. VacCard (CSS only): the `<img>` moves to the top with
+  `order: -1`, bleeds to the card edges, and every photo is cropped to the same 3:2 box. The old CSS sun/sea
+  banner is now the photo's loading / broken-image fallback. VacList stretches cards to equal height and VacCard
+  pins the buttons to the bottom. Added two VacCard TSX requests (section 6) and two gotchas (section 4).
+- **2026-10-08:** Designed the admin `AddVacationPage` and `UpdateVacation` forms (CSS only; the owner had
+  already split the image upload into a preview box and a "Select Image" label in the TSX). Added the
+  admin-form pattern and a grid gotcha (section 4), and two form TSX requests (section 6).
+- **2026-10-08:** With the owner's OK, fixed the form TSX: the start date, end date and price error spans
+  showed `errors.destination?.message`; each now shows its own field's message (both pages).
+- **2026-10-09:** Styled the VacList pagination (CSS only). It was a bulleted list sitting in a grid cell; now
+  it's a centered pager under a hairline with quiet squares, a solid-ink current page and arrow prev/next.
+  Fixed the VacList empty state, which the always-rendered `<ul>` had broken. Added the pagination pattern
+  and a gotcha (section 4) and a VacList TSX request (section 6).

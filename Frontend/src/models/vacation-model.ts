@@ -4,14 +4,17 @@ export type VacationModel = {
     startAt: string;
     finishAt: string;
     price: number;
+    imageId: string
     likeCount?: number;
     isLiked?: boolean;
 };
 
 export type VacationFormModel = {
     destination: string;
+    description: string;
     startAt: string;
     finishAt: string;
+    image: File;
     price: number;
 };
 

@@ -13,7 +13,7 @@ class AppConfig {
     public readonly vacationsUrl = this.apiUrl + "/vacations/";             // GET | User, GET /:_id | User, POST | Admin, PUT /:_id | Admin, DELETE /:_id | Admin
     public readonly likeVacationUrl = this.apiUrl + "/vacations/like/";     // POST /:_id | User
     public readonly unlikeVacationUrl = this.apiUrl + "/vacations/unlike/"; // POST /:_id | User
-
+    public readonly vacPictureUrl = this.apiUrl + "/images/"                // GET /:_id 
     // ---------- Admin ----------
     public readonly adminLikesUrl = this.apiUrl + "/admin/likes";           // GET | Admin
 

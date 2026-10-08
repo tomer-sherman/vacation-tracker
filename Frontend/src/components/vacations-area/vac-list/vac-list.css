@@ -1,15 +1,27 @@
 /* ============================================================================
    VacList — responsive grid of VacCards
    ----------------------------------------------------------------------------
-   Also styles the bare "Loading vacations..." <span> and the empty state
-   (no children at all) via :empty.
+   DOM (children of the grid, in order):
+       .VacCard × up to 9           the current page of vacations
+       ul.pagination                react-paginate (always rendered, even with
+                                    0 pages):
+           li.previous[.disabled] > a      label is "'" in the TSX, so CSS
+           li[.active] > a  (page number)  hides it and draws an arrow
+           li.break > a     ("...")
+           li.next[.disabled] > a
+       span                         "Loading vacations..." (while loading)
+
+   Layout: the pager spans the full grid width under the cards, centered, with
+   a hairline above it. It hides itself when there is only one page (prev, 1,
+   next = 3 items). Also styles the loading line and the empty state (no cards
+   and not loading).
    ============================================================================ */
 
 .VacList {
     display: grid;
     gap: 1.5rem;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
-    align-items: start;
+    align-items: stretch; /* equal-height cards; VacCard pins its buttons to the bottom */
 }
 
 /* Loading line with a small spinning ring */
@@ -36,12 +48,13 @@
     animation: spin 0.8s linear infinite;
 }
 
-/* Nothing loaded and nothing loading */
-.VacList:empty {
+/* Nothing loaded and nothing loading. The pager <ul> is always in the DOM,
+   so :empty can't be used; match "no cards and no loading line" instead. */
+.VacList:not(:has(> .VacCard, > span)) {
     display: block;
 }
 
-.VacList:empty::before {
+.VacList:not(:has(> .VacCard, > span))::before {
     content: "No vacations yet. Check back soon.";
     display: block;
     text-align: center;
@@ -52,4 +65,129 @@
     padding: 3.5rem 1.5rem;
     border-radius: var(--radius-lg);
     border: 1px dashed var(--border-strong);
+}
+
+
+/* --- Pagination ----------------------------------------------------------- */
+
+.VacList > .pagination {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 1.75rem 0 0;
+    border-top: 1px solid var(--border);
+    animation: fade-in var(--normal) var(--ease) 0.3s both;
+}
+
+/* One page (or none): nothing to paginate */
+.VacList > .pagination:not(:has(> li:nth-child(4))) {
+    display: none;
+}
+
+.VacList > .pagination > li {
+    margin: 0; /* drop the global li + li spacing */
+}
+
+/* Every control: a quiet square, tabular numbers */
+.VacList > .pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.6rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    color: var(--text);
+    font-size: 0.92rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        transform var(--fast) var(--ease),
+        background-color var(--fast) var(--ease),
+        border-color var(--fast) var(--ease),
+        box-shadow var(--normal) var(--ease),
+        color var(--fast) var(--ease);
+}
+
+.VacList > .pagination a:hover {
+    color: var(--text);
+    background: var(--surface-solid);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.VacList > .pagination a:focus-visible {
+    outline: none;
+    border-radius: var(--radius);
+    border-color: var(--ocean);
+    box-shadow: var(--ring);
+}
+
+/* Current page: solid ink, not clickable */
+.VacList > .pagination > li.active > a {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+    cursor: default;
+    transform: none;
+}
+
+/* "..." jump */
+.VacList > .pagination > li.break > a {
+    min-width: 2rem;
+    padding: 0;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+}
+
+/* Previous / Next: outlined, the "'" label swapped for an arrow */
+.VacList > .pagination > li:is(.previous, .next) > a {
+    font-size: 0;
+    border-color: var(--border-strong);
+}
+
+.VacList > .pagination > li.previous { margin-right: 0.5rem; }
+.VacList > .pagination > li.next     { margin-left: 0.5rem; }
+
+.VacList > .pagination > li.previous > a::before,
+.VacList > .pagination > li.next > a::before {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.VacList > .pagination > li.previous > a::before { content: "←"; }
+.VacList > .pagination > li.next > a::before     { content: "→"; }
+
+/* First / last page: the arrow fades and stops reacting */
+.VacList > .pagination > li.disabled > a {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: default;
+}
+
+@media (max-width: 480px) {
+    .VacList > .pagination {
+        gap: 0.25rem;
+        padding-top: 1.25rem;
+    }
+
+    .VacList > .pagination a {
+        min-width: 2.25rem;
+        height: 2.25rem;
+        padding: 0 0.45rem;
+    }
+
+    .VacList > .pagination > li.previous { margin-right: 0.25rem; }
+    .VacList > .pagination > li.next     { margin-left: 0.25rem; }
 }

@@ -8,16 +8,23 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../../redux/app-state";
 import { Role, UserModel } from "../../../models/user-models";
 import { useVacations } from "../use-vacations/use-vacations";
+import ReactPaginateImport from "react-paginate";
+import { usePagination } from "./use-paginate";
+
+const ReactPaginate =
+    (ReactPaginateImport as unknown as { default: typeof ReactPaginateImport }).default
+    ?? ReactPaginateImport;
+
 
 export function VacList() {
+
 
     const { vacations, isLoading } = useVacations();
     const user = useSelector<AppState, UserModel | null>(state => state.user);
     const isAdmin = user?.role === Role.Admin;
     const navigate = useNavigate();
 
-
-
+    const { page, setPage, pageCount, visible } = usePagination(vacations, 9);
 
 
     async function handleLike(vacationId: string) {
@@ -70,7 +77,7 @@ export function VacList() {
         <div className="VacList">
 
 
-            {vacations?.map(v => (
+            {visible?.map(v => (
 
                 <VacCard
                     key={v._id}
@@ -83,8 +90,17 @@ export function VacList() {
 
                 />
 
-
             ))}
+
+            <ReactPaginate
+                pageCount={pageCount}
+                forcePage={page}
+                onPageChange={({ selected }) => setPage(selected)}
+                previousLabel="'"
+                nextLabel="'"
+                containerClassName="pagination"
+                activeClassName="active"
+            />
 
             {isLoading && <span>Loading vacations...</span>}
 

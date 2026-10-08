@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { ClientError } from "../models/client-error";
 import { StatusCode } from "../models/enums";
-import { VacationModel, IVacationModel, VacationView } from "../models/vacation-model";
+import { VacationModel, IVacationModel } from "../models/vacation-model";
 import { imageHandler } from "../utils/image-handler";
 import path from "node:path";
 
@@ -18,7 +18,7 @@ class VacationService {
             {
                 $project: {
                     // This fields will be sent the same way as mongo stores them.
-                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1,
+                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1, imageId: 1,
 
                     // This are sent a bit differently, since we want to handle isLiked and likeCount as well.
                     likeCount: { $size: "$likes" },
@@ -84,6 +84,12 @@ class VacationService {
         return filePath;
     }
 
+    public async getImageByImageId(imageId: string): Promise<string> {
+
+        const imagePath = path.join(imageHandler.folderPath, imageId);
+        return imagePath;
+
+    }
 
 }
 
