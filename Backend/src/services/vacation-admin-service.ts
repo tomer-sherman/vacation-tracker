@@ -44,30 +44,30 @@ class VacationAdminService {
 
 
     public async updateVacation(vacation: IVacationModel): Promise<IVacationModel> {
-        if (!mongoose.isValidObjectId(vacation._id)) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found. `)
+        // Prevents cast error and converts it to 404
+        if (!mongoose.isValidObjectId(vacation._id)) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found. `);
 
+        // Checks validations and throws 422 if did not pass
         await ClientError.validateDocument(vacation);
 
-        const dbVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnDocument: "after" }).exec();
-        if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found.`)
-
-        // If a new image comes from the front, 
+        // Set a oldImagePath var.
+        let oldImagePath: string | null = null;
+        
+    
+        // If a new image comes, save it in the backend folder, And over write the vacation.imageId too the new image.
         if (vacation.image) {
-
-            // Delete the current image.
-            const currentImagePath = path.join(imageHandler.folderPath, vacation.imageId)
-            await imageHandler.removeImage(currentImagePath);
-
-            // Overwride the image id
+            oldImagePath = await vacationService.getImagePath(vacation._id.toString());
             vacation.imageId = await imageHandler.addImage(vacation.image);
-
         }
 
-
-
+        // Updates the vacation.
+        const dbVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnDocument: "after" }).exec();
+        if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found.`);
+        
+        // Only after updating the image in the DB, delete the old image from the backend.
+        if (oldImagePath) await imageHandler.removeImage(oldImagePath);
 
         return dbVacation;
-
     }
 
 

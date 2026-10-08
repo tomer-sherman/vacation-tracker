@@ -4,6 +4,7 @@ import { StatusCode } from "../models/enums";
 import { VacationModel } from "../models/vacation-model";
 import { vacationAdminService } from "../services/vacation-admin-service";
 import { UploadedFile } from "express-fileupload";
+import { verify } from "node:crypto";
 
 
 
@@ -12,9 +13,9 @@ class VacationAdminController {
     public router: Router = express.Router();
 
     public constructor() {
-        this.router.post("/api/vacations", this.addVacation);
-        this.router.put("/api/vacations/:_id", this.updateVacation);
-        this.router.delete("/api/vacations/:_id", this.deleteVacation);
+        this.router.post("/api/vacations", securityMiddleware.verifyAdmin, this.addVacation);
+        this.router.put("/api/vacations/:_id", securityMiddleware.verifyAdmin, this.updateVacation);
+        this.router.delete("/api/vacations/:_id", securityMiddleware.verifyAdmin, this.deleteVacation);
     }
 
     public async addVacation(request: Request, response: Response): Promise<void> {
@@ -32,11 +33,12 @@ class VacationAdminController {
 
         //Extract id too the Body:
         request.body._id = request.params._id.toString();
-        request.body.image = request.files?.image as UploadedFile;
-
         const vacation = new VacationModel(request.body);
-        const dbVacation = await vacationAdminService.updateVacation(vacation);
 
+        // Construct an extra field, Since the vacationModel does not handle this image field.
+        vacation.image = request.files?.image as UploadedFile;
+
+        const dbVacation = await vacationAdminService.updateVacation(vacation);
         response.json(dbVacation);
 
     }

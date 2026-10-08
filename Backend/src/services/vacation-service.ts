@@ -9,16 +9,16 @@ import path from "node:path";
 
 class VacationService {
 
-    public async getAllVacations(userId: string): Promise<VacationView[]> {
+    public async getAllVacations(userId: string): Promise<IVacationModel[]> {
 
         //Convert string to mongoDb userId object.
         const mongoUserId = new mongoose.Types.ObjectId(userId);
 
-        const dbVacations = await VacationModel.aggregate<VacationView>([
+        const dbVacations = await VacationModel.aggregate<IVacationModel>([
             {
                 $project: {
                     // This fields will be sent the same way as mongo stores them.
-                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1, imageId: 1,
+                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1,
 
                     // This are sent a bit differently, since we want to handle isLiked and likeCount as well.
                     likeCount: { $size: "$likes" },

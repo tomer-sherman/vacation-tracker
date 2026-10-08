@@ -2,7 +2,7 @@
    LikeAnalytics — admin dashboard: likes per destination (Recharts)
    ----------------------------------------------------------------------------
    DOM order: <h1>, div.recharts-responsive-container (inline style:
-   width 100%, height = rows × 40px) > div > div.recharts-wrapper >
+   width 100%, height 400px) > div > div.recharts-wrapper >
      div.recharts-tooltip-wrapper > div.recharts-default-tooltip
        (p.recharts-tooltip-label, ul > li.recharts-tooltip-item >
         span name / separator / value / unit)
@@ -19,9 +19,11 @@
    which any CSS rule overrides. The tooltip and the responsive container use
    inline `style`, so those few overrides need !important.
 
-   Chart specs (dataviz): one series → no legend, bars in the terracotta
-   accent, at most 20px thick with a 4px rounded end and a square base (clip-path
-   on the bar path), hairline axes, text in ink tokens, never the bar color.
+   Chart specs (dataviz): one series → no legend, vertical bars in the
+   terracotta accent. Bar thickness and the rounded top are set on <Bar>
+   (maxBarSize={20}, radius={[4, 4, 0, 0]}), not in CSS. Destinations on the
+   X axis, like counts on the Y axis. Hairline axes, text in ink tokens,
+   never the bar color.
    ============================================================================ */
 
 .LikeAnalytics {
@@ -48,7 +50,7 @@
 }
 
 /* Headline */
-.LikeAnalytics > h1 {
+.LikeAnalytics>h1 {
     order: 1;
     font-family: var(--font-serif);
     font-size: clamp(1.9rem, 4vw, 2.7rem);
@@ -73,11 +75,12 @@
 
 /* ---- Chart card ----------------------------------------------------------- */
 
-.LikeAnalytics > .recharts-responsive-container {
+.LikeAnalytics>.recharts-responsive-container {
     order: 3;
     position: relative;
     box-sizing: content-box;
-    width: auto !important;          /* inline 100% + padding would overflow */
+    width: auto !important;
+    /* inline 100% + padding would overflow */
     align-self: stretch;
     padding: 3.1rem clamp(0.75rem, 2.5vw, 1.75rem) clamp(1rem, 2.5vw, 1.5rem) clamp(0.25rem, 1vw, 0.75rem);
     border-radius: var(--radius-lg);
@@ -88,7 +91,7 @@
 }
 
 /* Card label, sits in the top padding */
-.LikeAnalytics > .recharts-responsive-container::before {
+.LikeAnalytics>.recharts-responsive-container::before {
     content: "Likes per destination";
     position: absolute;
     top: 1.15rem;
@@ -118,13 +121,13 @@
     display: none;
 }
 
-/* Value axis: faint hairline */
-.LikeAnalytics .recharts-xAxis .recharts-cartesian-axis-line {
+/* Value axis (like counts): faint hairline */
+.LikeAnalytics .recharts-yAxis .recharts-cartesian-axis-line {
     stroke: var(--border);
 }
 
-/* Category axis: the baseline the bars grow from */
-.LikeAnalytics .recharts-yAxis .recharts-cartesian-axis-line {
+/* Category axis (destinations): the baseline the bars grow from */
+.LikeAnalytics .recharts-xAxis .recharts-cartesian-axis-line {
     stroke: var(--border-strong);
 }
 
@@ -133,14 +136,14 @@
 }
 
 /* Destination names */
-.LikeAnalytics .recharts-yAxis .recharts-cartesian-axis-tick-value {
+.LikeAnalytics .recharts-xAxis .recharts-cartesian-axis-tick-value {
     fill: var(--text);
     font-size: 0.85rem;
     font-weight: 500;
 }
 
 /* Like counts */
-.LikeAnalytics .recharts-xAxis .recharts-cartesian-axis-tick-value {
+.LikeAnalytics .recharts-yAxis .recharts-cartesian-axis-tick-value {
     fill: var(--text-faint);
     font-size: 0.75rem;
     font-variant-numeric: tabular-nums;
@@ -150,8 +153,6 @@
 
 .LikeAnalytics .recharts-bar-rectangle path {
     fill: var(--primary);
-    /* cap the band-filling bar at 20px thick, round only the data end */
-    clip-path: inset(max(0px, calc(50% - 10px)) 0 round 0 4px 4px 0);
     transition: fill var(--fast) var(--ease);
 }
 
@@ -159,7 +160,7 @@
     fill: var(--primary-hover);
 }
 
-/* Row highlight behind the hovered destination */
+/* Column highlight behind the hovered destination */
 .LikeAnalytics .recharts-tooltip-cursor {
     fill: var(--surface-2);
 }
@@ -216,26 +217,10 @@
     color: var(--text);
 }
 
-/* ---- Empty state (no vacations in the store → height 0) ------------------- */
-
-.LikeAnalytics > .recharts-responsive-container[style*="height: 0px"] {
-    padding-block: 3.1rem 2.75rem;
-}
-
-.LikeAnalytics > .recharts-responsive-container[style*="height: 0px"]::after {
-    content: "No likes to chart yet.";
-    display: block;
-    padding-left: clamp(0.75rem, 1.5vw, 1rem);
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 1.1rem;
-    color: var(--text-muted);
-}
-
 /* ---- Mobile --------------------------------------------------------------- */
 
 @media (max-width: 560px) {
-    .LikeAnalytics .recharts-yAxis .recharts-cartesian-axis-tick-value {
+    .LikeAnalytics .recharts-xAxis .recharts-cartesian-axis-tick-value {
         font-size: 0.8rem;
     }
 }

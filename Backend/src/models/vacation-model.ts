@@ -7,6 +7,7 @@ export interface IVacationModel extends Document {
 
     _id: Types.ObjectId;
     destination: string,
+    description: string,
     startAt: Date;
     finishAt: Date;
     price: number,
@@ -20,7 +21,16 @@ export const VacationSchema = new Schema<IVacationModel>({
     destination: {
         type: String,
         required: [true, "Destination is a required field."],
-        match: [/^(?=.{2,100})[A-Z][a-z]+$/, "Destination name must contain only english letters between 2-100, first chat must be uppercase."],
+        match: [/^(?=.{2,100}$)[a-zA-Z]+(?: [a-zA-Z]+)*$/, "Destination must be 2-100 English letters."],
+        trim: true,
+        lowercase: true
+    },
+    description: {
+        type: String,
+        set: (value: string) => value.trim().replace(/[ \t]+/g, " "),
+        minLength: [5, "Description cannot be less then 5 chars."],
+        maxLength: [300, "Description cannot be more then 300 chars."],
+        lowercase: true
     },
     startAt: {
         type: Date,
@@ -50,6 +60,7 @@ export const VacationSchema = new Schema<IVacationModel>({
         type: String,
         required: [true, "imageId required"]
     },
+
     likes: {
         type: [Schema.Types.ObjectId],
         ref: "UserModel",
@@ -60,15 +71,7 @@ export const VacationSchema = new Schema<IVacationModel>({
     id: false
 })
 
-export const VacationModel = model<IVacationModel>("VacationModel", VacationSchema, "holidays");
+export const VacationModel = model<IVacationModel>("VacationModel", VacationSchema, "vacations");
 
 
-export type VacationView = {
-    _id: Types.ObjectId;
-    destination: string;
-    startAt: Date;
-    finishAt: Date;
-    price: number;
-    likeCount: number;
-    isLiked: boolean;
-};
+

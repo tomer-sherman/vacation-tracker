@@ -24,6 +24,7 @@ export const UserSchema = new Schema<IUserModel>({
         maxLength: [50, "Yo brah why your name so long"],
         match: [/^[a-z]*$/, "Your name must contain english chars only, no empty spaces."],
         trim: true,
+         lowercase: true
     },
     lastName: {
         type: String,
@@ -32,6 +33,7 @@ export const UserSchema = new Schema<IUserModel>({
         maxLength: [50, "Yo brah why your name so long"],
         match: [/^[a-z]*$/, "Your last name must contain english chars only."],
         trim: true,
+         lowercase: true
     },
     email: {
         type: String,

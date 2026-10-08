@@ -13,8 +13,8 @@ class VacationController {
     public constructor() {
         this.router.get("/api/vacations", securityMiddleware.verifyLogin, this.getAllVacations);
         this.router.get("/api/vacations/:_id", securityMiddleware.verifyLogin, this.getOneVacation);
-        this.router.post("/api/vacations/like/:_id", securityMiddleware.verifyLogin, this.likeVacation);
-        this.router.post("/api/vacations/unlike/:_id", securityMiddleware.verifyLogin, this.unlikeVacation);
+        this.router.post("/api/vacations/like/:_id", securityMiddleware.verifyLogin,this.likeVacation);
+        this.router.post("/api/vacations/unlike/:_id", securityMiddleware.verifyLogin,this.unlikeVacation);
         this.router.get("/api/images/:_id", this.getImage);
     }
 
