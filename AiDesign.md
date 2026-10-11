@@ -30,7 +30,8 @@ bouncing pills, script font) too childish. Keep it grown-up:
 - **No emoji in the UI.** Not as icons, watermarks or prefixes. If an icon is needed, use a small inline SVG
   (as a `mask` or `background-image` data URI) so it takes a token color. Typographic glyphs (♥ → $ ·) are fine.
 - **No idle motion.** Nothing floats, sways, spins for decoration or animates a gradient forever. Motion
-  is only for entrances (short `fade-up`), loading (spinner ring) and hover feedback (1–3px lift, color).
+  is only for entrances (short `fade-up`), loading (spinner ring), hover feedback (1–3px lift, color) and
+  scroll-linked parallax on the Home hero photo (owner-requested; it only moves while the user scrolls).
 - **No glowing pills or rainbow borders.** Solid fills, 1px borders, soft ink-tinted shadows.
 - **One accent at a time.** Terracotta is the accent; deep sea is the secondary. Most of the page is
   ivory, white and ink.
@@ -110,7 +111,9 @@ only need overrides where they hard-code a color.
   explicit `grid-row`/`grid-column` to rearrange without touching the TSX. Page titles and subtitles that
   the TSX lacks are added as `::before` / `::after` text with flex `order`.
 - **Use tokens, not raw values.** A raw hex is fine only inside an illustration (the sun/sea motif).
-- **Put keyframes in `index.css`** (section 7). Use `fade-up`, `fade-in`, `rise`, `card-in`, `spin`, `pulse`.
+- **Put keyframes in `index.css`** (section 7). Use `fade-up`, `fade-in`, `rise`, `card-in`, `spin`, `pulse`,
+  and `parallax-title` for the scroll-driven Home hero title (wrap in `@supports (animation-timeline: view())`
+  and `prefers-reduced-motion: no-preference`).
   `float`, `sway`, `flow`, `gradient-shift` and the wave keyframes are legacy: don't use them.
 - **Mobile first-class.** Common breakpoints: 560px (stack prompt cards), 600px and 900px (grids), 720px (app
   shell), 860px (Home art hides). Every page must work at 400px wide with no horizontal scroll.
@@ -118,8 +121,18 @@ only need overrides where they hard-code a color.
 ### Recurring page pattern: AI pages (`AskMcpPage`, `AiRecommendationPage`)
 A centered column at `min(100%, 760px)`: kicker (`::before`) → serif headline → **prompt card** (white,
 1px border, `--radius-xl`, `--shadow`) with a small field label, an input and a primary button side by side
-(stacked under 560px) → reply card (white, 3px sea left border, "Answer" label) → a loading line with a
+(stacked under 560px) → reply card (white, 3px sea left border, "Answer" label). **Loading has no separate line:** the button gets `disabled` + `aria-busy`, its label turns transparent and a white `spin` ring takes its place, and the old answer fades to 40% (`filter: opacity`). Before 2026-10-11 it was a loading line with a
 small spinning ring. New AI features follow this pattern.
+
+**Structured AI answers (`AiCompletion` inside `AiRecommendationPage`)** are one white card (`--radius-xl`,
+`--shadow`, 3px sea top border) styled from the page's CSS file (the component has no CSS import of its
+own, and its elements carry `ai-*` classes). Order inside: sea kicker (destination) → serif title → muted
+lead → hairline → numbered sections (serif `01`/`02` in a terracotta left gutter via a CSS counter, moved
+above the title under 560px) with highlight tiles (`--surface-2`, auto-fill 15rem) → tips in a soft sea panel
+with SVG check marks → site vacations as rows (3px terracotta left border, serif capitalized name, mono
+dates, serif terracotta price; dates drop below under 560px) or an italic empty line → gold-tinted notice.
+While a new answer loads there is no loading line: the TSX sets `disabled` + `aria-busy` on the button, its label
+turns transparent (keeping the width) with a white `spin` ring on top, and the old answer fades to 40%.
 
 ### Recurring page pattern: admin dashboards (`LikeAnalytics`)
 Left-aligned column at `min(100%, 960px)`: sea kicker "Admin · Insights" (`::before`) → serif headline →
@@ -136,6 +149,14 @@ conditional error spans never shift the layout. The two dates sit side by side a
 gets a "$" inside the field. The cover image is a 3:2 preview box (dashed "No image selected" state when
 `:empty`, the same crop as VacCard) with a separate outline "Select Image" label-button under it. Full-width
 primary submit. The two CSS files are copies with the root class, accent and headline swapped: keep them in sync.
+
+### Recurring pattern: filter tabs (`VacList`)
+A segmented control on the grid's first row (`grid-column: 1 / -1`, `order: -1`), left-aligned: a white track (1px
+`--border`, `--shadow-sm`, 0.3rem padding) holding quiet text buttons (transparent, `--text-muted`, 0.875rem/600,
+no lift on hover, `--surface-2` hover fill). The selected one is marked by `aria-pressed="true"` in the TSX and
+is solid ink (`--text` fill, `--surface-solid` text), the same "current" look as the pager. All options always
+render in a fixed order. Under 560px the track becomes a full-width 2 × 2 grid. When a filter leaves no cards,
+the empty state says "No vacations match this filter." (selected button isn't the first one).
 
 ### Recurring pattern: pagination (`VacList`, react-paginate)
 The `ul.pagination` spans the full grid width under the cards (`grid-column: 1 / -1`), centered, with a
@@ -173,6 +194,16 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 - A **numeric** `height` on `ResponsiveContainer` is used as is: CSS `min-height` grows the box but not the chart.
 - **A library that always renders a wrapper breaks `:empty`.** react-paginate renders its `<ul>` even with
   0 pages, so VacList's empty state matches `.VacList:not(:has(> .VacCard, > span))` instead of `:empty`.
+- **An entrance animation with `both` fill pins its properties.** `rise`/`fade-up` end on `opacity: 1`
+  and keep it, so a later `opacity: 0.4` rule does nothing. Dim with `filter: opacity()` instead.
+- **Scroll-driven animations and `overflow: hidden`.** `overflow: hidden` makes an element a scroll container,
+  so `animation-timeline: view()` on a child tracks that box (which never scrolls) and sits at 50%. Put a named
+  `view-timeline-name` on the clipping element itself, animate children along it, and clip with `overflow: clip`.
+- **Fixed-photo ("window") parallax.** A `position: fixed` child is clipped by an ancestor's `clip-path` but not by
+  its `overflow`, so `clip-path: inset(0 round …)` turns a box into a window onto a pinned photo (it also cuts off
+  the box's own `box-shadow`). Any ancestor with a `transform`, `filter` or a filled transform animation (the global
+  `main > div { animation: page-in }`) becomes the fixed child's containing block and breaks it, which is why
+  `.Home` overrides its entrance with an opacity-only `fade-in`.
 - **Grid with conditional children:** give every child an explicit `grid-row` and set `row-gap: 0` (spacing
   goes in margins). Empty implicit rows then collapse to 0, so one row numbering works whether or not an
   error span is rendered, and a breakpoint can move items into rows that are empty on desktop.
@@ -186,12 +217,13 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 | index.css (design system) | Designed | Coastal Editorial |
 | Layout, Header, Menu, Copyrights | Designed | Frosted ivory bar, 2px hairline on top, text nav with terracotta underline on the active link, ink footer with terracotta top rule |
 | Login, Register, LogoutBtn | Designed | White auth cards with a colored top hairline (terracotta / sea) |
-| Home | Designed | Left-aligned editorial hero, arch-window art on the right (hidden under 860px), one primary CTA plus a text-link Login |
-| About, Page404 | Designed | Letter card / large italic serif 404 |
-| VacationPage, VacList, VacCard | Designed | Full-bleed destination photo on top of each card, cropped to 3:2 (`object-fit: cover`) so every card matches. The sun/sea motif is the photo's loading / broken-image fallback. Rows of cards are equal height with the buttons pinned to the bottom. Pagination (react-paginate) under the grid, see section 4. Three TSX requests in section 6. |
+| Home | Designed | Parallax photo hero on top (`assets/paralax.jpg` in a rounded band, white serif "Vacation Tracker" centered over an ink scrim, "Sun · Sea · Zero worries" under it; the photo is `position: fixed` and clipped by the band's `clip-path`, so it stays still while the band scrolls over it; the title fades out along a named view timeline). Below it the intro card: left-aligned editorial text, arch-window art on the right (hidden under 860px), one primary CTA plus a text-link Login. |
+| About | Designed | Real content (owner-approved TSX): framed portrait (`assets/me.jpeg`, 4:5, max 200px wide, 150px on phones, offset 1px outline) beside a serif intro with badge tags; a grid of six numbered white feature cards; an ink "Built with" band with three label/value columns. Stacks under 720px. |
+| Page404 | Designed | Large italic serif 404 |
+| VacationPage, VacList, VacCard | Designed | Full-bleed destination photo on top of each card, cropped to 3:2 (`object-fit: cover`) so every card matches. The sun/sea motif is the photo's loading / broken-image fallback. Rows of cards are equal height with the buttons pinned to the bottom. Filter tabs above the grid and pagination (react-paginate) under it, see section 4. Three TSX requests in section 6. |
 | Spinner | Designed | GIF in a thin terracotta ring |
 | AskMcpPage | Designed | Reference for the AI-page pattern |
-| AiRecommendationPage | Designed (form + loading) | Search card with an SVG-pin suggestions dropdown (shown on focus). The result isn't rendered by the TSX yet, see section 6. |
+| AiRecommendationPage, AiCompletion | Designed | Search card with an SVG-pin suggestions dropdown (open only while the input is focused and nothing is loading). The answer is a structured result card, see section 4. One TSX request in section 6. |
 | LikeAnalytics (admin) | Designed | Reference for the admin-dashboard pattern: terracotta 20px bars in a white chart card, ♥ tooltip, italic empty state. Two TSX requests in section 6. |
 | AddVacationPage (admin) | Designed | Reference for the admin-form pattern (terracotta accent). One TSX request in section 6. |
 | UpdateVacation (admin) | Designed | Same layout as AddVacationPage with a sea accent; the preview box shows the current photo. |
@@ -200,12 +232,11 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 
 ## 6. Pending TSX requests (need the owner's permission)
 
-- **AiRecommendationPage: render the result.** `completion` (a `VacationRecommendation`: title, summary,
-  sections with highlights, tips, matching vacations, notice) is fetched but never rendered, so nothing
-  shows after loading. Once markup exists, style it as a reply card in the AI-page pattern.
 - **AiRecommendationPage: suggestion details (minor).** Duplicate destinations show twice (one `<li>` per
-  vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it), and
-  picking one doesn't clear `destinations` (CSS already hides the list on blur, so this is cosmetic).
+  vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it). Neither
+  picking one nor submitting clears `destinations`. CSS hides the list unless the input is focused and
+  nothing is loading, but after submitting **with Enter** the input keeps focus, so the list reopens when
+  the answer arrives. `setDestinations([])` in `send` and in the `<li>` click fixes it.
 - **LikeAnalytics: load the vacations.** The page only reads `state.vacation`, which gets filled when
   `VacList` mounts. Opening `/admin/likes` directly (or refreshing it) shows an empty chart. Calling
   `vacationService.getAllVacations()` in a `useEffect`, as `VacList` does, would fix it. Until then, CSS
@@ -285,3 +316,35 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   it's a centered pager under a hairline with quiet squares, a solid-ink current page and arrow prev/next.
   Fixed the VacList empty state, which the always-rendered `<ul>` had broken. Added the pagination pattern
   and a gotcha (section 4) and a VacList TSX request (section 6).
+- **2026-10-11:** AiRecommendationPage (CSS only). The suggestions list stayed open after clicking the
+  button (it showed on form `:focus-within`, and the button keeps focus); it now opens only while the input
+  is focused and nothing is loading. Styled the new `AiCompletion` result card (the owner added the
+  component) and the loading state. Added the structured-answer pattern and an animation gotcha
+  (section 4); removed the "render the result" request and updated the suggestions request (section 6).
+- **2026-10-11:** At the owner's request (TSX change approved): AiRecommendationPage dropped the "AI IS
+  THINKING" `<span>`; the button gets `disabled={loading}` and `aria-busy={loading}`, so a second request
+  can't be sent. CSS turns the busy button's label into a white spinning ring at full color. The dropdown
+  and result-dimming rules now key off `button[aria-busy="true"]` instead of the span.
+- **2026-10-11:** Same loading change on AskMcpPage, at the owner's request (TSX change approved): removed
+  the "AI IS CALCULATING" `<p>`, the Send button gets `disabled={loading}` + `aria-busy={loading}`, and CSS
+  shows a spinner in the button and fades the previous answer. Both AI pages now share this loading pattern.
+- **2026-10-11:** VacList filter tabs, with the owner's OK for a TSX change: the 4 filter buttons now sit in a
+  `div.filters`, always render in a fixed order (All, Liked, Active, Not started) with `aria-pressed`, and
+  switching filters resets to page 1 (a shorter list used to leave you on an empty page). CSS: segmented
+  control with a solid-ink selected tab, 2 × 2 on phones, and a "No vacations match this filter." empty
+  state. Added the filter-tabs pattern (section 4).
+- **2026-10-11:** Built the About page at the owner's request (TSX + CSS): developer intro with the owner's
+  photo (`src/assets/me.jpeg`), a "What Vacation Tracker does" feature grid and a "Built with" ink band.
+  The old single-`<p>` letter-card CSS was removed.
+- **2026-10-11:** Home parallax hero, at the owner's request (TSX + CSS): the TSX adds `section.home-hero`
+  (the `assets/paralax.jpg` photo and an h1 "Vacation Tracker") and wraps the old content in
+  `div.home-intro`, so every old Home selector moved under `.Home > .home-intro`. The photo slides on a named
+  view timeline (`parallax-photo`), the title rises and fades as the band leaves (`parallax-title`); both
+  keyframes are in `index.css`. Still photo without scroll-timeline support or with reduced motion. Added
+  a scroll-timeline gotcha (section 4).
+- **2026-10-11:** The owner found the first parallax too subtle (a ±10% slide inside the band). Home hero is
+  now classic window parallax: the photo is `position: fixed` (full viewport, `100lvh`), the band clips it with
+  `clip-path`, so the page scrolls over a still photo. `.Home` fades in with opacity only (a transform entrance
+  would break the fixed photo). Removed the `parallax-photo` keyframes; the band lost its shadow (clip-path
+  cuts it). Added a gotcha (section 4).
+- **2026-10-11:** About: the owner found the portrait too big; halved it (about 400px → max 200px wide, 150px on phones).

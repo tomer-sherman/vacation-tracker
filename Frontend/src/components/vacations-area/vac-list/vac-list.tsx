@@ -10,10 +10,15 @@ import { Role, UserModel } from "../../../models/user-models";
 import { useVacations } from "../use-vacations/use-vacations";
 import ReactPaginateImport from "react-paginate";
 import { usePagination } from "./use-paginate";
+import { VacationModel } from "../../../models/vacation-model";
+import { VacationFilter } from "../../../models/enums";
+import { useState } from "react";
+import { filterVacations } from "../../../utils/vacation-filter";
 
 const ReactPaginate =
     (ReactPaginateImport as unknown as { default: typeof ReactPaginateImport }).default
     ?? ReactPaginateImport;
+
 
 
 export function VacList() {
@@ -24,8 +29,21 @@ export function VacList() {
     const isAdmin = user?.role === Role.Admin;
     const navigate = useNavigate();
 
-    const { page, setPage, pageCount, visible } = usePagination(vacations, 9);
+    const [filter, setFilter] = useState<VacationFilter>(VacationFilter.All);
+    const filteredVacations = handleFilter(vacations, filter);
 
+    const { page, setPage, pageCount, visible } = usePagination(filteredVacations, 9);
+
+
+    function handleFilter(vacations: VacationModel[], filter: VacationFilter) {
+        return filterVacations(vacations, filter);
+    }
+
+    // Back to the first page, otherwise a shorter filtered list can leave you on an empty page.
+    function changeFilter(newFilter: VacationFilter) {
+        setFilter(newFilter);
+        setPage(0);
+    }
 
     async function handleLike(vacationId: string) {
 
@@ -42,8 +60,6 @@ export function VacList() {
 
         try {
             await vacationService.unLikeVacation(vacationId);
-
-            // same thing as like but ternary.
 
 
         } catch (err: any) {
@@ -73,24 +89,36 @@ export function VacList() {
 
 
 
+
+
     return (
         <div className="VacList">
 
+            {/* All 4 always render in the same order; aria-pressed marks the selected one (CSS styles it) */}
+            <div className="filters">
+                <button aria-pressed={filter === VacationFilter.All} onClick={() => changeFilter(VacationFilter.All)}>All Vacations</button>
+                <button aria-pressed={filter === VacationFilter.Liked} onClick={() => changeFilter(VacationFilter.Liked)}>Liked Vacations</button>
+                <button aria-pressed={filter === VacationFilter.Active} onClick={() => changeFilter(VacationFilter.Active)}>Active Vacations</button>
+                <button aria-pressed={filter === VacationFilter.NotStarted} onClick={() => changeFilter(VacationFilter.NotStarted)}>Not Started Vacations</button>
+            </div>
 
-            {visible?.map(v => (
 
-                <VacCard
-                    key={v._id}
-                    vacacation={v}
-                    isAdmin={isAdmin}
-                    likeBtn={handleLike}
-                    unLikeBtn={handleUnLike}
-                    editBtn={handleEdit}
-                    deleteBtn={handleDelete}
+            {
+                visible?.map(v => (
 
-                />
+                    <VacCard
+                        key={v._id}
+                        vacacation={v}
+                        isAdmin={isAdmin}
+                        likeBtn={handleLike}
+                        unLikeBtn={handleUnLike}
+                        editBtn={handleEdit}
+                        deleteBtn={handleDelete}
 
-            ))}
+                    />
+
+                ))
+            }
 
             <ReactPaginate
                 pageCount={pageCount}
@@ -104,6 +132,6 @@ export function VacList() {
 
             {isLoading && <span>Loading vacations...</span>}
 
-        </div>
+        </div >
     );
 }

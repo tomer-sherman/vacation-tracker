@@ -1,5 +1,5 @@
 import axios from "axios";
-import { VacationFormModel, VacationModel } from "../models/vacation-model";
+import { VacationModel } from "../models/vacation-model";
 import { appConfig } from "../utils/app-config";
 import { vacationSlice } from "../redux/vacation-slice";
 import { store } from "../redux/store";
@@ -51,7 +51,7 @@ class VacationService {
 
 
     // Admin services
-    public async addVacation(vacation: VacationFormModel): Promise<VacationModel> {
+    public async addVacation(vacation: VacationModel): Promise<VacationModel> {
 
         const vacationFormData = formUtil.toFormData(vacation);
         const response = await axios.post<VacationModel>(appConfig.vacationsUrl, vacationFormData);
@@ -63,7 +63,7 @@ class VacationService {
         return dbVacation;
     }
 
-    public async updateVacation(vacation: VacationFormModel, paramsId: string): Promise<VacationModel> {
+    public async updateVacation(vacation: VacationModel, paramsId: string): Promise<VacationModel> {
 
         const vacationFormData = formUtil.toFormData(vacation);
         const response = await axios.put<VacationModel>(appConfig.vacationsUrl + paramsId, vacationFormData);
@@ -81,6 +81,8 @@ class VacationService {
         const action = vacationSlice.actions.removeVacation(vacationId);
         store.dispatch(action);
     }
+
+    
 
 }
 

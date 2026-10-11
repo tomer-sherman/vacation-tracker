@@ -1,8 +1,8 @@
-import { VacationFormModel } from "../models/vacation-model";
+import { VacationModel } from "../models/vacation-model";
 
 class FormUtil {
 
-    public toFormData(vacation: VacationFormModel): FormData {
+    public toFormData(vacation: VacationModel): FormData {
 
         const vacationFormData = new FormData();
 

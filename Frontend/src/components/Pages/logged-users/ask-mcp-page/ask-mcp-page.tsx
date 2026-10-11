@@ -53,12 +53,12 @@ export function AskMcpPage() {
                     required: "This field must have something if you want to send dumb ass",
                 })} ></input>
                 <span className="error">{errors.text?.message}</span>
-                <button>FEED ME WITH DATA!!!</button>
+
+                {/* disabled blocks clicks and Enter while a request is running, aria-busy tells CSS to show the spinner */}
+                <button disabled={loading} aria-busy={loading}>Send</button>
             </form>
 
             <p>{completion}</p>
-
-            {loading && <p> AI IS CALCULATING AN ANSWER</p>}
 
 
         </div >

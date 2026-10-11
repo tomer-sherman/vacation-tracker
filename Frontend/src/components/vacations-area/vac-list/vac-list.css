@@ -2,6 +2,9 @@
    VacList — responsive grid of VacCards
    ----------------------------------------------------------------------------
    DOM (children of the grid, in order):
+       div.filters > button × 4     All / Liked / Active / Not started, fixed
+                                    order; the selected one has
+                                    aria-pressed="true"
        .VacCard × up to 9           the current page of vacations
        ul.pagination                react-paginate (always rendered, even with
                                     0 pages):
@@ -11,7 +14,8 @@
            li.next[.disabled] > a
        span                         "Loading vacations..." (while loading)
 
-   Layout: the pager spans the full grid width under the cards, centered, with
+   Layout: the filters are a segmented control on the first grid row (2 × 2
+   on phones). The pager spans the full grid width under the cards, centered, with
    a hairline above it. It hides itself when there is only one page (prev, 1,
    next = 3 items). Also styles the loading line and the empty state (no cards
    and not loading).
@@ -48,14 +52,79 @@
     animation: spin 0.8s linear infinite;
 }
 
-/* Nothing loaded and nothing loading. The pager <ul> is always in the DOM,
-   so :empty can't be used; match "no cards and no loading line" instead. */
-.VacList:not(:has(> .VacCard, > span)) {
-    display: block;
+/* --- Filters (segmented control) ------------------------------------------ */
+
+/* A white track spanning the first grid row; the buttons inside are quiet
+   text tabs and the selected one (aria-pressed) is solid ink, the same
+   "current" look as the pager. Always 4 buttons in a fixed order. */
+.VacList > .filters {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: flex;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.3rem;
+    border-radius: calc(var(--radius) + 0.3rem);
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+    animation: fade-in var(--normal) var(--ease) both;
+}
+
+.VacList > .filters > button {
+    padding: 0.6rem 1.05rem;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.VacList > .filters > button:hover {
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: none;
+    transform: none;
+}
+
+.VacList > .filters > button:focus-visible {
+    box-shadow: var(--ring);
+}
+
+.VacList > .filters > button[aria-pressed="true"] {
+    background: var(--text);
+    color: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+    cursor: default;
+}
+
+/* Phones: a 2 × 2 grid of equal tabs instead of one long row */
+@media (max-width: 560px) {
+    .VacList > .filters {
+        justify-self: stretch;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .VacList > .filters > button {
+        padding: 0.6rem 0.5rem;
+        white-space: normal;
+        text-align: center;
+    }
+}
+
+/* Nothing to show and nothing loading. The pager <ul> is always in the DOM,
+   so :empty can't be used; match "no cards and no loading line" instead.
+   The message is a full-width grid item; the filters stay above it so the
+   user can switch back. */
+.VacList > .filters {
+    order: -1;
 }
 
 .VacList:not(:has(> .VacCard, > span))::before {
     content: "No vacations yet. Check back soon.";
+    grid-column: 1 / -1;
     display: block;
     text-align: center;
     font-family: var(--font-serif);
@@ -65,6 +134,11 @@
     padding: 3.5rem 1.5rem;
     border-radius: var(--radius-lg);
     border: 1px dashed var(--border-strong);
+}
+
+/* Any filter other than the first ("All") is selected: say so instead */
+.VacList:not(:has(> .VacCard, > span)):has(> .filters > button:not(:first-child)[aria-pressed="true"])::before {
+    content: "No vacations match this filter.";
 }
 
 

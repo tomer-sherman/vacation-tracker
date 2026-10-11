@@ -2,7 +2,7 @@
    AiRecommendationPage — AI travel guide
    ----------------------------------------------------------------------------
    DOM order: <label> prompt, <form> (input, ul.suggestions only while there
-   are matches, button), <span> "thinking" (only while loading).
+   are matches, button), article.AiCompletion (once there is an answer).
 
    Layout: one centered column, same family as AskMcpPage.
        ::before        kicker
@@ -14,12 +14,18 @@
                        positioned inside the input's grid area (an abs-pos
                        grid child uses its grid area as containing block),
                        so it matches the input's width without a wrapper.
-       span            loading line
 
-   Dropdown visibility: shown only while the form has focus. Clicking an
-   <li> blurs the input, so hiding is delayed a beat (and held while the
-   list is :active) to let the click land. After a pick the input is no
-   longer focused, so the list closes by itself.
+       article.AiCompletion   the AI's answer (AiCompletion component), see
+                       the "Result card" section below for its own map.
+
+   Dropdown visibility: shown only while the INPUT has focus and nothing is
+   loading. Clicking an <li> blurs the input, so hiding is delayed a beat
+   (and held while the list is :active) to let the click land. After a pick
+   the input is no longer focused, so the list closes by itself.
+
+   Loading: the TSX puts disabled + aria-busy="true" on the button (so no
+   second request can be sent). The button's label turns into a spinning
+   ring, the dropdown stays shut, and an old result fades back.
    ============================================================================ */
 
 .AiRecommendationPage {
@@ -139,7 +145,10 @@
         visibility 0s linear 250ms;
 }
 
-.AiRecommendationPage form:focus-within .suggestions,
+/* Open only while the INPUT is focused (not the whole form: clicking the
+   button focuses it and used to leave the list hanging over the result),
+   and never while the AI is loading (Enter keeps the input focused). */
+.AiRecommendationPage form:not(:has(button[aria-busy="true"])):has(input:focus) .suggestions,
 .AiRecommendationPage .suggestions:active {
     visibility: visible;
     opacity: 1;
@@ -188,37 +197,339 @@
     background: var(--primary-soft);
 }
 
-/* ---- Loading line --------------------------------------------------------- */
+/* ---- Loading: the button becomes the spinner ------------------------------ */
 
-.AiRecommendationPage > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    animation: fade-in var(--normal) var(--ease) both;
+/* The TSX sets disabled + aria-busy while waiting. The label goes transparent
+   (it still holds the button's width, so nothing jumps) and a white ring
+   spins in its place. Full color instead of the global 50% disabled fade. */
+.AiRecommendationPage form button[aria-busy="true"] {
+    position: relative;
+    opacity: 1;
+    color: transparent;
+    cursor: progress;
+    box-shadow: none;
+    transform: none;
 }
 
-.AiRecommendationPage > span::before {
+.AiRecommendationPage form button[aria-busy="true"]::after {
     content: "";
-    flex: none;
-    width: 1rem;
-    height: 1rem;
+    position: absolute;
+    inset: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: auto;
     border-radius: 50%;
-    border: 2px solid var(--border-strong);
-    border-top-color: var(--coral);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
     animation: spin 0.8s linear infinite;
 }
 
-/* The button quietly pulses while the AI is working */
-.AiRecommendationPage:has(> span) form button {
-    animation: pulse-glow 1.6s ease-in-out infinite;
+/* ---- Result card (AiCompletion) ------------------------------------------- */
+/*
+   article.AiCompletion
+       header.ai-header        span.ai-destination (kicker), h2.ai-title,
+                               p.ai-summary (lead paragraph)
+       div.ai-sections         section.ai-section × n, numbered 01, 02 …
+                                   h3, p, ul.ai-highlights > li (strong, span)
+                                   highlights are small tiles, 2 per row
+       section.ai-tips         soft panel: h3 + ul of tips with sea ticks
+       section.ai-matching     h3 + ul.ai-vacations > li rows
+                                   (destination · mono dates · serif price)
+                               or p.ai-no-match (italic empty state)
+       footer.ai-notice        gold-tinted note (only when not on the site)
+*/
+
+.AiRecommendationPage .AiCompletion {
+    order: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 4vw, 2.25rem);
+    padding: clamp(1.4rem, 4vw, 2.25rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ocean);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    overflow-wrap: anywhere;
+    counter-reset: ai-section;
+    animation: rise var(--slow) var(--ease) both;
+    transition: filter var(--normal) var(--ease);
+}
+
+/* An old answer steps back while a new one is on its way */
+.AiRecommendationPage:has(button[aria-busy="true"]) .AiCompletion {
+    /* filter, not opacity: the `rise` entrance animation pins opacity at 1 */
+    filter: opacity(0.4);
+    pointer-events: none;
+}
+
+/* Shared sub-heading look (sections, tips, matches) */
+.AiRecommendationPage .AiCompletion h3 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.AiRecommendationPage .AiCompletion ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.AiRecommendationPage .AiCompletion li {
+    margin: 0;
+}
+
+/* -- Header -- */
+
+.AiRecommendationPage .ai-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding-bottom: clamp(1.4rem, 3vw, 1.75rem);
+    border-bottom: 1px solid var(--border);
+}
+
+.AiRecommendationPage .ai-destination {
+    padding-left: 2.1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    background: linear-gradient(var(--ocean), var(--ocean)) left center / 1.5rem 1px no-repeat;
+}
+
+.AiRecommendationPage .ai-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+}
+
+.AiRecommendationPage .ai-summary {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+/* -- Sections -- */
+
+.AiRecommendationPage .ai-sections {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.AiRecommendationPage .ai-section {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+}
+
+/* Big serif number in the left gutter: 01, 02 … */
+.AiRecommendationPage .ai-section::before {
+    counter-increment: ai-section;
+    content: counter(ai-section, decimal-leading-zero);
+    grid-row: 1 / span 3;
+    grid-column: 1;
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--coral);
+    opacity: 0.85;
+}
+
+.AiRecommendationPage .ai-section > * {
+    grid-column: 2;
+}
+
+.AiRecommendationPage .ai-section > p {
+    margin: 0;
+    max-width: 62ch;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+.AiRecommendationPage ul.ai-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+.AiRecommendationPage .ai-highlight {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+.AiRecommendationPage .ai-highlight strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.AiRecommendationPage .ai-highlight span {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+/* -- Tips -- */
+
+.AiRecommendationPage .ai-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: clamp(1.1rem, 3vw, 1.4rem);
+    border-radius: var(--radius-lg);
+    background: var(--accent-soft);
+}
+
+.AiRecommendationPage .ai-tips ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.AiRecommendationPage .ai-tips li {
+    display: flex;
+    gap: 0.65rem;
+    line-height: 1.6;
+}
+
+/* Check mark, masked SVG in sea */
+.AiRecommendationPage .ai-tips li::before {
+    content: "";
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.22em;
+    background: var(--ocean);
+    -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23000%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M20 6 9 17l-5-5%27/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23000%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M20 6 9 17l-5-5%27/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* -- Matching vacations -- */
+
+.AiRecommendationPage .ai-matching {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.AiRecommendationPage .ai-vacations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.AiRecommendationPage .ai-vacation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: baseline;
+    column-gap: 1.25rem;
+    row-gap: 0.15rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--coral);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+}
+
+.AiRecommendationPage .ai-vacation-destination {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.AiRecommendationPage .ai-vacation-dates {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.AiRecommendationPage .ai-vacation-price {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--primary-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.AiRecommendationPage .ai-no-match {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* -- Notice (only when the site doesn't sell this destination) -- */
+
+.AiRecommendationPage .ai-notice {
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--warning-soft);
+    border-left: 3px solid var(--sun);
+    background: var(--warning-soft);
+}
+
+.AiRecommendationPage .ai-notice small {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text);
 }
 
 /* ---- Mobile: stack the search card --------------------------------------- */
 
 @media (max-width: 560px) {
+    /* Section numbers move above the title instead of a side gutter */
+    .AiRecommendationPage .ai-section {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .AiRecommendationPage .ai-section::before {
+        grid-row: auto;
+        font-size: 1.2rem;
+    }
+
+    .AiRecommendationPage .ai-section > * {
+        grid-column: 1;
+    }
+
+    /* Vacation row: destination + price on top, dates underneath */
+    .AiRecommendationPage .ai-vacation {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .AiRecommendationPage .ai-vacation-dates {
+        grid-row: 2;
+        grid-column: 1 / -1;
+    }
+
     .AiRecommendationPage form {
         grid-template-columns: 1fr;
     }

@@ -1,15 +1,18 @@
-type Highlight = {
+// Keep in sync with Backend/src/models/ai-recommendation-model.ts
+// (the backend turns the offTopic answer into a 400, so the frontend only ever receives AiRecommendationModel).
+
+export type Highlight = {
     name: string;
     description: string;
 };
 
-type Section = {
+export type Section = {
     title: string;
     description: string;
     highlights: Highlight[];
 };
 
-type MatchingVacation = {
+export type MatchingVacation = {
     _id: string;
     destination: string;
     startAt: string;
@@ -17,7 +20,7 @@ type MatchingVacation = {
     price: number;
 };
 
-export type VacationRecommendation = {
+export type AiRecommendationModel = {
     destination: string;
     title: string;
     summary: string;

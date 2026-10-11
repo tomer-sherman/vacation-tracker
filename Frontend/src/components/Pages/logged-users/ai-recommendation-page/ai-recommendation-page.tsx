@@ -3,15 +3,16 @@ import "./ai-recommendation-page.css";
 import { ChangeEvent, useState } from "react";
 import { notify } from "../../../../utils/notify";
 import { aiService } from "../../../../services/ai-service";
-import { VacationRecommendation } from "../../../../models/ai-recommendation-model";
+import { AiRecommendationModel } from "../../../../models/ai-recommendation-model";
 import { useVacations } from "../../../vacations-area/use-vacations/use-vacations";
+import { AiCompletion } from "./ai-completion";
 
 
 export function AiRecommendationPage() {
 
     const { vacations } = useVacations();
     const [destinations, setDestinations] = useState<string[] | undefined>([]);
-    const [completion, setCompletion] = useState<VacationRecommendation>();
+    const [completion, setCompletion] = useState<AiRecommendationModel>();
     const [loading, setLoading] = useState<boolean>(false);
 
 
@@ -62,18 +63,13 @@ export function AiRecommendationPage() {
                         ))}
                     </ul>
                 )}
-                <button>Get Ai Recomendation.</button>
+                
+                {/* disabled blocks clicks and Enter while a request is running, aria-busy tells CSS to show the spinner */}
+                <button disabled={loading} aria-busy={loading}>Get Ai Recomendation.</button>
 
             </form>
 
-            {completion &&
-                <div>
-                    Ai info
-                </div>
-
-            }
-
-            {loading && <span> AI IS THINKING!!!!!!</span>}
+            {completion && <AiCompletion {...completion} />}
 
 
         </div>

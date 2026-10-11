@@ -1,79 +1,269 @@
 /* ============================================================================
    About page
    ----------------------------------------------------------------------------
-   Long-form layout for when real content lands. Until then, the single <p>
-   is set as a letter card: serif italic text, a small
-   kicker above it and a quiet "Par avion" mark in the corner.
+   DOM order:
+       section.about-me        img (portrait), div.about-intro (span.about-kicker,
+                               h1, p, ul.about-tags > li × 3)
+       section.about-system    span.about-kicker, h2, p,
+                               ul.about-features > li × 6 (h3, p)
+       section.about-stack     span.about-kicker, dl > div × 3 (dt, dd)
+
+   Layout: one centered column at min(100%, 960px).
+       about-me      editorial intro: framed portrait left, text right
+                     (stacked, portrait on top, under 720px)
+       about-system  heading + a grid of white feature cards numbered 01–06
+       about-stack   ink band with three label / value columns (stacked
+                     under 720px)
    ============================================================================ */
 
 .About {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    max-width: 72ch;
+    gap: clamp(3rem, 7vw, 4.5rem);
+    width: min(100%, 960px);
+    margin: clamp(0.5rem, 3vh, 2rem) auto clamp(1.5rem, 4vh, 3rem);
 }
 
-.About h2 {
-    margin-bottom: 0.25rem;
-}
-
-.About h3 {
-    margin-top: 1rem;
-}
-
-.About p {
-    color: var(--text-muted);
-    line-height: 1.75;
-}
-
-/* ---- Letter mode (only while the page has a single <p>) ------------------ */
-.About > p:only-child {
-    position: relative;
-    width: min(100%, 640px);
-    min-height: 280px;
-    margin: 1rem auto;
-    padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 5vw, 3rem);
-    color: var(--text);
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
-    line-height: 1.6;
-    background: var(--surface-solid);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    animation: rise var(--slow) var(--ease) both;
-}
-
-/* Kicker */
-.About > p:only-child::before {
-    content: "Greetings from";
+/* Shared kicker */
+.About .about-kicker {
     display: block;
-    font-family: var(--font-sans);
-    font-style: normal;
+    padding-left: 2.1rem;
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--coral);
-    margin-bottom: 0.5rem;
+    background: linear-gradient(var(--coral), var(--coral)) left center / 1.5rem 1px no-repeat;
 }
 
-/* Corner mark */
-.About > p:only-child::after {
-    content: "Par avion";
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.45rem 0.6rem;
-    font-family: var(--font-sans);
-    font-style: normal;
-    font-size: 0.6rem;
+.About ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.About li {
+    margin: 0;
+}
+
+/* ---- The developer -------------------------------------------------------- */
+
+.About .about-me {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 4rem);
+    animation: fade-up 0.6s var(--ease) both;
+}
+
+/* Portrait in a thin offset frame */
+.About .about-me img {
+    display: block;
+    width: clamp(160px, 18vw, 200px); /* was ~400px, halved */
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center 30%;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    outline: 1px solid var(--border-strong);
+    outline-offset: 6px;
+    background: var(--sand);
+}
+
+.About .about-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.About .about-intro h1 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: clamp(2rem, 4.6vw, 3rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
+}
+
+.About .about-intro p {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+}
+
+.About .about-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.About .about-tags li {
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
+    font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    line-height: 1;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ---- The system ----------------------------------------------------------- */
+
+.About .about-system {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding-top: clamp(2.5rem, 6vw, 3.5rem);
+    border-top: 1px solid var(--border);
+    counter-reset: about-feature;
+    animation: fade-up 0.6s var(--ease) 0.1s both;
+}
+
+.About .about-system > .about-kicker {
     color: var(--ocean);
-    border: 1px solid rgba(29, 95, 119, 0.35);
-    border-radius: 4px;
+    background-image: linear-gradient(var(--ocean), var(--ocean));
+}
+
+.About .about-system h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.About .about-system > p {
+    margin: 0;
+    max-width: 60ch;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+.About .about-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.About .about-features li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.4rem 1.4rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-sm);
+    transition:
+        transform var(--fast) var(--ease),
+        box-shadow var(--normal) var(--ease);
+}
+
+.About .about-features li:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* 01, 02 … in terracotta serif */
+.About .about-features li::before {
+    counter-increment: about-feature;
+    content: counter(about-feature, decimal-leading-zero);
+    margin-bottom: 0.35rem;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--coral);
+}
+
+.About .about-features h3 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.About .about-features p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+/* ---- The stack (ink band) ------------------------------------------------- */
+
+.About .about-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+    border-radius: var(--radius-xl);
+    background: var(--ink);
+    box-shadow: var(--shadow-lg);
+    animation: fade-up 0.6s var(--ease) 0.2s both;
+}
+
+.About .about-stack > .about-kicker {
+    color: var(--sun);
+    background-image: linear-gradient(var(--sun), var(--sun));
+}
+
+.About .about-stack dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem clamp(1.5rem, 4vw, 2.5rem);
+    margin: 0;
+}
+
+.About .about-stack dl > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.About .about-stack dt {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.About .about-stack dd {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---- Smaller screens ------------------------------------------------------ */
+
+@media (max-width: 720px) {
+    .About .about-me {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .About .about-me img {
+        width: 150px;
+    }
+
+    .About .about-stack dl {
+        grid-template-columns: 1fr;
+    }
 }

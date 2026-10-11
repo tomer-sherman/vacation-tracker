@@ -2,7 +2,11 @@
    AskMcpPage — AI concierge
    ----------------------------------------------------------------------------
    DOM order: <h1> headline, <form> (label, input, span.error, button),
-   <p> answer, <p> "calculating" (only while loading).
+   <p> answer.
+
+   Loading: the TSX puts disabled + aria-busy="true" on the button (so no
+   second request can be sent); its label turns into a spinning ring and
+   the old answer fades back.
 
    Layout: one centered column. The form is a prompt card: label on top,
    input + button side by side, error message underneath (grid + `order`,
@@ -137,27 +141,41 @@
     color: var(--text-faint);
 }
 
-/* ---- Loading line --------------------------------------------------------- */
+/* ---- Loading: the button becomes the spinner ------------------------------ */
 
-.AskMcpPage > p:nth-of-type(2) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    animation: fade-in var(--normal) var(--ease) both;
+/* The TSX sets disabled + aria-busy while waiting. The label goes transparent
+   (it still holds the button's width, so nothing jumps) and a white ring
+   spins in its place. Full color instead of the global 50% disabled fade. */
+.AskMcpPage form button[aria-busy="true"] {
+    position: relative;
+    opacity: 1;
+    color: transparent;
+    cursor: progress;
+    box-shadow: none;
+    transform: none;
 }
 
-.AskMcpPage > p:nth-of-type(2)::before {
+.AskMcpPage form button[aria-busy="true"]::after {
     content: "";
-    flex: none;
-    width: 1rem;
-    height: 1rem;
+    position: absolute;
+    inset: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: auto;
     border-radius: 50%;
-    border: 2px solid var(--border-strong);
-    border-top-color: var(--ocean);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
     animation: spin 0.8s linear infinite;
+}
+
+/* An old answer steps back while a new one is on its way
+   (filter, not opacity: the `rise` entrance animation pins opacity at 1) */
+.AskMcpPage:has(button[aria-busy="true"]) > p:first-of-type {
+    filter: opacity(0.4);
+}
+
+.AskMcpPage > p:first-of-type {
+    transition: filter var(--normal) var(--ease);
 }
 
 /* ---- Mobile: stack the prompt card --------------------------------------- */

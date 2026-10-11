@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import "./add-vacation-page.css";
-import { VacationFormModel, vacationValidation } from "../../../../models/vacation-model";
+import { VacationModel, vacationValidation } from "../../../../models/vacation-model";
 import { vacationService } from "../../../../services/vacation-service";
 import { notify } from "../../../../utils/notify";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { useVacations } from "../../../vacations-area/use-vacations/use-vacation
 export function AddVacationPage() {
     // Prevents strange duplications.
     useVacations();
-    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<VacationFormModel>();
+    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<VacationModel>();
     const navigate = useNavigate();
     const [preview, setPreview] = useState<string>();
 
@@ -24,7 +24,7 @@ export function AddVacationPage() {
         return () => URL.revokeObjectURL(url);
     }, [imageFiles]);
 
-    async function send(vacation: VacationFormModel) {
+    async function send(vacation: VacationModel) {
 
         vacation.image = (vacation.image as unknown as FileList)[0];
 
@@ -34,6 +34,7 @@ export function AddVacationPage() {
             .then(() => {
                 notify.success("Vacation added.");
                 reset();
+                navigate("/vacations")
             })
             .catch(err => notify.error(err));
 
@@ -65,7 +66,7 @@ export function AddVacationPage() {
                 <div className="imagePreview">{preview && <img src={preview} alt="Image preview" />}</div>
                 <label className="imageUploadButton">
                     Select Image
-                    <input type="file" accept="image/*" hidden {...register("image")} />
+                    <input type="file" accept="image/*" hidden {...register("image", { required: true })} />
                 </label>
 
                 <label>Price:</label>

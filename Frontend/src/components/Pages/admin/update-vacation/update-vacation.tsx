@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import "./update-vacation.css";
-import { VacationFormModel, vacationValidation } from "../../../../models/vacation-model";
+import { VacationModel, vacationValidation } from "../../../../models/vacation-model";
 import { vacationService } from "../../../../services/vacation-service";
 import { notify } from "../../../../utils/notify";
 import { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { appConfig } from "../../../../utils/app-config";
 
 export function UpdateVacation() {
-    const { register, handleSubmit, reset, setValues, watch, formState: { errors } } = useForm<VacationFormModel>();
+    const { register, handleSubmit, reset, setValues, watch, formState: { errors } } = useForm<VacationModel>();
     const navigate = useNavigate();
     const params = useParams();
     const _id = params._id;
@@ -58,7 +58,7 @@ export function UpdateVacation() {
 
 
 
-    async function send(vacation: VacationFormModel) {
+    async function send(vacation: VacationModel) {
 
         // Only if a new image comes, Then set the new image.
         if (vacation.image) vacation.image = (vacation.image as unknown as FileList)[0];
@@ -116,7 +116,7 @@ export function UpdateVacation() {
                 <button>Update vacation</button>
             </form>
 
-            <button onClick={()=> navigate("/vacations")}>Back</button>
+            <button onClick={() => navigate("/vacations")}>Back</button>
 
         </div>
     );

@@ -1,22 +1,20 @@
 export type VacationModel = {
     _id: string;
     destination: string;
+    description: string;
     startAt: string;
     finishAt: string;
     price: number;
+    image: File;
     imageId: string
     likeCount?: number;
     isLiked?: boolean;
 };
 
-export type VacationFormModel = {
-    destination: string;
-    description: string;
-    startAt: string;
-    finishAt: string;
-    image: File;
-    price: number;
-};
+export type LikedVacations = {
+    destination: string,
+    likeCount: number
+}
 
 // Mirrors Backend/src/models/vacation-model.ts (VacationSchema) so the client fails fast with the same messages.
 // Usage: <input {...register("destination", vacationValidation.destination)} />

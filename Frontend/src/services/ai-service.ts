@@ -1,7 +1,7 @@
 import axios from "axios";
 import { appConfig } from "../utils/app-config";
 import { Prompt } from "../components/Pages/logged-users/ask-mcp-page/ask-mcp-page";
-import { VacationRecommendation } from "../models/ai-recommendation-model";
+import { AiRecommendationModel } from "../models/ai-recommendation-model";
 
 class AiService {
 
@@ -14,9 +14,9 @@ class AiService {
         return completion;
     }
 
-    public async getAiRecommendation(prompt: Prompt): Promise<VacationRecommendation> {
+    public async getAiRecommendation(prompt: Prompt): Promise<AiRecommendationModel> {
 
-        const response = await axios.post<VacationRecommendation>(appConfig.aiRecommendationUrl, prompt);
+        const response = await axios.post<AiRecommendationModel>(appConfig.aiRecommendationUrl, prompt);
         const completion = response.data;
 
         return completion;

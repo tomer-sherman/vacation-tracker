@@ -15,6 +15,7 @@ class VacationService {
         const mongoUserId = new mongoose.Types.ObjectId(userId);
 
         const dbVacations = await VacationModel.aggregate<IVacationModel>([
+            { $sort: { startAt: 1 } },
             {
                 $project: {
                     // This fields will be sent the same way as mongo stores them.
