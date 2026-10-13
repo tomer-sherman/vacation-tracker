@@ -26,6 +26,7 @@ export function VacCard(props: VacProps) {
         <div className="VacCard">
 
             <p>{props.vacacation.destination}</p>
+            <p>{props.vacacation.description}</p>
             <p>{props.vacacation.startAt}</p>
             <p>{props.vacacation.finishAt}</p>
             <p>{props.vacacation.likeCount}</p>

@@ -220,7 +220,7 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 | Home | Designed | Parallax photo hero on top (`assets/paralax.jpg` in a rounded band, white serif "Vacation Tracker" centered over an ink scrim, "Sun · Sea · Zero worries" under it; the photo is `position: fixed` and clipped by the band's `clip-path`, so it stays still while the band scrolls over it; the title fades out along a named view timeline). Below it the intro card: left-aligned editorial text, arch-window art on the right (hidden under 860px), one primary CTA plus a text-link Login. |
 | About | Designed | Real content (owner-approved TSX): framed portrait (`assets/me.jpeg`, 4:5, max 200px wide, 150px on phones, offset 1px outline) beside a serif intro with badge tags; a grid of six numbered white feature cards; an ink "Built with" band with three label/value columns. Stacks under 720px. |
 | Page404 | Designed | Large italic serif 404 |
-| VacationPage, VacList, VacCard | Designed | Full-bleed destination photo on top of each card, cropped to 3:2 (`object-fit: cover`) so every card matches. The sun/sea motif is the photo's loading / broken-image fallback. Rows of cards are equal height with the buttons pinned to the bottom. Filter tabs above the grid and pagination (react-paginate) under it, see section 4. Three TSX requests in section 6. |
+| VacationPage, VacList, VacCard | Designed | Full-bleed destination photo on top of each card, cropped to 3:2 (`object-fit: cover`) so every card matches. The sun/sea motif is the photo's loading / broken-image fallback. The description sits under the destination in muted body text (first letter capitalized, since the backend lowercases it; italic "No description yet." when empty). Rows of cards are equal height with the buttons pinned to the bottom. Filter tabs above the grid and pagination (react-paginate) under it, see section 4. Three TSX requests in section 6. |
 | Spinner | Designed | GIF in a thin terracotta ring |
 | AskMcpPage | Designed | Reference for the AI-page pattern |
 | AiRecommendationPage, AiCompletion | Designed | Search card with an SVG-pin suggestions dropdown (open only while the input is focused and nothing is loading). The answer is a structured result card, see section 4. One TSX request in section 6. |
@@ -348,3 +348,7 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   would break the fixed photo). Removed the `parallax-photo` keyframes; the band lost its shadow (clip-path
   cuts it). Added a gotcha (section 4).
 - **2026-10-11:** About: the owner found the portrait too big; halved it (about 400px → max 200px wide, 150px on phones).
+- **2026-10-13:** VacCard shows the description, at the owner's request (TSX + CSS): a `<p>` for it right after the
+  destination, always rendered so the CSS numbering is stable. Every later `p:nth-of-type` moved up by one (dates
+  are now 3/4, likes 5, price 6) and the grid gained a row. Muted 0.9rem text with `::first-letter` uppercase;
+  `:empty` shows an italic "No description yet." (all seeded vacations have none).

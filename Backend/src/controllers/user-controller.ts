@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import { userService } from "../services/user-service";
-import { CredentialsModel, UserModel } from "../models/user-model";
+import { UserModel } from "../models/user-model";
+import { CredentialsModel } from "../models/credentials-model";
 import { StatusCode } from "../models/enums";
 import { securityMiddleware } from "../middleware/security-middleware";
 
@@ -28,7 +29,7 @@ class UserController {
 
     private async login(request: Request, response: Response): Promise<void> {
 
-        const credentials = request.body as CredentialsModel;
+        const credentials = new CredentialsModel(request.body);
         const jwtString = await userService.login(credentials);
         response.status(StatusCode.OK).json(jwtString);
     }

@@ -52,22 +52,36 @@ class VacationAdminService {
 
         // Set a oldImagePath var.
         let oldImagePath: string | null = null;
-        
-    
+
+
         // If a new image comes, save it in the backend folder, And over write the vacation.imageId too the new image.
         if (vacation.image) {
             oldImagePath = await vacationService.getImagePath(vacation._id.toString());
             vacation.imageId = await imageHandler.addImage(vacation.image);
         }
 
-        // Updates the vacation.
+        // Checks if the name was changed if overide the likes to prevent like deletion.
+        if (!await this.isNameChanged(vacation.destination, vacation._id.toString())) {
+            const likesObj = await VacationModel.findById(vacation._id).select("likes");
+            vacation.likes = likesObj!.likes
+        }
+
         const dbVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnDocument: "after" }).exec();
         if (!dbVacation) throw new ClientError(StatusCode.NotFound, `Vacation ${vacation._id} not found.`);
-        
+
         // Only after updating the image in the DB, delete the old image from the backend.
         if (oldImagePath) await imageHandler.removeImage(oldImagePath);
 
         return dbVacation;
+    }
+
+    private async isNameChanged(destination: string, vacationId: string): Promise<boolean> {
+
+        const nameObj = await VacationModel.findById(vacationId).select("destination");
+        const currentDestination = nameObj?.destination;
+
+        if (currentDestination === destination) { return false };
+        return true;
     }
 
 

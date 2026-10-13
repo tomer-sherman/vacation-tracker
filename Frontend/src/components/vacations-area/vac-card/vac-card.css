@@ -2,7 +2,8 @@
    VacCard — editorial card with a full-bleed destination photo
    ----------------------------------------------------------------------------
    DOM (no classes on children):
-       p1 destination   p2 startAt   p3 finishAt   p4 likeCount   p5 price
+       p1 destination   p2 description   p3 startAt   p4 finishAt
+       p5 likeCount     p6 price
        img (the vacation photo)
        then either one button (Like / UnLike) or two (Edit, Delete)
 
@@ -10,8 +11,10 @@
        img       photo, moved to the top with order: -1, spans both columns,
                  bleeds to the card edges, fixed 3:2 crop
        p1        destination, spans both
-       p2 | p3   depart / return
-       p4 | p5   likes / price
+       p2        description, spans both. Always rendered (so the nth-of-type
+                 numbers below stay put); empty shows "No description yet."
+       p3 | p4   depart / return
+       p5 | p6   likes / price
        button(s) pinned to the bottom, so cards in a row line up
 
    Dates arrive as ISO strings (2026-10-05T00:00:00.000Z). The date boxes use
@@ -35,9 +38,9 @@
     overflow: hidden;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    /* photo, destination, dates, likes/price, buttons. The last row soaks up
-       any extra height when VacList stretches a row of cards to match. */
-    grid-template-rows: auto auto auto auto 1fr;
+    /* photo, destination, description, dates, likes/price, buttons. The last
+       row soaks up any extra height when VacList stretches a row of cards. */
+    grid-template-rows: auto auto auto auto auto 1fr;
     column-gap: 0.75rem;
     row-gap: 0.6rem;
     align-items: center;
@@ -133,13 +136,35 @@
     color: var(--text);
 }
 
+/* Description — muted body text under the destination. The backend stores it
+   lowercased, so the first letter is capitalized here. */
+.VacCard p:nth-of-type(2) {
+    grid-column: 1 / -1;
+    margin-top: -0.2rem;
+    margin-bottom: 0.2rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+.VacCard p:nth-of-type(2)::first-letter {
+    text-transform: uppercase;
+}
+
+.VacCard p:nth-of-type(2):empty::before {
+    content: "No description yet.";
+    font-style: italic;
+    color: var(--text-faint);
+}
+
 /* Depart / Return — clipped to YYYY-MM-DD.
    overflow: hidden clips at the padding box, so the right-hand spacing is a
    transparent border rather than padding: the content box is exactly 10ch
    wide and the clip edge lands right after the tenth character. The outline
    is a box-shadow because the real border is used for spacing. */
-.VacCard p:nth-of-type(2),
-.VacCard p:nth-of-type(3) {
+.VacCard p:nth-of-type(3),
+.VacCard p:nth-of-type(4) {
     /* -1px keeps the anti-aliased edge of the hidden "T" from peeking out */
     width: calc(10ch + 1.2rem - 1px);
     padding: 0.4rem 0 0.4rem 0.6rem;
@@ -157,8 +182,8 @@
     overflow: hidden;
 }
 
-.VacCard p:nth-of-type(2)::before,
-.VacCard p:nth-of-type(3)::before {
+.VacCard p:nth-of-type(3)::before,
+.VacCard p:nth-of-type(4)::before {
     display: block;
     font-family: var(--font-sans);
     font-size: 0.6rem;
@@ -169,15 +194,15 @@
     margin-bottom: 0.1rem;
 }
 
-.VacCard p:nth-of-type(2)::before { content: "Depart"; }
-.VacCard p:nth-of-type(3)::before { content: "Return"; }
+.VacCard p:nth-of-type(3)::before { content: "Depart"; }
+.VacCard p:nth-of-type(4)::before { content: "Return"; }
 
-.VacCard p:nth-of-type(3) {
+.VacCard p:nth-of-type(4) {
     justify-self: end;
 }
 
 /* Likes — small muted count with a heart */
-.VacCard p:nth-of-type(4) {
+.VacCard p:nth-of-type(5) {
     justify-self: start;
     display: inline-flex;
     align-items: center;
@@ -189,14 +214,14 @@
     line-height: 1;
 }
 
-.VacCard p:nth-of-type(4)::before {
+.VacCard p:nth-of-type(5)::before {
     content: "♥";
     color: var(--coral);
     font-size: 1em;
 }
 
 /* Price */
-.VacCard p:nth-of-type(5) {
+.VacCard p:nth-of-type(6) {
     justify-self: end;
     margin-top: 0.4rem;
     font-family: var(--font-serif);
@@ -207,7 +232,7 @@
     color: var(--text);
 }
 
-.VacCard p:nth-of-type(5)::before {
+.VacCard p:nth-of-type(6)::before {
     content: "$";
     font-size: 0.6em;
     vertical-align: top;

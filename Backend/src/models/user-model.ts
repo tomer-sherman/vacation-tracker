@@ -73,11 +73,5 @@ UserSchema.pre("save", async function () {
 
 export const UserModel = model<IUserModel>("UserModel", UserSchema, "users");
 
-// Credentials.
-export type CredentialsModel = {
-    email: string;
-    password: string;
-}
-
 // User request type , used only when you need some of the users properties.
 export type AuthRequest = Request & { user: IUserModel };

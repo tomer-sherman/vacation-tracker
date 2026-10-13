@@ -19,7 +19,7 @@ class VacationService {
             {
                 $project: {
                     // This fields will be sent the same way as mongo stores them.
-                    _id: 1, destination: 1, startAt: 1, finishAt: 1, price: 1, imageId: 1,
+                    _id: 1, destination: 1, description: 1  ,startAt: 1, finishAt: 1, price: 1, imageId: 1,
 
                     // This are sent a bit differently, since we want to handle isLiked and likeCount as well.
                     likeCount: { $size: "$likes" },
