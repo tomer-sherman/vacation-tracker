@@ -16,7 +16,7 @@ class UserController {
     public constructor() {
         this.router.post("/api/register", this.register);
         this.router.post("/api/login", this.login);
-        this.router.get("/api/auth/test", securityMiddleware.verifyAdmin, this.test);
+       
     }
 
     // Get register user
@@ -33,20 +33,6 @@ class UserController {
         const jwtString = await userService.login(credentials);
         response.status(StatusCode.OK).json(jwtString);
     }
-
-    private async test(request: Request, response: Response): Promise<void> {
-
-        const sherminator = {
-            hacker: true,
-            pro: true
-        };
-
-        response.json(sherminator);
-
-
-    }
-
-
 
 }
 

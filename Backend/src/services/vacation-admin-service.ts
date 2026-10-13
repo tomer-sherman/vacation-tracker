@@ -81,7 +81,7 @@ class VacationAdminService {
         const nameObj = await VacationModel.findById(vacationId).select("destination");
         const currentDestination = nameObj?.destination;
 
-        if (currentDestination === destination) { return false };
+        if (currentDestination === destination) return false ;
         return true;
     }
 

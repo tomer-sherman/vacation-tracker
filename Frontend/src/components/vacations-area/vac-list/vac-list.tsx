@@ -15,6 +15,7 @@ import { VacationFilter } from "../../../models/enums";
 import { useState } from "react";
 import { filterVacations } from "../../../utils/vacation-filter";
 
+
 const ReactPaginate =
     (ReactPaginateImport as unknown as { default: typeof ReactPaginateImport }).default
     ?? ReactPaginateImport;

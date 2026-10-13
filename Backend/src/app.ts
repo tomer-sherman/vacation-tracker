@@ -22,9 +22,6 @@ class App {
         // Connect to mongoDb:
         await mongoose.connect(appConfig.mongoConnectionString);
 
-        // Configure smart-saver - images path:
-        saver.config(path.join(__dirname, "assets", "images"));
-
         // Create our server object:
         const server = express();
 
