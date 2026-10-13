@@ -2,27 +2,28 @@
    AddVacationPage — admin form: add a vacation
    ----------------------------------------------------------------------------
    DOM order: <form> (label, input[name=destination], span.error?,
-     label, input[name=description],
+     label, input[name=description], span.error?,
      label, input[name=startAt], span.error?,
      label, input[name=finishAt], span.error?,
      label, div.imagePreview (img only once a file is picked),
-     label.imageUploadButton (wraps the hidden file input),
+     label.imageUploadButton (wraps the hidden file input), span.error?,
      label, input[name=price], span.error?,
      button "Add vacation"),
    then <button> "Back" outside the form.
 
-   Layout: a centered column. "Back" becomes a quiet "← Back" link on top
-   (flex `order: -1`), ::before is the kicker, ::after the serif headline,
-   and the form is a white card with a terracotta hairline.
+   Layout: a centered column. ::before is the kicker, ::after the serif
+   headline, and the form is a white card with a terracotta hairline. "Back" is an
+   outline "← Back" button pulled up into the card's bottom row, right of
+   the submit button.
 
    Inside the card a 2-column grid places every field by its `name`
    (explicit rows, so the conditional error spans never shift anything):
        1-3   destination (label, input, error)
-       4-5   description
-       6-8   start date | end date        (stacked as rows 6-11 under 480px)
-       12-14 price
-       15-17 cover image (label, preview box, "Select Image" button)
-       18    submit
+       4-6   description (label, input, error)
+       7-9   start date | end date        (stacked as rows 7-12 under 480px)
+       13-15 price
+       16-19 cover image (label, preview box, "Select Image" button, error on Add)
+       20    submit
    Rows with nothing in them collapse to 0 because row-gap is 0 (spacing
    lives in margins). Price is shown before the image, like the reference.
 
@@ -31,6 +32,9 @@
 
 .AddVacationPage {
     --form-accent: var(--coral);
+    --card-pad: clamp(1.5rem, 4vw, 2.25rem);
+    --action-h: 3.1rem;   /* submit + Back height */
+    --back-w: 7.5rem;
 
     display: flex;
     flex-direction: column;
@@ -69,19 +73,26 @@
     animation: fade-up 0.6s var(--ease) 0.06s both;
 }
 
-/* ---- "Back" → quiet text link above the kicker ---------------------------- */
+/* ---- "Back" → outline button beside "Add vacation" ------------------------
+   It sits after the form (order: 3) and a negative top margin pulls it up
+   into the card's bottom padding, right of the submit button. That's why both
+   buttons share a fixed height (--action-h) and the card padding is a token. */
 
 .AddVacationPage > button {
-    order: -1;
-    align-self: flex-start;
-    margin-bottom: 1.25rem;
-    padding: 0.25rem 0;
-    background: none;
-    border: none;
-    box-shadow: none;
-    color: var(--text-muted);
-    font-size: 0.88rem;
-    font-weight: 500;
+    order: 3;
+    z-index: 1;
+    align-self: flex-end;
+    width: var(--back-w);
+    height: var(--action-h);
+    margin: calc(-1 * (var(--card-pad) + 1px + var(--action-h))) calc(var(--card-pad) + 1px) 0 0;
+    padding: 0 1rem;
+    background: var(--surface-solid);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+    font-size: 1rem;
+    /* backwards, not both: a pinned transform would kill the hover lift */
+    animation: fade-up 0.6s var(--ease) 0.12s backwards;
 }
 
 .AddVacationPage > button::before {
@@ -90,10 +101,10 @@
 }
 
 .AddVacationPage > button:hover {
-    background: none;
-    box-shadow: none;
+    background: var(--surface-solid);
+    border-color: rgba(21, 34, 44, 0.35);
+    box-shadow: var(--shadow);
     color: var(--text);
-    transform: none;
 }
 
 .AddVacationPage > button:hover::before {
@@ -101,7 +112,6 @@
 }
 
 .AddVacationPage > button:focus-visible {
-    border-radius: var(--radius-sm);
     box-shadow: var(--ring);
 }
 
@@ -115,7 +125,7 @@
     grid-template-columns: 1fr 1fr;
     column-gap: 1rem;
     row-gap: 0;
-    padding: clamp(1.5rem, 4vw, 2.25rem);
+    padding: var(--card-pad);
     background: var(--surface-solid);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
@@ -155,30 +165,32 @@
 
 .AddVacationPage > form > label:has(+ input[name="description"]) { grid-row: 4; }
 .AddVacationPage > form > input[name="description"]              { grid-row: 5; }
+.AddVacationPage > form > input[name="description"] + .error     { grid-row: 6; }
 
-.AddVacationPage > form > label:has(+ input[name="startAt"]) { grid-row: 6; grid-column: 1; }
-.AddVacationPage > form > input[name="startAt"]              { grid-row: 7; grid-column: 1; }
-.AddVacationPage > form > input[name="startAt"] + .error     { grid-row: 8; grid-column: 1; }
+.AddVacationPage > form > label:has(+ input[name="startAt"]) { grid-row: 7; grid-column: 1; }
+.AddVacationPage > form > input[name="startAt"]              { grid-row: 8; grid-column: 1; }
+.AddVacationPage > form > input[name="startAt"] + .error     { grid-row: 9; grid-column: 1; }
 
-.AddVacationPage > form > label:has(+ input[name="finishAt"]) { grid-row: 6; grid-column: 2; }
-.AddVacationPage > form > input[name="finishAt"]              { grid-row: 7; grid-column: 2; }
-.AddVacationPage > form > input[name="finishAt"] + .error     { grid-row: 8; grid-column: 2; }
+.AddVacationPage > form > label:has(+ input[name="finishAt"]) { grid-row: 7; grid-column: 2; }
+.AddVacationPage > form > input[name="finishAt"]              { grid-row: 8; grid-column: 2; }
+.AddVacationPage > form > input[name="finishAt"] + .error     { grid-row: 9; grid-column: 2; }
 
-.AddVacationPage > form > label:has(+ input[name="price"]) { grid-row: 12; }
-.AddVacationPage > form > input[name="price"]              { grid-row: 13; }
-.AddVacationPage > form > input[name="price"] + .error     { grid-row: 14; }
+.AddVacationPage > form > label:has(+ input[name="price"]) { grid-row: 13; }
+.AddVacationPage > form > input[name="price"]              { grid-row: 14; }
+.AddVacationPage > form > input[name="price"] + .error     { grid-row: 15; }
 
-.AddVacationPage > form > label:has(+ .imagePreview) { grid-row: 15; }
-.AddVacationPage > form > .imagePreview              { grid-row: 16; }
-.AddVacationPage > form > .imageUploadButton         { grid-row: 17; }
+.AddVacationPage > form > label:has(+ .imagePreview) { grid-row: 16; }
+.AddVacationPage > form > .imagePreview              { grid-row: 17; }
+.AddVacationPage > form > .imageUploadButton         { grid-row: 18; }
+.AddVacationPage > form > .imageUploadButton + .error { grid-row: 19; }
 
-.AddVacationPage > form > button { grid-row: 18; }
+.AddVacationPage > form > button { grid-row: 20; }
 
-/* Narrow screens: end date drops under the start date (rows 9-11) */
+/* Narrow screens: end date drops under the start date (rows 10-12) */
 @media (max-width: 480px) {
-    .AddVacationPage > form > label:has(+ input[name="finishAt"]) { grid-row: 9;  grid-column: 1 / -1; }
-    .AddVacationPage > form > input[name="finishAt"]              { grid-row: 10; grid-column: 1 / -1; }
-    .AddVacationPage > form > input[name="finishAt"] + .error     { grid-row: 11; grid-column: 1 / -1; }
+    .AddVacationPage > form > label:has(+ input[name="finishAt"]) { grid-row: 10; grid-column: 1 / -1; }
+    .AddVacationPage > form > input[name="finishAt"]              { grid-row: 11; grid-column: 1 / -1; }
+    .AddVacationPage > form > input[name="finishAt"] + .error     { grid-row: 12; grid-column: 1 / -1; }
 
     .AddVacationPage > form > label:has(+ input[name="startAt"]),
     .AddVacationPage > form > input[name="startAt"],
@@ -212,7 +224,8 @@
 }
 
 /* Validation: a rendered error span marks its field */
-.AddVacationPage > form > input:has(+ .error) {
+.AddVacationPage > form > input:has(+ .error),
+.AddVacationPage > form > .imageUploadButton:has(+ .error) {
     border-color: var(--danger);
     box-shadow: 0 0 0 3px var(--danger-soft);
 }
@@ -323,11 +336,22 @@
     box-shadow: var(--shadow);
 }
 
-/* ---- Submit -------------------------------------------------------------------- */
+/* ---- Submit (fills the row left of the Back button) ------------------------- */
 
 .AddVacationPage > form > button {
-    width: 100%;
+    height: var(--action-h);
     margin-top: 2rem;
-    padding: 0.9rem 1.5rem;
+    margin-right: calc(var(--back-w) + 0.75rem);
+    padding: 0 1.5rem;
     font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+    .AddVacationPage {
+        --back-w: 6.25rem;
+    }
+
+    .AddVacationPage > form > button {
+        padding: 0 1rem;
+    }
 }

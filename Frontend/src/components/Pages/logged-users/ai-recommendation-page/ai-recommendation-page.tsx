@@ -20,15 +20,21 @@ export function AiRecommendationPage() {
 
 
 
-    function handleChange(args: ChangeEvent<HTMLInputElement>) {
-
-        const value = args.target.value;
-        setQuery(value);
+    // An empty value matches every destination (startsWith("") is always true), so focusing an empty input lists them all.
+    function filterDestinations(value: string) {
 
         const filtered = vacations?.filter(v => v.destination.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()))
             .map(v => v.destination)
 
         setDestinations(filtered);
+
+    }
+
+    function handleChange(args: ChangeEvent<HTMLInputElement>) {
+
+        const value = args.target.value;
+        setQuery(value);
+        filterDestinations(value);
 
     }
 
@@ -38,6 +44,11 @@ export function AiRecommendationPage() {
         // Prevents the page from reloading since i do not use a react-hook-form here.
         e.preventDefault();
         setLoading(true)
+
+        // The request below already holds the current query, so clearing the input (and its suggestions) is safe.
+        setQuery("");
+        setDestinations([]);
+
         aiService.getAiRecommendation({ text: query })
             .then(completion => setCompletion(completion))
             .catch(err => notify.error(err))
@@ -54,7 +65,8 @@ export function AiRecommendationPage() {
 
             <form onSubmit={send} >
 
-                <input value={query} onChange={handleChange} />
+                {/* required blocks an empty destination, maxLength matches the backend's 300 chars */}
+                <input value={query} onChange={handleChange} onFocus={() => filterDestinations(query)} required maxLength={300} />
 
                 {destinations && destinations.length > 0 && (
                     <ul className="suggestions">

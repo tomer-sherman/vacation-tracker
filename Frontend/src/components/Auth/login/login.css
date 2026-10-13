@@ -4,6 +4,8 @@
    The TSX only renders a <form>; the title and subtitle are pseudo-elements,
    re-ordered with flex `order` so they sit above the form. A terracotta
    hairline runs along the card's top edge (form::before, absolutely placed).
+   DOM order: <form> (label, input[name=email], span.error?,
+                      label, input[name=password], span.error?, button)
    ============================================================================ */
 
 .Login {
@@ -64,6 +66,15 @@
 
 .Login form label:first-child {
     margin-top: 0;
+}
+
+/* Validation messages, same look as Register */
+.Login form .error {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--danger);
+    animation: fade-in var(--normal) var(--ease) both;
 }
 
 .Login form button {

@@ -34,3 +34,30 @@
     white-space: nowrap;
     color: var(--text);
 }
+
+/* "Hello {name}" right after the wordmark, split off by a thin divider.
+   capitalize turns "test user" into "Test User" (only the shown text, the stored name stays as is). */
+.Header .greeting {
+    padding-left: 0.8rem;
+    border-left: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+/* Phones: no room beside the wordmark, so the greeting drops under it (lined up with the title, not the mark) */
+@media (max-width: 480px) {
+    .Header {
+        flex-wrap: wrap;
+        row-gap: 0.2rem;
+    }
+
+    .Header .greeting {
+        flex-basis: 100%;
+        padding-left: calc(34px + 0.7rem);
+        border-left: 0;
+    }
+}

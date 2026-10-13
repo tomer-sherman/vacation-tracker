@@ -22,6 +22,13 @@ export class ClientError {
         }
     }
 
+    public static validateStartDate(startDate: Date): void {
+        const now = new Date();
+        const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+        if (startDate < today) throw new ClientError(StatusCode.UnprocessableContent, "Start date cannot be in the past.");
+        return
+    }
+
 
     // Logging
     public static logError(err: ClientError) {

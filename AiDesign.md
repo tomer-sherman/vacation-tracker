@@ -120,8 +120,9 @@ only need overrides where they hard-code a color.
 
 ### Recurring page pattern: AI pages (`AskMcpPage`, `AiRecommendationPage`)
 A centered column at `min(100%, 760px)`: kicker (`::before`) → serif headline → **prompt card** (white,
-1px border, `--radius-xl`, `--shadow`) with a small field label, an input and a primary button side by side
-(stacked under 560px) → reply card (white, 3px sea left border, "Answer" label). **Loading has no separate line:** the button gets `disabled` + `aria-busy`, its label turns transparent and a white `spin` ring takes its place, and the old answer fades to 40% (`filter: opacity`). Before 2026-10-11 it was a loading line with a
+1px border, `--radius-xl`, `--shadow`) with a small field label, a field and a primary button side by side
+(stacked under 560px). AskMcpPage's field is a full-width `<textarea>`, so its button sits in a footer row under it,
+right-aligned, with a muted "Up to 300 characters" hint (`form::after`) on the left → reply card (white, 3px sea left border, "Answer" label). **Loading has no separate line:** the button gets `disabled` + `aria-busy`, its label turns transparent and a white `spin` ring takes its place, and the old answer fades to 40% (`filter: opacity`). Before 2026-10-11 it was a loading line with a
 small spinning ring. New AI features follow this pattern.
 
 **Structured AI answers (`AiCompletion` inside `AiRecommendationPage`)** are one white card (`--radius-xl`,
@@ -140,15 +141,19 @@ muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart
 `--radius-lg`, `--shadow`) with a small uppercase label in its top padding ("Likes per destination").
 
 ### Recurring page pattern: admin forms (`AddVacationPage`, `UpdateVacation`)
-A centered column at `min(100%, 620px)`: the outside "Back" `<button>` becomes a quiet "← Back" text link on
-top (`order: -1`) → kicker "Admin · Vacations" (`::before`) → serif headline (`::after`) → **form card**
+A centered column at `min(100%, 620px)`: kicker "Admin · Vacations" (`::before`) → serif headline (`::after`) → **form card**
 (white, 1px border, `--radius-xl`, `--shadow`, 3px top hairline in `--form-accent`: terracotta for Add,
 sea for Edit). Inside the card a 2-column grid places each field **by its `name` attribute**
 (`input[name="startAt"]`, `label:has(+ input[name="…"])`, `input[name="…"] + .error`) on fixed rows, so the
 conditional error spans never shift the layout. The two dates sit side by side and stack under 480px. Price
 gets a "$" inside the field. The cover image is a 3:2 preview box (dashed "No image selected" state when
-`:empty`, the same crop as VacCard) with a separate outline "Select Image" label-button under it. Full-width
-primary submit. The two CSS files are copies with the root class, accent and headline swapped: keep them in sync.
+`:empty`, the same crop as VacCard) with a separate outline "Select Image" label-button under it. A rendered
+error span gives its field a red border; the file input is hidden, so the "Select Image" button takes it. Full-width
+primary submit with the outside "Back" `<button>` on its right as a white outline "← Back" button (owner-requested:
+the old quiet link on top was hard to find). Back comes after the form (`order: 3`, `align-self: flex-end`) and a
+negative top margin pulls it into the card's bottom padding, so both buttons share a fixed `--action-h`, the card
+padding is the `--card-pad` token, and the submit button leaves room with `margin-right: calc(var(--back-w) + 0.75rem)`.
+The two CSS files are copies with the root class, accent and headline swapped: keep them in sync.
 
 ### Recurring pattern: filter tabs (`VacList`)
 A segmented control on the grid's first row (`grid-column: 1 / -1`, `order: -1`), left-aligned: a white track (1px
@@ -233,10 +238,9 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 ## 6. Pending TSX requests (need the owner's permission)
 
 - **AiRecommendationPage: suggestion details (minor).** Duplicate destinations show twice (one `<li>` per
-  vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it). Neither
-  picking one nor submitting clears `destinations`. CSS hides the list unless the input is focused and
-  nothing is loading, but after submitting **with Enter** the input keeps focus, so the list reopens when
-  the answer arrives. `setDestinations([])` in `send` and in the `<li>` click fixes it.
+  vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it). Submitting
+  now clears the input and `destinations`, but picking a suggestion still leaves the list open
+  (`setDestinations([])` in the `<li>` click fixes it).
 - **LikeAnalytics: load the vacations.** The page only reads `state.vacation`, which gets filled when
   `VacList` mounts. Opening `/admin/likes` directly (or refreshing it) shows an empty chart. Calling
   `vacationService.getAllVacations()` in a `useEffect`, as `VacList` does, would fix it. Until then, CSS
@@ -352,3 +356,27 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   destination, always rendered so the CSS numbering is stable. Every later `p:nth-of-type` moved up by one (dates
   are now 3/4, likes 5, price 6) and the grid gained a row. Muted 0.9rem text with `::first-letter` uppercase;
   `:empty` shows an italic "No description yet." (all seeded vacations have none).
+- **2026-10-13:** Login and Register validation, at the owner's request (TSX + CSS): both password inputs are now
+  `type="password"`. Register's password error is a normal `span.error` showing the rule's message (it was a bare
+  span with hardcoded text). Login now renders `span.error` under email and password; `login.css` styles them like
+  Register's (`.Login form .error`) and its header maps the DOM order.
+- **2026-10-13:** Add/Update vacation validation, at the owner's request (TSX + CSS): description now has rules and a
+  `span.error` on both forms, and Add shows `span.error` after the "Select Image" button when no image is picked.
+  Both CSS grids were renumbered (description 4-6, dates 7-9 / 10-12 under 480px, price 13-15, image 16-19,
+  submit 20), and `.imageUploadButton:has(+ .error)` gets the red error border. The two files are still copies.
+- **2026-10-13:** AskMcpPage uses a `<textarea>`, at the owner's request (TSX + CSS; the spec asks for a text area).
+  Its `input` selectors now target `textarea`. It keeps the global 120px min-height and vertical resize, and the Send
+  button gets `align-self: end` so it lines up with the textarea's bottom edge. Enter now adds a new line, so the
+  question is sent with the button.
+- **2026-10-13:** Both AI pages use plain `useState` forms, at the owner's request (TSX + CSS). AskMcpPage dropped
+  react-hook-form, so its `span.error` is gone. Validation is native on the field itself (`required` + `maxLength={300}`
+  on both pages' fields, matching the backend's PromptModel). AskMcpPage's `.error` rules were removed; the textarea
+  turns red with `:user-invalid` instead, and the browser shows its own message bubble.
+- **2026-10-13:** Add/Update vacation (CSS only), at the owner's request: the quiet "← Back" link on top was hard to
+  find, so on both forms it's now an outline button (white, ink text, `--border-strong`) on the right of the submit
+  button in the card's bottom row; the submit button fills the rest of the row.
+- **2026-10-13:** Both AI pages clear their field on submit (owner's TSX change; AiRecommendationPage also clears
+  `destinations`). AskMcpPage (CSS only), at the owner's request: the Send button looked odd floating beside the
+  textarea's bottom edge. The textarea now spans the card, and Send sits right-aligned in a footer row under it with
+  a muted "Up to 300 characters" hint (`form::after`) on the left. Under 560px the hint sits under the textarea and
+  Send gets a full-width row of its own.

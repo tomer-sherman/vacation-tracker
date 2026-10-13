@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import "./add-vacation-page.css";
-import { VacationModel, vacationValidation } from "../../../../models/vacation-model";
+import { VacationModel, addVacationValidation } from "../../../../models/vacation-model";
+import { dateUtil } from "../../../../utils/date-util";
 import { vacationService } from "../../../../services/vacation-service";
 import { notify } from "../../../../utils/notify";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,10 @@ export function AddVacationPage() {
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<VacationModel>();
     const navigate = useNavigate();
     const [preview, setPreview] = useState<string>();
+
+    // The date inputs' min greys out past days in the picker. The error messages come from addVacationValidation,
+    // which is why the form has noValidate (otherwise the browser shows its own popup for min first).
+    const today = dateUtil.todayInputDate();
 
     // Show a preview of the chosen image.
     const imageFiles = watch("image") as unknown as FileList | undefined;
@@ -43,34 +48,35 @@ export function AddVacationPage() {
     return (
         <div className="AddVacationPage">
 
-            <form onSubmit={handleSubmit(send)}>
+            <form onSubmit={handleSubmit(send)} noValidate>
                 <label>Destination name:</label>
-                <input type="text" {...register("destination", vacationValidation.destination)} ></input>
+                <input type="text" {...register("destination", addVacationValidation.destination)} ></input>
                 {errors.destination?.message && <span className="error">{errors.destination?.message}</span>}
 
                 <label>Description:</label>
-                <input type="textarea" {...register("description")} />
-
+                <input type="textarea" {...register("description", addVacationValidation.description)} />
+                {errors.description?.message && <span className="error">{errors.description?.message}</span>}
 
                 <label>Starting date</label>
-                <input type="date" {...register("startAt", vacationValidation.startAt)}></input>
+                <input type="date" min={today} {...register("startAt", addVacationValidation.startAt)}></input>
                 {errors.startAt?.message && <span className="error">{errors.startAt?.message}</span>}
 
 
 
                 <label>Ending date</label>
-                <input type="date" {...register("finishAt", vacationValidation.finishAt)}></input>
+                <input type="date" min={today} {...register("finishAt", addVacationValidation.finishAt)}></input>
                 {errors.finishAt?.message && <span className="error">{errors.finishAt?.message}</span>}
 
                 <label>Upload an image:</label>
                 <div className="imagePreview">{preview && <img src={preview} alt="Image preview" />}</div>
                 <label className="imageUploadButton">
                     Select Image
-                    <input type="file" accept="image/*" hidden {...register("image", { required: true })} />
+                    <input type="file" accept="image/*" hidden {...register("image", addVacationValidation.image)} />
                 </label>
+                {errors.image?.message && <span className="error">{errors.image?.message}</span>}
 
                 <label>Price:</label>
-                <input type="number" {...register("price", vacationValidation.price)} ></input>
+                <input type="number" {...register("price", addVacationValidation.price)} ></input>
                 {errors.price?.message && <span className="error">{errors.price?.message}</span>}
 
 

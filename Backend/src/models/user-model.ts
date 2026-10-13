@@ -19,21 +19,21 @@ export const UserSchema = new Schema<IUserModel>({
 
     firstName: {
         type: String,
-        required: [true, "First name required"],
+        required: [true, "First name required."],
         minLength: [2, "First name cannot be with less than 2 chars."],
-        maxLength: [50, "Yo brah why your name so long"],
+        maxLength: [50, "Yo brah why your name so long."],
         match: [/^[a-z]*$/, "Your name must contain english chars only, no empty spaces."],
         trim: true,
-         lowercase: true
+        lowercase: true
     },
     lastName: {
         type: String,
-        required: [true, "First name required"],
-        minLength: [2, "First name cannot be with less than 2 chars."],
-        maxLength: [50, "Yo brah why your name so long"],
-        match: [/^[a-z]*$/, "Your last name must contain english chars only."],
+        required: [true, "Last name required."],
+        minLength: [2, "Last name cannot be with less than 2 chars."],
+        maxLength: [50, "Yo brah why your name so long."],
+        match: [/^[a-z]*$/, "Your last name must contain english chars only, no empty spaces."],
         trim: true,
-         lowercase: true
+        lowercase: true
     },
     email: {
         type: String,
@@ -41,14 +41,14 @@ export const UserSchema = new Schema<IUserModel>({
         unique: true,
         lowercase: true,
         trim: true,
-        match: [/^\S+@\S+\.\S+$/, "Invalid email"]
+        match: [/^\S+@\S+\.\S+$/, "Invalid email."]
     },
     password: {
         type: String,
         required: [true, "Password is required."],
         match: [
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{4,100}$/,
-            "Password must be 4-100 chars with lowercase, uppercase and a number",
+            "Password must be 4-100 chars with lowercase, uppercase and a number.",
         ]
     },
     role: {

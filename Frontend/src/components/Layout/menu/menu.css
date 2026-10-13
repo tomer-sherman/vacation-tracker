@@ -59,3 +59,15 @@
     outline: none;
     box-shadow: var(--ring);
 }
+
+/* Narrower desktops: the admin's 8 links plus the header greeting don't fit at full padding, so tighten it */
+@media (max-width: 1400px) {
+    .Menu a {
+        padding-inline: 0.55rem;
+    }
+
+    .Menu a::after {
+        left: 0.55rem;
+        right: 0.55rem;
+    }
+}

@@ -74,6 +74,8 @@ export function VacList() {
 
     async function handleDelete(vacationId: string) {
 
+        if (!window.confirm("Are you sure you want to delete this vacation?")) return;
+
         try {
             await vacationService.deleteVacation(vacationId);
             notify.success("Vacation deleted");
@@ -97,9 +99,9 @@ export function VacList() {
             {/* All 4 always render in the same order; aria-pressed marks the selected one (CSS styles it) */}
             <div className="filters">
                 <button aria-pressed={filter === VacationFilter.All} onClick={() => changeFilter(VacationFilter.All)}>All Vacations</button>
-                <button aria-pressed={filter === VacationFilter.Liked} onClick={() => changeFilter(VacationFilter.Liked)}>Liked Vacations</button>
+                {!isAdmin && <button aria-pressed={filter === VacationFilter.Liked} onClick={() => changeFilter(VacationFilter.Liked)}>Liked Vacations</button>}
                 <button aria-pressed={filter === VacationFilter.Active} onClick={() => changeFilter(VacationFilter.Active)}>Active Vacations</button>
-                <button aria-pressed={filter === VacationFilter.NotStarted} onClick={() => changeFilter(VacationFilter.NotStarted)}>Not Started Vacations</button>
+                <button aria-pressed={filter === VacationFilter.NotStarted} onClick={() => changeFilter(VacationFilter.NotStarted)}>Upcomming Vacations</button>
             </div>
 
 

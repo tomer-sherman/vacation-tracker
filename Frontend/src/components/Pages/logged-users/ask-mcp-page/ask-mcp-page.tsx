@@ -1,4 +1,3 @@
-import { useForm } from "react-hook-form";
 import "./ask-mcp-page.css";
 import { useState } from "react";
 import { notify } from "../../../../utils/notify";
@@ -11,21 +10,24 @@ export type Prompt = {
 
 export function AskMcpPage() {
 
-    const { register, handleSubmit, formState: { errors } } = useForm<Prompt>();
     const [loading, setLoading] = useState<boolean>(false);
-    
+
 
     const [completion, setCompletion] = useState<string>("");
+    const [text, setText] = useState<string>("");
 
-    
 
-
-    async function send(prompt: Prompt) {
+    async function send(e: React.FormEvent<HTMLFormElement>) {
+        // Prevents the page from reloading since i do not use a react-hook-form here.
+        e.preventDefault();
 
         try {
             setLoading(true);
-            
-            const completion = await aiService.getMcpCompletion(prompt);
+
+            // The request below already holds the current text, so clearing the textarea is safe.
+            setText("");
+
+            const completion = await aiService.getMcpCompletion({ text });
             setCompletion(completion);
             console.log(completion);
 
@@ -47,12 +49,10 @@ export function AskMcpPage() {
             <h1>Ask ai any question regarding our vacations and you will get acurate answers. </h1>
 
 
-            <form onSubmit={handleSubmit(send)}>
+            <form onSubmit={send}>
                 <label>Ask AI</label>
-                <input type="text"  {...register("text", {
-                    required: "This field must have something if you want to send dumb ass",
-                })} ></input>
-                <span className="error">{errors.text?.message}</span>
+                {/* required blocks an empty question, maxLength matches the backend's 300 chars */}
+                <textarea value={text} onChange={e => setText(e.target.value)} required maxLength={300}></textarea>
 
                 {/* disabled blocks clicks and Enter while a request is running, aria-busy tells CSS to show the spinner */}
                 <button disabled={loading} aria-busy={loading}>Send</button>

@@ -15,12 +15,12 @@ class VacationController {
         this.router.get("/api/vacations/:_id", securityMiddleware.verifyLogin, this.getOneVacation);
         this.router.post("/api/vacations/like/:_id", securityMiddleware.verifyLogin, this.likeVacation);
         this.router.post("/api/vacations/unlike/:_id", securityMiddleware.verifyLogin, this.unlikeVacation);
-        this.router.get("/api/images/:_id", this.getImage);
+        this.router.get("/api/images/:imageId", this.getImage);
     }
 
     private async getImage(request: Request, response: Response): Promise<void> {
 
-        const imageId = request.params._id as string;
+        const imageId = request.params.imageId as string;
 
         const imagePath = await vacationService.getImageByImageId(imageId);
 

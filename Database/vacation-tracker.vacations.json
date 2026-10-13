@@ -1,0 +1,547 @@
+[
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7778f"
+    },
+    "destination": "kyoto",
+    "description": "red torii gates at fushimi inari, autumn leaves in temple gardens and matcha in old tea houses.",
+    "startAt": {
+      "$date": "2026-10-08T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-24T00:00:00Z"
+    },
+    "price": 3199,
+    "imageId": "727364e8-b745-4815-b3d7-b06f89c3bbc7.jpeg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091765"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091766"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091767"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091768"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77790"
+    },
+    "destination": "santorini",
+    "description": "white villages, blue domes and famous sunsets over the aegean sea from the cliffs of oia.",
+    "startAt": {
+      "$date": "2026-10-10T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-21T00:00:00Z"
+    },
+    "price": 2299,
+    "imageId": "b8793966-fbdb-4b6a-b57b-f3cc0c0c6eaa.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091770"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091772"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091773"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091768"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091769"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176c"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77791"
+    },
+    "destination": "crete",
+    "description": "turquoise water at balos lagoon, mountain villages and fresh seafood in chania's old harbor.",
+    "startAt": {
+      "$date": "2026-10-04T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-22T00:00:00Z"
+    },
+    "price": 1699,
+    "imageId": "e89f901e-dc2c-41e7-b5e5-950e211130df.jpeg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176e"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091772"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091769"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176b"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77792"
+    },
+    "destination": "cyprus",
+    "description": "sea caves at cape greco, warm october swims and meze dinners by the beach in ayia napa.",
+    "startAt": {
+      "$date": "2026-10-11T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-25T00:00:00Z"
+    },
+    "price": 1099,
+    "imageId": "42d60a12-1824-4292-87c6-94a0c033b2cc.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091770"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77793"
+    },
+    "destination": "barcelona",
+    "description": "gaudi's sagrada familia, tapas bars in the gothic quarter and sunny afternoons on the beach.",
+    "startAt": {
+      "$date": "2026-10-09T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-23T00:00:00Z"
+    },
+    "price": 1399,
+    "imageId": "835e0e9f-b6a4-422e-8263-de67f9aea19f.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176e"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176f"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091771"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091773"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77794"
+    },
+    "destination": "paris",
+    "description": "croissants by the seine, the louvre and evening lights on the eiffel tower.",
+    "startAt": {
+      "$date": "2026-10-12T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-27T00:00:00Z"
+    },
+    "price": 1599,
+    "imageId": "9dfd286b-fe46-47f7-92a9-380021318bf4.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091770"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091766"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176a"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176c"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77795"
+    },
+    "destination": "london",
+    "description": "big ben, red double-deckers, west end shows and afternoon tea in covent garden.",
+    "startAt": {
+      "$date": "2026-10-07T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-10-30T00:00:00Z"
+    },
+    "price": 1899,
+    "imageId": "4c6ad6ea-1f86-4a5b-8106-0cd69606b06a.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091773"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091765"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091766"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091769"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77796"
+    },
+    "destination": "new york",
+    "description": "a ferry past the manhattan skyline, broadway shows and fall colors in central park.",
+    "startAt": {
+      "$date": "2026-10-01T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-11-02T00:00:00Z"
+    },
+    "price": 2899,
+    "imageId": "887b6b5b-6068-4c75-a77a-229c65aaa9bd.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176e"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176a"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77797"
+    },
+    "destination": "smoky mountains",
+    "description": "waterfall hikes through misty forests at the peak of the fall foliage season.",
+    "startAt": {
+      "$date": "2026-10-03T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-11-08T00:00:00Z"
+    },
+    "price": 1299,
+    "imageId": "dff11b35-0698-4b50-8b19-3bf56be1285f.jpeg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091771"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091767"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176c"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77798"
+    },
+    "destination": "mexico city",
+    "description": "day of the dead parades, the angel of independence lit up at night and tacos on every corner.",
+    "startAt": {
+      "$date": "2026-10-27T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-11-04T00:00:00Z"
+    },
+    "price": 1799,
+    "imageId": "7d02cee1-1398-46f6-b2fd-2ed76c01ffd0.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091771"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091768"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176b"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176c"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d77799"
+    },
+    "destination": "phi phi islands",
+    "description": "limestone cliffs, maya bay and snorkeling in clear green water off the coast of thailand.",
+    "startAt": {
+      "$date": "2026-11-15T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-11-26T00:00:00Z"
+    },
+    "price": 2199,
+    "imageId": "b50d49ba-832c-4ab9-8b0a-614f90f5335d.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091771"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091769"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779a"
+    },
+    "destination": "bavaria",
+    "description": "neuschwanstein castle, alpine lakes and christmas markets with mulled wine.",
+    "startAt": {
+      "$date": "2026-12-04T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-12-10T00:00:00Z"
+    },
+    "price": 1499,
+    "imageId": "d6137547-aaa9-4f26-a35a-78f667a0eee1.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091773"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091765"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091767"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779b"
+    },
+    "destination": "cape town",
+    "description": "table mountain and lion's head hikes, penguin beaches and wine tasting in the vineyards.",
+    "startAt": {
+      "$date": "2026-12-18T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2026-12-30T00:00:00Z"
+    },
+    "price": 2699,
+    "imageId": "e9abc174-fdf2-4297-9974-30ab64eba242.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176f"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091772"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091765"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091766"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176a"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176c"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779c"
+    },
+    "destination": "zermatt",
+    "description": "fresh powder, long ski runs under the matterhorn and fondue in a warm mountain chalet.",
+    "startAt": {
+      "$date": "2027-01-09T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-01-16T00:00:00Z"
+    },
+    "price": 3499,
+    "imageId": "59b3cc24-0988-4dfd-8d94-5f34b8d17c54.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176f"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091770"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091771"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091772"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176a"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779d"
+    },
+    "destination": "costa rica",
+    "description": "rainforest canopy walks, sloths, toucans and hot springs under the arenal volcano.",
+    "startAt": {
+      "$date": "2027-02-01T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-02-12T00:00:00Z"
+    },
+    "price": 2599,
+    "imageId": "f4f3cf34-fb60-4b80-b419-b85da484d541.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176f"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091767"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091769"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779e"
+    },
+    "destination": "lake atitlan",
+    "description": "volcano views over the lake, mayan villages and boat rides between the shores of guatemala.",
+    "startAt": {
+      "$date": "2027-02-20T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-02-28T00:00:00Z"
+    },
+    "price": 1399,
+    "imageId": "5c02535f-b91e-4587-8deb-b325826b682f.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176e"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091770"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091772"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091766"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091768"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176b"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d7779f"
+    },
+    "destination": "cancun",
+    "description": "a family beach week with caribbean sunsets, warm sand and day trips to the mayan ruins.",
+    "startAt": {
+      "$date": "2027-03-14T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-03-21T00:00:00Z"
+    },
+    "price": 1999,
+    "imageId": "0488bb35-419a-4461-8ac3-6a0db55f03ba.jpeg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091773"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176b"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176d"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d777a0"
+    },
+    "destination": "lijiang",
+    "description": "lantern-lit lanes of the old town, naxi culture and views of jade dragon snow mountain.",
+    "startAt": {
+      "$date": "2027-04-10T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-04-19T00:00:00Z"
+    },
+    "price": 2399,
+    "imageId": "ddcbcc6e-310d-4472-917e-407b34ed8172.jpeg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf091767"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf091768"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176a"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6ace3cab487827bff8d777a1"
+    },
+    "destination": "hawaii",
+    "description": "palm-lined beaches, surfing lessons and sunset luaus on the island of oahu.",
+    "startAt": {
+      "$date": "2027-05-06T00:00:00Z"
+    },
+    "finishAt": {
+      "$date": "2027-05-16T00:00:00Z"
+    },
+    "price": 3899,
+    "imageId": "39eb5b69-9eac-46fb-a0e9-1e7dd1abb331.jpg",
+    "likes": [
+      {
+        "$oid": "6ac7815c70388c5ddf09176e"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176f"
+      },
+      {
+        "$oid": "6ac7815c70388c5ddf09176b"
+      }
+    ]
+  }
+]

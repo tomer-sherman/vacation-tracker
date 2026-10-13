@@ -50,8 +50,8 @@ export function Register() {
                 {errors.email && <span className="error">{errors.email.message}</span>}
 
                 <label>Password:</label>
-                <input type="text" {...register("password", userValidation.password)} ></input>
-                {errors.password && <span>HELLO? CAN'T YOU READ INSTRUCTIONS!! S2PID!</span>}
+                <input type="password" {...register("password", userValidation.password)} ></input>
+                {errors.password && <span className="error">{errors.password.message}</span>}
                 <p>Password must be 4-100 chars with lowercase, uppercase and a number.</p>
 
                 <button>Send</button>

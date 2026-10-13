@@ -1,19 +1,21 @@
 /* ============================================================================
    AskMcpPage — AI concierge
    ----------------------------------------------------------------------------
-   DOM order: <h1> headline, <form> (label, input, span.error, button),
-   <p> answer.
+   DOM order: <h1> headline, <form> (label, textarea, button), <p> answer.
+   No react-hook-form: the textarea has native required + maxLength, so
+   there is no error span (the browser shows its own bubble).
 
    Loading: the TSX puts disabled + aria-busy="true" on the button (so no
    second request can be sent); its label turns into a spinning ring and
    the old answer fades back.
 
    Layout: one centered column. The form is a prompt card: label on top,
-   input + button side by side, error message underneath (grid + `order`,
-   so the TSX order stays untouched). The answer <p> becomes a reply card
-   and hides itself while empty.
+   full-width textarea, then a footer row with a muted "Up to 300 characters"
+   hint on the left and the Send button on the right (explicit grid rows, so
+   the TSX order stays untouched). The answer <p> becomes a reply card and
+   hides itself while empty.
 
-   ::before is the kicker above the headline.
+   ::before is the kicker above the headline; form::after is the hint.
    ============================================================================ */
 
 .AskMcpPage {
@@ -66,42 +68,41 @@
 }
 
 .AskMcpPage form label {
-    order: 0;
+    grid-row: 1;
     grid-column: 1 / -1;
     margin: 0;
 }
 
-.AskMcpPage form input {
-    order: 1;
-    grid-column: 1;
+/* Global textarea rules give it min-height 120px and vertical resize */
+.AskMcpPage form textarea {
+    grid-row: 2;
+    grid-column: 1 / -1;
     min-width: 0;
     padding: 0.85rem 1rem;
     font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Footer row: hint on the left, Send on the right */
+.AskMcpPage form::after {
+    content: "Up to 300 characters";
+    grid-row: 3;
+    grid-column: 1;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-faint);
 }
 
 .AskMcpPage form button {
-    order: 2;
+    grid-row: 3;
     grid-column: 2;
-    margin-top: 0;
-    padding: 0.85rem 1.35rem;
+    margin-top: 0.4rem;
+    padding: 0.75rem 1.6rem;
 }
 
-/* Validation message from react-hook-form; collapses while empty */
-.AskMcpPage form .error {
-    order: 3;
-    grid-column: 1 / -1;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--danger);
-    animation: fade-in var(--normal) var(--ease) both;
-}
-
-.AskMcpPage form .error:empty {
-    display: none;
-}
-
-/* Flag the input red while its message is showing */
-.AskMcpPage form input:has(+ .error:not(:empty)) {
+/* Native validation (required): the browser shows the message bubble,
+   :user-invalid flags the textarea red once the user tried to send it empty */
+.AskMcpPage form textarea:user-invalid {
     border-color: var(--danger);
     box-shadow: 0 0 0 3px var(--danger-soft);
 }
@@ -180,14 +181,20 @@
 
 /* ---- Mobile: stack the prompt card --------------------------------------- */
 
+/* The hint sits right under the textarea, Send gets its own full-width row */
 @media (max-width: 560px) {
     .AskMcpPage form {
         grid-template-columns: 1fr;
     }
 
-    .AskMcpPage form input,
+    .AskMcpPage form::after {
+        margin-top: 0;
+    }
+
     .AskMcpPage form button {
+        grid-row: 4;
         grid-column: 1;
         width: 100%;
+        margin-top: 0.35rem;
     }
 }

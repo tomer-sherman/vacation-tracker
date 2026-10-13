@@ -13,7 +13,8 @@ class VacationAdminService {
     public async addVacation(vacation: IVacationModel): Promise<IVacationModel> {
 
         await ClientError.validateDocument(vacation);
-        if (!vacation.image) throw new ClientError(StatusCode.UnprocessableContent, "You must send image.");
+        ClientError.validateStartDate(vacation.startAt);
+        if (!vacation.image) throw new ClientError(StatusCode.UnprocessableContent, "You must choose an image.");
 
         const imageId = await imageHandler.addImage(vacation.image);
         console.log("Image adding succeeded.");

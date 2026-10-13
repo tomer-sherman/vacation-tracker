@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { CredentialsModel, userValidation } from "../../../models/user-models";
+import { CredentialsModel, credentialsValidation } from "../../../models/user-models";
 import "./login.css";
 import { authService } from "../../../services/auth-service";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import { notify } from "../../../utils/notify";
 
 export function Login() {
 
-    const { register, handleSubmit } = useForm<CredentialsModel>();
+    const { register, handleSubmit, formState: { errors } } = useForm<CredentialsModel>();
     const navigate = useNavigate();
 
     async function send(credentials: CredentialsModel) {
@@ -28,10 +28,12 @@ export function Login() {
             <form onSubmit={handleSubmit(send)}>
 
                 <label>Email: </label>
-                <input type="text" {...register("email", userValidation.email)} ></input>
+                <input type="text" {...register("email", credentialsValidation.email)} ></input>
+                {errors.email && <span className="error">{errors.email.message}</span>}
 
                 <label>Password: </label>
-                <input type="text" {...register("password", userValidation.password)} ></input>
+                <input type="password" {...register("password", credentialsValidation.password)} ></input>
+                {errors.password && <span className="error">{errors.password.message}</span>}
 
 
                 <button>Send</button>

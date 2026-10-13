@@ -23,6 +23,9 @@ class AppConfig {
 
     // Keys
     public readonly openaiApiKey = process.env.OPENAI_API_KEY!;
+
+    //Ngrok url
+    public readonly ngrokUrl = process.env.NGROK_URL!;
 }
 
 export const appConfig = new AppConfig();

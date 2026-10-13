@@ -30,9 +30,7 @@ class App {
 
         //Connect mcp:
         const mspController = sseHandlers(() => vacationMcpServer.create(), {});
-        server.get("/sse", mspController.getHandler);
-        server.post("/messages", express.json(), mspController.postHandler);
-
+        
         // System middleware:
         securityMiddleware.registerRateLimit(server);
         securityMiddleware.headerProtection(server);
@@ -50,6 +48,10 @@ class App {
         server.use(vacationController.router);
         server.use(vacationAdminController.router);
         server.use(aiController.router);
+
+        // Mcp Routes
+        server.get("/sse", securityMiddleware.verifyLogin  ,mspController.getHandler);
+        server.post("/messages", securityMiddleware.verifyLogin , mspController.postHandler);
 
 
 

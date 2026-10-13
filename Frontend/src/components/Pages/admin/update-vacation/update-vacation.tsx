@@ -6,6 +6,7 @@ import { notify } from "../../../../utils/notify";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { appConfig } from "../../../../utils/app-config";
+import { dateUtil } from "../../../../utils/date-util";
 
 export function UpdateVacation() {
     const { register, handleSubmit, reset, setValues, watch, formState: { errors } } = useForm<VacationModel>();
@@ -31,8 +32,8 @@ export function UpdateVacation() {
             .then(vacation => {
                 setValues({
                     ...vacation,
-                    startAt: toInputDate(vacation.startAt),
-                    finishAt: toInputDate(vacation.finishAt)
+                    startAt: dateUtil.toInputDate(vacation.startAt),
+                    finishAt: dateUtil.toInputDate(vacation.finishAt)
                 });
                 setImageId(vacation.imageId);
             })
@@ -44,17 +45,6 @@ export function UpdateVacation() {
 
 
     }, [])
-
-    function toInputDate(date: string): string {
-
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        const inputDate = `${year}-${month}-${day}`;
-        return inputDate
-
-    }
 
 
 
@@ -86,7 +76,8 @@ export function UpdateVacation() {
                 {errors.destination?.message && <span className="error">{errors.destination?.message}</span>}
 
                 <label>Description:</label>
-                <input type="textarea" {...register("description")} />
+                <input type="textarea" {...register("description", vacationValidation.description)} />
+                {errors.description?.message && <span className="error">{errors.description?.message}</span>}
 
                 <label>Starting date</label>
                 <input type="date" {...register("startAt", vacationValidation.startAt)}></input>
@@ -115,6 +106,7 @@ export function UpdateVacation() {
 
                 <button>Update vacation</button>
             </form>
+                
 
             <button onClick={() => navigate("/vacations")}>Back</button>
 

@@ -32,9 +32,17 @@ function removeVacation(currentState: VacationModel[], action: PayloadAction<str
 
 function updateVacation(currentState: VacationModel[], action: PayloadAction<VacationModel>): VacationModel[] {
 
+
+
     const vacToUpdate = action.payload;
     const state = [...currentState];
-    const newState = state.map(v => v._id === vacToUpdate._id ? vacToUpdate : v);
+
+
+    const newState = state.map(v => {
+        if (v._id !== vacToUpdate._id) return v;
+        const isSameDestination = v.destination === vacToUpdate.destination;
+        return isSameDestination ? { ...vacToUpdate, likeCount: v.likeCount, isLiked: v.isLiked } : vacToUpdate;
+    });
 
     return newState;
 

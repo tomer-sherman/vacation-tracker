@@ -41,7 +41,7 @@ export function VacCard(props: VacProps) {
                 </>
                 :
                 props.vacacation.isLiked ?
-                    <button onClick={() => props.unLikeBtn(props.vacacation._id)}>UnLike</button>
+                    <button onClick={() => props.unLikeBtn(props.vacacation._id)}>Unlike</button>
                     :
                     <button onClick={() => props.likeBtn(props.vacacation._id)}>Like</button>
 

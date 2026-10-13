@@ -22,7 +22,7 @@ class McpRegister {
             inputSchema: z.object({ _id: z.string() })
         }
 
-        mcpServer.registerTool(name, config, mcpTools.getOneVacation)
+        mcpServer.registerTool(name, config, mcpTools.getOneVacationTool)
     }
 
 
