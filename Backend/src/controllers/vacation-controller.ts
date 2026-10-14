@@ -18,11 +18,11 @@ class VacationController {
         this.router.get("/api/images/:imageId", this.getImage);
     }
 
-    private async getImage(request: Request, response: Response): Promise<void> {
+    private getImage(request: Request, response: Response): void {
 
         const imageId = request.params.imageId as string;
 
-        const imagePath = await vacationService.getImageByImageId(imageId);
+        const imagePath = vacationService.getImagePathByImageId(imageId);
 
         response.sendFile(imagePath);
     }

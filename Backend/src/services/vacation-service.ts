@@ -9,6 +9,7 @@ import path from "node:path";
 
 class VacationService {
 
+    // gets all.
     public async getAllVacations(userId: string): Promise<IVacationModel[]> {
 
         //Convert string to mongoDb userId object.
@@ -21,7 +22,7 @@ class VacationService {
                     // This fields will be sent the same way as mongo stores them.
                     _id: 1, destination: 1, description: 1, startAt: 1, finishAt: 1, price: 1, imageId: 1,
 
-                    // This are sent a bit differently, since we want to handle isLiked and likeCount as well.
+                    // This are sent a bit differently, since we want to handle isLiked and likeCount as instead of an array of usersUid, and to add isLiked property
                     likeCount: { $size: "$likes" },
                     isLiked: { $in: [mongoUserId, "$likes"] }
                 },
@@ -31,8 +32,9 @@ class VacationService {
 
     }
 
+    // gives one vacation
     public async getOneVacation(_id: string): Promise<IVacationModel> {
-
+        // prevents cast error
         if (!mongoose.isValidObjectId(_id)) throw new ClientError(StatusCode.NotFound, `_id: ${_id} not found.`);
 
 
@@ -41,7 +43,8 @@ class VacationService {
         return dbVacation;
 
     }
-
+    
+    // Like
     public async like(userId: string, vacationId: string): Promise<void> {
         // Prevents cast errors.
         if (!mongoose.isValidObjectId(userId)) throw new ClientError(StatusCode.NotFound, `Vacation ${vacationId} not found. `);
@@ -56,6 +59,7 @@ class VacationService {
 
     }
 
+    // un like
     public async unLike(userId: string, vacationId: string): Promise<void> {
 
         if (!mongoose.isValidObjectId(userId)) throw new ClientError(StatusCode.BadRequest, ``);
@@ -68,24 +72,8 @@ class VacationService {
 
     }
 
-    public async getImagePath(_id: string): Promise<string> {
-        // Prevents 500 cast error.
-        if (!mongoose.isValidObjectId(_id)) throw new ClientError(StatusCode.BadRequest, "Wrong id format.");
-
-
-        const imageObj = await VacationModel.findById(_id).select("imageId");
-
-        // Checks if not found.
-        if (!imageObj) throw new ClientError(StatusCode.NotFound, `Vacation ${_id} not found.`)
-        if (!imageObj?.imageId) throw new ClientError(StatusCode.NotFound, `Image not found for vacation ${_id}.`);
-
-        const imageId = imageObj.imageId;
-        const filePath = path.join(imageHandler.folderPath, imageId);
-
-        return filePath;
-    }
-
-    public async getImageByImageId(imageId: string): Promise<string> {
+   // Gets the image path by the imageId
+    public getImagePathByImageId(imageId: string): string {
 
         if (!/^[0-9a-f-]{36}\.\w+$/i.test(imageId)) throw new ClientError(StatusCode.NotFound, `Image ${imageId} not found.`);
 

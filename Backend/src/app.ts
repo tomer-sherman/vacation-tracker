@@ -1,8 +1,6 @@
 import cors from "cors";
 import express from "express";
 import expressFileUpload from "express-fileupload";
-import path from "path";
-import { saver } from "smart-saver";
 import { userController } from "./controllers/user-controller";
 import { errorMiddleware } from "./middleware/error-middleware";
 import { securityMiddleware } from "./middleware/security-middleware";
@@ -34,7 +32,6 @@ class App {
         server.use(cors());
         server.use(express.json());
         server.use(expressFileUpload());
-
         server.use(securityMiddleware.preventXss);
 
         // Logger middleware:

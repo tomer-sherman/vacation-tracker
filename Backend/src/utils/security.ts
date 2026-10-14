@@ -6,6 +6,7 @@ import { Role } from "../models/enums";
 
 class Security {
 
+    // Hashes the password
     public hashPassword(plainString: string): string {
 
         const hashPass = crypto.createHmac("sha512", appConfig.hashSalt).update(plainString).digest("hex");
@@ -13,6 +14,7 @@ class Security {
 
     }
 
+    // generates jwt token
     public generateJwt(user: IUserModel): string {
 
         user.password = undefined!;
@@ -27,6 +29,7 @@ class Security {
 
     }
 
+    // Verifies the token, with the jwt secret
     public verifyJwtToken(token: string): boolean {
 
         try {
@@ -42,6 +45,7 @@ class Security {
 
     }
 
+    // Checks whether the user is an admin,
     public isAdmin(token: string): boolean {
 
 

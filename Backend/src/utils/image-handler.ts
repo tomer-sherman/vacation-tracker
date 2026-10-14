@@ -30,6 +30,7 @@ class ImageHandler {
 
     }
 
+    // Removes an image, decided to use a try catch here, Too throw, my wanted error.
     public async removeImage(imagePath: string): Promise<void> {
         try {
             await fs.unlink(imagePath);

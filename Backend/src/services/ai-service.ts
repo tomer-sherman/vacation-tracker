@@ -10,50 +10,63 @@ import { PromptModel } from "../models/prompt-model";
 
 class AiService {
 
+    // The key
     private openai = new OpenAi({
         apiKey: appConfig.openaiApiKey
 
     })
 
-    // Ask AI page - the rules go in "instructions" (the system message), the user's question stays separate in "input":
+    // Gets the ask mcp page Completion.
     public async getMcpAnswer(prompt: PromptModel, authorization: string): Promise<string> {
 
+        // Validates the prompt.
         prompt.validate();
 
-        return this.askOpenAi(prompt.text, authorization, promptHolder.askAiInstructions);
+        // Uses the askOpenAi func to send an mcp request.
+        const completion = await this.askOpenAi(prompt.text, authorization, promptHolder.askAiInstructions);
+
+        return completion;
     }
 
-    // AI Recommendation page - same as Ask AI: the rules go in "instructions", the destination stays separate in "input":
+    // Gets the recomendation completion json.
     public async getAiRecommendation(prompt: PromptModel, authorization: string): Promise<AiRecommendationModel> {
 
+        // Validates the prompt
         prompt.validate();
 
+        // Uses the same askOpenAi mcp request to send a request for the ai.
         const completion = await this.askOpenAi(prompt.text, authorization, promptHolder.recommendationInstructions);
+        
+        // parses the ai response into a obj type.
         const aiResponse = this.parseAiRecommendation(completion);
 
-        // Off topic isn't a recommendation, send it to the client as an error with the ai's message:
+        // Off topic user prompt brings a different response.
         if ("offTopic" in aiResponse) throw new ClientError(StatusCode.BadRequest, aiResponse.message);
 
         return aiResponse;
 
     }
-    
+
+    // Parses the 
     private parseAiRecommendation(completion: string): AiResponse {
 
-        // The model sometimes wraps its json in ```json ... ``` fences despite the prompt:
+        // Trims the unececery text using regex.
         const json = completion.trim().replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
 
+        // parses the text json into an ai response.
         const aiResponse: AiResponse = JSON.parse(json);
         return aiResponse;
     }
 
 
 
-    // Every singe Ai from my server goes throughout this function, the only difference is the system prompt. which is the instructions which is changed.
+    // Every singe Ai from my server goes throughout this function, the only difference is the system prompt. which is the instructions which can be changed.
     private async askOpenAi(prompt: string, authorization: string, instructions: string): Promise<string> {
 
         const response = await this.openai.responses.create({
             model: "gpt-4o-mini",
+            
+            // Injected time too the intructions, In each request the ai will have time.
             instructions: instructions + "\nToday's date: " + new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" }),
             input: prompt,
 
