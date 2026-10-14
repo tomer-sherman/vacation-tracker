@@ -28,6 +28,10 @@ class ErrorMiddleware {
         response.status(status).json(message);
     }
 
+    public ping(request: Request, response: Response, next: NextFunction): void {
+        response.send("pong");
+    }
+
 }
 
 export const errorMiddleware = new ErrorMiddleware();

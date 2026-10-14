@@ -1,0 +1,17 @@
+# Windows-built dependencies - must never enter the image.
+# npm install runs inside the Dockerfile instead, so the binaries are Linux ones:
+node_modules
+
+# Secrets stay out of the image - compose passes them in with env_file:
+.env
+
+# Postman collection - not needed to run the server:
+postman
+
+# Junk:
+npm-debug.log
+*.log
+.git
+.gitignore
+Dockerfile
+.dockerignore

@@ -32,6 +32,7 @@ class App {
         server.use(cors());
         server.use(express.json());
         server.use(expressFileUpload());
+        server.use("/ping", errorMiddleware.ping); // Ping
         server.use(securityMiddleware.preventXss);
 
         // Logger middleware:

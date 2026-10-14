@@ -1,0 +1,7 @@
+**/node_modules
+**/Dockerfile
+compose.yml
+**/postman
+.dockerignore
+.git
+.gitignore

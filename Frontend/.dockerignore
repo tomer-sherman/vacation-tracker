@@ -1,0 +1,16 @@
+# Windows-built dependencies - must never enter the image
+# (npm install runs inside the Dockerfile instead):
+node_modules
+
+# Build output and local secrets:
+build
+dist
+.env
+
+# Junk:
+npm-debug.log
+*.log
+.git
+.gitignore
+Dockerfile
+.dockerignore

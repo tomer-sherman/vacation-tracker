@@ -56,7 +56,44 @@ Running `npm start` in the frontend opens the app automatically.
 
 ### Run with Docker
 
-<!-- TODO: Docker setup -->
+Requires Docker Desktop. The app runs in 3 containers: MongoDB, the backend and the frontend. All commands run in PowerShell from the project root.
+
+1. Create the `.env` files from the examples (skipped if you already have them), then fill in your own values:
+
+```powershell
+if (-not (Test-Path Backend\.env)) { Copy-Item Backend\.env.example Backend\.env }
+if (-not (Test-Path Frontend\.env)) { Copy-Item Frontend\.env.example Frontend\.env }
+```
+
+`HASH_SALT` must be the salt the seed passwords were hashed with, otherwise the test accounts below can't log in.
+
+2. Build and start everything:
+
+```powershell
+docker compose up -d --build
+```
+
+3. Open the frontend at http://localhost. The backend runs at http://localhost:4000.
+
+On the first start, MongoDB imports both collections from the `Database` folder by itself (`Database/import.sh`). The database and the vacation images live in Docker volumes, so they survive restarts and rebuilds. For the AI features, ngrok still runs on your own machine (`ngrok http 4000`), since the backend's port 4000 is published to the host.
+
+| Task | Command |
+|------|---------|
+| Status | `docker compose ps` |
+| Logs, all services | `docker compose logs -f` |
+| Logs, one service | `docker compose logs -f backend-service` |
+| Stop everything, keep the data | `docker compose down` |
+| Rebuild and restart one service after a code change | `docker compose up -d --build backend-service` |
+| List the volumes | `docker volume ls --filter name=vacationtracker` |
+| Inspect a volume | `docker volume inspect vacationtracker_mongo-volume` |
+| See the stored images | `docker exec vacation-tracker-backend ls /app/src/assets/images` |
+| Mongo shell | `docker exec -it vacation-tracker-mongo mongosh vacation-tracker` |
+
+**Full reset.** ⚠️ This deletes the database and every uploaded image. The next start re-imports the seed data:
+
+```powershell
+docker compose down -v
+```
 
 ### Database
 

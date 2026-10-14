@@ -1,0 +1,111 @@
+# All images and containers:
+services:
+
+  # Mongo Db container:
+  mongo-service:
+
+    # Image:
+    image: mongo:8
+
+    # Container name:
+    container_name: vacation-tracker-mongo
+
+    # Restart policy:
+    restart: unless-stopped
+
+    # Volumes:
+    # mongo-volume keeps the database itself.
+    # ./Database runs import.sh only on the first start (when mongo-volume is still empty):
+    volumes:
+      - mongo-volume:/data/db
+      - ./Database:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 }).ok'" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  #------------------------------------------------------------------
+
+  backend-service:
+
+    # Which other services we're depending on:
+    depends_on:
+      mongo-service:
+        condition: service_healthy
+
+    image: vacation-tracker-backend
+
+    build: ./Backend
+
+    container_name: vacation-tracker-backend
+
+    ports:
+      - 4000:4000
+
+    restart: unless-stopped
+
+    # Vacation images (the seed ones from the image + every uploaded one):
+    volumes:
+      - assets-volume:/app/src/assets
+
+    # Everything from Backend/.env (secrets, keys...).
+    # The file is NOT inside the image - docker reads it from here at run time:
+    env_file:
+      - ./Backend/.env
+
+    # This WINS over the value from .env above, because inside the docker
+    # network the database is not on "localhost" but on its service name:
+    environment:
+      MONGO_CONNECTION_STRING: mongodb://mongo-service:27017/vacation-tracker
+
+    healthcheck:
+      test: [ "CMD", "node", "-e", "require('http').get('http://localhost:4000/ping', response => process.exit(response.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  #------------------------------------------------------------------
+
+  frontend-service:
+
+    depends_on:
+      backend-service:
+        condition: service_healthy
+
+    image: vacation-tracker-frontend
+
+    build: ./Frontend
+
+    ports:
+      - 80:5173
+
+    container_name: vacation-tracker-frontend
+
+    restart: unless-stopped
+
+    # Everything from Frontend/.env (VITE_RECAPTCHA_SITE_KEY...).
+    # .dockerignore keeps .env OUT of the image, so docker reads it from here at
+    # run time and vite picks up every VITE_* variable from the environment:
+    env_file:
+      - ./Frontend/.env
+
+    # There's no browser inside the container - stops vite's "open: true" from trying (and logging an error):
+    environment:
+      BROWSER: none
+
+    healthcheck:
+      test: [ "CMD", "node", "-e", "require('http').get('http://localhost:5173/', response => process.exit(response.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+#-----------------------------------------------------------------------------
+
+volumes:
+  mongo-volume:
+  assets-volume:
