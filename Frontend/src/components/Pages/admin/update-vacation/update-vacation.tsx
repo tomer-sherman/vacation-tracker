@@ -38,8 +38,7 @@ export function UpdateVacation() {
                 setImageId(vacation.imageId);
             })
             .catch(err => {
-                notify.error(err)
-                if (err.response?.status === 404) navigate("/vacations")
+                if (err.response?.status === 404) navigate("*")
             }
             )
 

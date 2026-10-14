@@ -76,13 +76,24 @@ class SecurityMiddleware {
         server.use(expressRateLimit({
             windowMs: 1000, // Time window in milliseconds.
             limit: 10, // How many requests allowed in that window.
-            skip: (request: Request) => request.path === "/mcp" || request.path.startsWith("/api/images/"),
+            skip: (request: Request) => request.path === "/mcp" || request.path.startsWith("/api/images/") || request.path === "/messages",
         }));
 
         server.use("/api/images/", expressRateLimit({
             windowMs: 1000,
             limit: 200,
         }))
+
+        server.use("/mcp", expressRateLimit({
+            windowMs: 1000,
+            limit: 40
+        }))
+        
+        server.use("/messages", expressRateLimit({
+            windowMs: 1000,
+            limit: 40
+        }))
+
 
     }
 

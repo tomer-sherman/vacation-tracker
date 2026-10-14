@@ -13,6 +13,7 @@ class VacationMcpServer {
         //register Tools:
         mcpRegister.registerGetAllVacations(mcpServer);
         mcpRegister.registerGetOneVacation(mcpServer);
+        mcpRegister.registerGetVacationsByStatus(mcpServer);
 
         return mcpServer;
 

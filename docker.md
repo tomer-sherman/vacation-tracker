@@ -3,7 +3,7 @@
 ## Context
 - You are running in the root of my Vacation Tracker project: React + TypeScript frontend, Node + Express + TypeScript backend, MongoDB via Mongoose, JWT auth with user/admin roles, vacation image upload, an AI recommendation page (OpenAI key), and an MCP page.
 - My reference project is at: "C:\Users\tomer\OneDrive\Desktop\01 - Northwind". It is already Dockerized. It is READ-ONLY for you. Never edit, build, or run anything inside it.
-- I'm on Windows with Docker Desktop. Paths are inside OneDrive and contain spaces, so quote every path.
+- I'm on Windows. Docker Desktop is already open and running for you, so you can use `docker` and `docker compose` commands right away. Paths are inside OneDrive and contain spaces, so quote every path.
 - Goal: Dockerize Vacation Tracker with the SAME structure, conventions and style as Northwind, so I can read it and explain it in my course project defense.
 
 ## Ground rules
@@ -30,7 +30,7 @@
    - CORS config
    - how the MCP page works (is it a separate server/process that needs its own container?)
 3. Look for a course spec / requirements file in the repo that mentions Docker requirements.
-4. Run `docker --version` and `docker compose version`, and confirm Docker Desktop is running.
+4. Docker Desktop is already open. Confirm the engine is reachable with `docker info`, `docker --version` and `docker compose version`. If it isn't reachable, stop and tell me. Don't try to start, restart, or reset Docker Desktop yourself.
 
 ## Checkpoint 1: STOP and report
 Give me:

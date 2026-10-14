@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { ClientError } from "../models/client-error";
-import { StatusCode } from "../models/enums";
+import { StatusCode, VacationStatus } from "../models/enums";
 import { VacationModel, IVacationModel } from "../models/vacation-model";
 import { imageHandler } from "../utils/image-handler";
 import path from "node:path";
@@ -29,6 +29,24 @@ class VacationService {
             }
         ])
         return dbVacations;
+
+    }
+
+    // Gets the vacations by status - the dates are compared here, so the ai never compares them itself.
+    public async getVacationsByStatus(userId: string, status: VacationStatus): Promise<IVacationModel[]> {
+
+        const vacations = await this.getAllVacations(userId);
+        const now = new Date();
+
+        // Same checks as the frontend vacation filter:
+        switch (status) {
+            case VacationStatus.Active:
+                return vacations.filter(v => now >= v.startAt && now <= v.finishAt);
+            case VacationStatus.Upcoming:
+                return vacations.filter(v => now < v.startAt);
+            case VacationStatus.Ended:
+                return vacations.filter(v => now > v.finishAt);
+        }
 
     }
 

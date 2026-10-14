@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { mcpTools } from "./mcp-tools";
 import z from "zod";
+import { VacationStatus } from "../models/enums";
 
 class McpRegister {
 
@@ -23,6 +24,17 @@ class McpRegister {
         }
 
         mcpServer.registerTool(name, config, mcpTools.getOneVacationTool)
+    }
+
+    public registerGetVacationsByStatus(mcpServer: McpServer): void {
+        const name = "get_vacations_by_status";
+        const config = {
+            // The ai picks a tool by its description, so it says exactly when to use it:
+            description: "Get the vacations that are active now, upcoming (not started yet) or ended. Use this for any question about which vacations are active, ongoing, upcoming, future, ended or past.",
+            inputSchema: z.object({ status: z.enum(VacationStatus) })
+        }
+
+        mcpServer.registerTool(name, config, mcpTools.getVacationsByStatusTool);
     }
 
 

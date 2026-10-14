@@ -137,8 +137,11 @@ turns transparent (keeping the width) with a white `spin` ring on top, and the o
 
 ### Recurring page pattern: admin dashboards (`LikeAnalytics`)
 Left-aligned column at `min(100%, 960px)`: sea kicker "Admin · Insights" (`::before`) → serif headline →
-muted subtitle with a hairline under it (`::after`, flex `order: 2`) → **chart card** (white, 1px border,
-`--radius-lg`, `--shadow`) with a small uppercase label in its top padding ("Likes per destination").
+muted subtitle with a hairline under it (`::after`, flex `order: 2`) → muted italic loading line (`order: 3`) →
+**chart card** (white, 1px border, `--radius-lg`, `--shadow`) with a small uppercase label in its top padding
+("Likes per destination") → **CSV download** (`order: 5`), a secondary action, so a quiet white outline button
+(ink text, `--border-strong`, 0.875rem) with a terracotta SVG download icon (`::before` mask), left-aligned under
+the chart with a 2.25rem gap so the angled destination names never touch it. The page has no primary button.
 
 ### Recurring page pattern: admin forms (`AddVacationPage`, `UpdateVacation`)
 A centered column at `min(100%, 620px)`: kicker "Admin · Vacations" (`::before`) → serif headline (`::after`) → **form card**
@@ -197,6 +200,10 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 - **Photos of mixed sizes:** give the `<img>` a fixed `aspect-ratio`, `height: auto` and `object-fit: cover`.
   Uploads range from 275px wide to 2048px, portrait to panorama.
 - A **numeric** `height` on `ResponsiveContainer` is used as is: CSS `min-height` grows the box but not the chart.
+- **Recharts 3 drops `ResponsiveContainer` when `width` and `height` are both numbers.** No
+  `div.recharts-responsive-container` is rendered; `div.recharts-wrapper` becomes the direct child, so selectors
+  on the container silently stop matching. Angled axis labels longer than the axis `height` are clipped by the
+  `<svg>`; `.recharts-surface { overflow: visible }` lets them draw below it.
 - **A library that always renders a wrapper breaks `:empty`.** react-paginate renders its `<ul>` even with
   0 pages, so VacList's empty state matches `.VacList:not(:has(> .VacCard, > span))` instead of `:empty`.
 - **An entrance animation with `both` fill pins its properties.** `rise`/`fade-up` end on `opacity: 1`
@@ -229,7 +236,7 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
 | Spinner | Designed | GIF in a thin terracotta ring |
 | AskMcpPage | Designed | Reference for the AI-page pattern |
 | AiRecommendationPage, AiCompletion | Designed | Search card with an SVG-pin suggestions dropdown (open only while the input is focused and nothing is loading). The answer is a structured result card, see section 4. One TSX request in section 6. |
-| LikeAnalytics (admin) | Designed | Reference for the admin-dashboard pattern: terracotta 20px bars in a white chart card, ♥ tooltip, italic empty state. Two TSX requests in section 6. |
+| LikeAnalytics (admin) | Designed | Reference for the admin-dashboard pattern: vertical terracotta bars (20px, set on `<Bar>`) with angled destination names, ♥ tooltip, quiet outline CSV button under the chart. The white chart card only shows once the chart is responsive again (TSX request in section 6). |
 | AddVacationPage (admin) | Designed | Reference for the admin-form pattern (terracotta accent). One TSX request in section 6. |
 | UpdateVacation (admin) | Designed | Same layout as AddVacationPage with a sea accent; the preview box shows the current photo. |
 
@@ -241,14 +248,12 @@ Squares shrink to 2.25rem under 480px; 10+ pages wrap to a second line on phones
   vacation, no de-dupe). The `<li>`s aren't keyboard-focusable (`<button>`s inside would fix it). Submitting
   now clears the input and `destinations`, but picking a suggestion still leaves the list open
   (`setDestinations([])` in the `<li>` click fixes it).
-- **LikeAnalytics: load the vacations.** The page only reads `state.vacation`, which gets filled when
-  `VacList` mounts. Opening `/admin/likes` directly (or refreshing it) shows an empty chart. Calling
-  `vacationService.getAllVacations()` in a `useEffect`, as `VacList` does, would fix it. Until then, CSS
-  shows "No likes to chart yet." in the card (keyed off the container's inline `height: 0px`).
-- **LikeAnalytics: chart height (minor).** `height={data.length * 40}` also has to fit the X axis (~40px),
-  so with 1–2 vacations the rows get squeezed and Recharts drops labels. `data.length * 40 + 40` fixes it.
-  Nice to have: `name="Likes"` on `<Bar>` (CSS currently hides the raw "likeCount :" in the tooltip), and
-  dropping `fill="#15222c"` (CSS overrides it anyway).
+- **LikeAnalytics: responsive chart width.** `like-chart.tsx` has `<ResponsiveContainer width={800}>`. With a
+  numeric width Recharts 3 skips the container `div`, so the white chart card never renders, and the 800px chart
+  runs off the screen on phones (horizontal scroll). `width="100%"` restores both, no CSS change needed. Nice to
+  have: label the button "Download CSV" (it says "Dowload csv like analytics"), `height={110}` on `<XAxis>` so
+  the longest angled names fit inside the svg, and `name="Likes"` on `<Bar>` (CSS hides the raw "likeCount :"
+  in the tooltip).
 - **VacCard: `alt` on the photo.** The `<img>` has no `alt`, so screen readers announce nothing (or the
   file URL). `alt={props.vacacation.destination}` fixes it; `loading="lazy"` would also help once the list
   grows. CSS already hides any alt text that shows while a photo is broken.
@@ -380,3 +385,10 @@ Headless Chrome won't shrink below about 500px wide, so for mobile, screenshot a
   textarea's bottom edge. The textarea now spans the card, and Send sits right-aligned in a footer row under it with
   a muted "Up to 300 characters" hint (`form::after`) on the left. Under 560px the hint sits under the textarea and
   Send gets a full-width row of its own.
+- **2026-10-14:** LikeAnalytics (CSS only), at the owner's request. The new CSV button sat right under the chart and
+  long angled names ("smoky mountains", "phi phi islands") were clipped at the svg's bottom, so the button looked
+  like it hid them; the fixed `width={800}` had also pushed the chart above the headline (Recharts 3 skips the
+  responsive container, see section 4). Now: the chart is ordered under the header, names draw below the svg
+  (`overflow: visible`), the button is a quiet white outline with a terracotta download icon and a 2.25rem gap,
+  and the "Loading data..." span is a muted italic line under the subtitle. Replaced the two stale LikeAnalytics
+  TSX requests (the page now loads its own vacations through `useVacations`) with a responsive-width request.

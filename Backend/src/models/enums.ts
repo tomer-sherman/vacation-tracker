@@ -5,6 +5,14 @@ export enum Role {
 
 }
 
+export enum VacationStatus {
+
+    Active = "active",
+    Upcoming = "upcoming",
+    Ended = "ended"
+
+}
+
 export enum StatusCode {
 
     // Success:
